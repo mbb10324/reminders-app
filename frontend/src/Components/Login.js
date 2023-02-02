@@ -23,7 +23,6 @@ function debounce(ms, action) {
 
 function Login() {
     //DATA
-    const [user, setUser] = useState([]); //holds all users
     const [cookies, setCookie] = useCookies(['user']); //cookies
     //VIEW
     const navigate = useNavigate(); //navigate var
@@ -38,11 +37,10 @@ function Login() {
     const handleShow = () => setShow(true); //shows create account modal
     const toggleLock = () => setLock(!lock); //toggles the lock view
 
-    //fetch all users
     useEffect(() => {
-        fetch("http://localhost:3030/user")
-            .then((response) => response.json())
-            .then((data) => { setUser(data) })
+        if (localStorage.getItem('token')) {
+            navigate('/');
+        }
     }, []);
 
     //closes create account modal
@@ -87,16 +85,27 @@ function Login() {
     function tryLogin(e) {
         e.preventDefault();
         e.stopPropagation();
+
+
         let username = e.target[0].value;
         let password = e.target[1].value;
-        const testLogin = user.filter(users => username === users.username && password === users.password)
-        if (testLogin.length === 0) {
-            setShowAlert(true)
-        } else {
-            setCookie('user', testLogin)
-            toggleLock()
-            setTimeout(() => { navigate("/") }, 2000)
-        }
+        
+        fetch('http://localhost:3030/login', {
+            method: 'POST',
+            headers: {'content-type': 'application/json'},
+            body: JSON.stringify({ username, password }),
+        })
+            .then(res => res.json())
+            .then((result) => {
+                if (!result) {
+                    setShowAlert(true);
+                    return;
+                }
+
+                toggleLock();
+                localStorage.setItem('token', result.token);
+                setTimeout(() => { navigate("/") }, 2000);
+            });
     }
 
     function checkIdentity(email, username) {

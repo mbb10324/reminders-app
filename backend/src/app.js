@@ -1,68 +1,121 @@
+/*------------------------------------------------------------------------------
+ | Imports
+ |------------------------------------------------------------------------------
+ | 
+ */
+
+require('dotenv/config');
+
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const express = require('express');
-const app = express();
-const port = 3030;
 const cors = require("cors");
 const util = require('util');
-app.use(express.json());
-app.use(cors())
+
+
+/*------------------------------------------------------------------------------
+ | Constants
+ |------------------------------------------------------------------------------
+ | Define all of the constants for the server.
+ */
+
+
+const PORT = process.env.PORT || '3030';
+const JWT_SECRET = process.env.JWT_SECRET || '';
+const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS || '10');
+
+
+/*------------------------------------------------------------------------------
+ | Database Setup
+ |------------------------------------------------------------------------------
+ | Initialize Knex.
+ */
+
+
+const knex = require('knex')(require('../knexfile.js')["development"]);
+
+
+/*------------------------------------------------------------------------------
+ | Express Initialization
+ |------------------------------------------------------------------------------
+ | 
+ */
+
+
+const app = express();
+
+
+/*------------------------------------------------------------------------------
+ | Promisified Functions
+ |------------------------------------------------------------------------------
+ | 
+ */
+
 
 const sign = util.promisify(jwt.sign);
 const verify = util.promisify(jwt.verify);
 
-const knex = require('knex')(require('../knexfile.js')["development"])
+
+/*------------------------------------------------------------------------------
+ | Global Middleware
+ |------------------------------------------------------------------------------
+ | The middleware that express will execute on every request.
+ */
+
+
+app.use(express.json());
+app.use(cors())
+
+
+/*------------------------------------------------------------------------------
+ | Custom Middleware
+ |------------------------------------------------------------------------------
+ | 
+ */
+
+
+async function requireUser(req, res, next) {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+
+    // Ensure a token is present.
+    if (!token) {
+        return res.status(401).json({ message: 'Not Authorized' });
+    }
+
+    // Ensure we know about the token.
+    const savedToken = await knex('tokens').select('*').where('value', token).first();
+
+    if (!savedToken) {
+        return res.status(401).json({ message: 'Not Authorized' });
+    }
+
+    // Ensure the token is valid and decode it.
+
+    try {
+        const { email } = await verify(token, JWT_SECRET);
+
+        const user = await knex('user_table').select('*').where({ email }).first();
+
+        req.user = user;
+        req.token = token;
+
+        return next();
+    } catch (e) {
+        return res.status(401).json({ message: 'Not Authorized' });
+    }
+}
+
+
+/*------------------------------------------------------------------------------
+ | Express Routes
+ |------------------------------------------------------------------------------
+ | 
+ */
+
 
 app.get('/', (req, res) => {
     res.send('API running')
-})
-
-app.listen(port, () => {
-    console.log('Server listening on port 3030')
-})
-
-//------------------------------------------------------------------------------------------
-
-let tokens = [];
-
-app.post('/login', async (req, res) => {
-    if (req.body.email !== 'valid@email.com') {
-        return res.status(401).json({message: 'Invalid Credentials'});
-    }
-
-    const token = await sign({ email: 'valid@email.com' }, 'my super secret secret');
-
-    tokens.push(token);
-    console.log(tokens);
-    return res.json({ token });
 });
-
-app.get('/protected', async (req, res) => {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-
-    if (!token || !tokens.includes(token)) {
-        return res.status(401).json({message: 'Not Authorized'});
-    }
-
-    try {
-        const payload = await verify(token, 'my super secret secret');
-        console.log(payload)
-
-        res.json({ message: `Hello ${payload.email}` });
-    } catch(e) {
-        tokens = tokens.filter(t => t !== token);
-        return res.status(401).json({message: 'Not Authorized'});
-    }
-});
-
-app.get('/logout', (req, res) => {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    tokens = tokens.filter(t => t !== token);
-    console.log(tokens);
-    res.send('OK');
-});
-
-//------------------------------------------------------------------------------------------
 
 app.get('/emails/:email', async (req, res) => {
     knex('user_table')
@@ -77,7 +130,6 @@ app.get('/emails/:email', async (req, res) => {
             }
         })
 });
-
 
 app.get('/identities', async (req, res) => {
     const email = await knex('user_table')
@@ -96,63 +148,96 @@ app.get('/identities', async (req, res) => {
     });
 });
 
-
 app.get('/user', (req, res) => {
     knex('user_table')
         .select('*')
         .then(user => {
             res.json(user)
-        })
-})
+        });
+});
+
+app.get('/logout', requireUser, async (req, res) => {
+    await knex('tokens')
+    .where('value', req.token)
+    .del()
+    res.send()
+});
+
+app.post('/login', async (req, res) => {
+    const {username, password} = req.body;
+    const user = await knex('user_table')
+        .select('*')
+        .where('username', username)
+        .first();
+    
+    if (!user) {
+        return res.json(null)
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password)
+
+    if (!passwordMatch) {
+        return res.json(null)
+    }
+
+    const sanitizedUser = sanitizeUser(user);
+
+    const token = await sign(sanitizedUser, JWT_SECRET);
+
+    await knex('tokens').insert({ value: token });
+
+    res.json({
+        user: sanitizedUser,
+        token,
+    });
+});
 
 app.post('/user', async (req, res) => {
-    const maxIdQuery = await knex('user_table').max('id as maxId').first();
-    let num = maxIdQuery.maxId + 1;
     knex('user_table')
         .insert(
             {
-                id: num,
                 fname: req.body.fname,
                 lname: req.body.lname,
                 email: req.body.email,
                 username: req.body.username,
-                password: req.body.password
+                password: await bcrypt.hash(req.body.password, BCRYPT_ROUNDS)
             }
         )
         .then(res.status(201).send("add complete"))
 });
 
-app.get('/reminders', (req, res) => {
+app.get('/reminders', requireUser, (req, res) => {
     knex('reminder_table')
         .select('*')
+        .where('user', req.user.id)
         .then(reminder => {
             res.json(reminder)
         })
 })
 
-app.post('/reminders', async (req, res) => {
-    const maxIdQuery = await knex('reminder_table').max('id as maxId').first();
-    let num = maxIdQuery.maxId + 1;
+app.post('/reminders', requireUser, async (req, res) => {
     knex('reminder_table')
         .insert(
             {
-                id: num,
                 description: req.body.description,
                 date: req.body.date,
                 start: req.body.start,
                 end: req.body.end,
                 type: req.body.type,
-                user: req.body.user
+                user: req.user.id,
             }
         )
-        .then(res.status(201).send("add complete"))
+        .then(() => {
+            res.status(201).send("add complete")
+        });
 });
 
-app.delete('/reminders/:id', async (req, res) => {
+app.delete('/reminders/:id', requireUser, async (req, res) => {
     const id = req.params.id;
     try {
         await knex('reminder_table')
             .where('id', id)
+            .where('user', req.user.id)
             .del()
         let responseString = "Deleted from Reminders";
         res.status(201).send(responseString);
@@ -160,3 +245,29 @@ app.delete('/reminders/:id', async (req, res) => {
         console.log('Error deleting from Reminders:', error)
     }
 });
+
+
+
+/*------------------------------------------------------------------------------
+ | Server Start
+ |------------------------------------------------------------------------------
+ | Start the server and listen on the defined port.
+ */
+
+
+app.listen(PORT, () => {
+    console.log('Server listening on port', PORT);
+});
+
+
+
+/*------------------------------------------------------------------------------
+ | Helpers
+ |------------------------------------------------------------------------------
+ | Helper functions.
+ */
+
+
+function sanitizeUser({password, ...user}) {
+    return user;
+}

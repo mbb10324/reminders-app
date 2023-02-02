@@ -6,23 +6,11 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 
-//function to filter through reminders to determine a single days reminders
-function filterReminders(dailyReminders, passedIn, cookies) {
-    const thisCookie = (cookies.user.map(users => users.id)).pop()
-    const empty = []
-    if (!passedIn.dayNum) return empty
-    const filteredArray = dailyReminders.filter((reminder) => {
-        const date = new Date(reminder.date);
-        return date.getDate() + 1 === passedIn.dayNum && date.getMonth() === passedIn.selectedMonth && reminder.user === thisCookie
-    })
-    return filteredArray
-}
-
 //COMPONENT START -------------------------------------------------------------------------------------------------------
 function Reminder(props) {
     //Data Stuff
-    const [todaysReminders, setTodaysReminders] = useState([]); //array containing reminders for todays date
-    const { reminders } = useContext(Context); //context to pass fetch for all of the reminders
+    const todaysReminders = props.reminders;
+    // const [todaysReminders, setTodaysReminders] = useState([]); //array containing reminders for todays date
     //View Stuff
     const [cookies, setCookie] = useCookies(['index', 'month', 'today', 'user']);
     const [events, setEvents] = useState();
@@ -37,6 +25,7 @@ function Reminder(props) {
     const handleCloseEdit = () => setShow(false); //function to toggle closing delete modal
     const handleShowEdit = () => setShow(true); //function to toggle showing delete modal
 
+    //toggles showing the edit modal with proper parameters for the selected reminder
     function handleShowEditor(rem, thisClass) {
         setEditorView(true);
         setModalRem(rem)
@@ -44,14 +33,18 @@ function Reminder(props) {
         setModalRemClass(addModalEvent)
     }
 
+    function closeAll() {
+        setEditorView(false);
+        setShow(false);
+        setDeleteCheck(false);
+    }
 
     //calls function to filter reminders into daily reminders then sets state, contains logic to determine past present and future
     useEffect(() => {
-        setTodaysReminders(filterReminders(reminders, props, cookies))
+        // setTodaysReminders(filterReminders(reminders, props, cookies))
         let date = new Date
         let dateNum = date.getDate()
         let dateMonth = date.getMonth()
-        let month = props.selectedMonth
         if (dateNum === props.dayNum && dateMonth === props.selectedMonth) {
             setEvents('today events')
         } else if (dateNum > props.dayNum  || dateMonth > props.selectedMonth) {
@@ -59,25 +52,15 @@ function Reminder(props) {
         } else {
             setEvents('events')
         }
-    }, [reminders, props, cookies]);
+    }, [props, cookies]);
 
     //function responsible for deleting a reminder from the database
     function deleteReminder(modalRem) {
-        console.log(modalRem)
-        fetch(`http://localhost:3030/reminders/${modalRem.id}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-type': 'application/json; charset=UTF-8'
-            },
-            body: JSON.stringify(modalRem)
-        })
-            .then(res => console.log("deleted", res));
-        window.location.reload()
+        props.deleteReminder(modalRem);
     }
 
     //function responsible for posting a reminder to the database upon form submission
     function editReminder(e) {
-        console.log(e)
         e.preventDefault();
         e.stopPropagation();
         let description = e.target[0].value;
@@ -85,31 +68,26 @@ function Reminder(props) {
         let start = e.target[2].value;
         let end = e.target[3].value;
         let type = e.target[4].value;
-        let user = (cookies.user.map(users => users.id)).pop()
-        fetch("http://localhost:3030/reminders", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            mode: "cors",
-            body: JSON.stringify({ description, date, start, end, type, user }),
-        })
-            .then(res => console.log(res), deleteReminder(modalRem))
-        window.location.reload()
+        props.editReminder({ description, date, start, end, type })
+            .then(() => props.deleteReminder(modalRem))
+            .then(() => props.fetchReminders())
+            .then(() => closeAll());
     }
 
     //start of HTML
     return (
         <div className={events}>
             {/* Map through todays reminders */}
-            {todaysReminders.map((rem, index) => {
+            {todaysReminders.map((rem) => {
                 let start = rem.start
                 let thisStart = start.slice(0, 2)
                 let end = rem.end
                 let thisEnd = end.slice(0, 2)
                 let thisClass = `event start-${thisStart} end-${thisEnd} ${rem.type}`
                 return (
-                    <>
+                    <React.Fragment key={rem.id}>
                         {/* Creates a reminder */}
-                        <div className={thisClass} onClick={() => handleShowEditor(rem, thisClass)} key={index}>
+                        <div className={thisClass} onClick={() => handleShowEditor(rem, thisClass)}>
                             <p className="title">{rem.description}</p>
                             <p className="time">{rem.start}-{rem.end}</p>
                         </div>
@@ -119,7 +97,7 @@ function Reminder(props) {
                             dialogClassName={"editModal"}
                             contentClassName={"editModal"}
                         >
-                            <div className={modalRemClass} key={index}>
+                            <div className={modalRemClass}>
                                 <p className="title">{modalRem.description}</p>
                                 <p className="time">{modalRem.start}-{modalRem.end}</p>
                             </div>
@@ -146,7 +124,7 @@ function Reminder(props) {
                                 <Modal.Title>Are you sure?</Modal.Title>
                             </Modal.Header>
                             <Modal.Body>
-                                You are about to delete a {rem.type} reminder, are you sure you want to do that?
+                                You are about to delete a {modalRem.type} reminder, are you sure you want to do that?
                             </Modal.Body>
                             <Modal.Footer>
                                 <Button variant="secondary" onClick={handleClose}>
@@ -221,7 +199,7 @@ function Reminder(props) {
                                 </Form>
                             </Modal>
                         </div>
-                    </>
+                    </React.Fragment>
                 )
             })}
         </div>
@@ -231,13 +209,3 @@ function Reminder(props) {
 export default Reminder;
 
 //EOD
-
-
-
-
-
-
-
-
-
-

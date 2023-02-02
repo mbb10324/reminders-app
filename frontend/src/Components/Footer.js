@@ -16,11 +16,22 @@ function Footer() {
 
     //function fired when logging out
     function logout() {
-        removeCookie('index')
-        removeCookie('month')
-        removeCookie('today')
-        removeCookie('user')
-        navigate("/Login")
+        fetch('http://localhost:3030/logout', {
+            method: 'GET',
+            headers: {
+                'Authorization': localStorage.getItem('token'),
+            },
+        })
+            .then((response) => {
+                if (response.status !== 200) {
+                    console.log('WARNING server did not successfully logout.');
+                }
+                removeCookie('index')
+                removeCookie('month')
+                removeCookie('today')
+                localStorage.removeItem('token');
+                navigate("/Login")
+            });
     }
 
     //tooltip for logout button

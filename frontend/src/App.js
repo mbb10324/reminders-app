@@ -7,24 +7,14 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
-  const [reminders, setReminders] = useState([])
-
-  useEffect(() => {
-    fetch("http://localhost:3030/reminders")
-      .then((response) => response.json())
-      .then((data) => { setReminders(data) })
-  }, []);
-
   return (
     <div className="App">
-      <Context.Provider value={{ reminders }}>
-        <Router>
-          <Routes>
-            <Route path="/Login" element={<Login />} />
-            <Route path="/" element={<Home />} />
-          </Routes>
-        </Router>
-      </Context.Provider>
+      <Router>
+        <Routes>
+          <Route path="/Login" element={<Login />} />
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </Router>
     </div>
   );
 }

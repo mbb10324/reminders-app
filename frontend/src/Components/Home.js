@@ -13,6 +13,7 @@ import Form from 'react-bootstrap/Form';
 import Carousel from 'react-bootstrap/Carousel';
 import Tooltip from "react-bootstrap/Tooltip";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import * as api from '../api';
 
 
 //creates a dates array with all the days in a month
@@ -102,11 +103,25 @@ function getInitialMonth(cookies, date) {
     return cookies.month ? parseInt(cookies.month) : date.getMonth()
 }
 
+function filterReminders(allReminders, selectedMonth, dayNum) {
+    if (!dayNum) return [];
+
+    console.log({allReminders, dayNum, selectedMonth})
+    
+    return allReminders.filter((reminder) => {
+        const date = new Date(reminder.date);
+        
+        return date.getDate() + 1 === dayNum
+            && date.getMonth() === selectedMonth;
+    });
+}
+
 
 //COMPONENT START ---------------------------------------------------------------------------------------------------------------------
 function Home() {
     //Cookie stuff
     const [cookies, setCookie] = useCookies(['index', 'month', 'today', 'user']); //index of current slide-index of the month-index of this week
+    const [reminders, setReminders] = useState([]);
     // Date Stuff
     const date = new Date //todays date
     const thisMonth = date.getMonth()
@@ -130,15 +145,26 @@ function Home() {
         setCookie("index", selectedIndex)
     };
 
+    function reloadReminders() {
+        api.fetchReminders().then(setReminders);
+    }
+
     //useeffect fired on render and each time month is changed
     useEffect(() => {
-        if (!cookies.user) {
+        if (!localStorage.getItem('token')) {
             navigate("/Login")
+        } else {
+            reloadReminders();
         }
         const monthyFiltered = getAllDaysInMonth(date.getFullYear(), selectedMonth)
         setWeeks(splitMonthIntoWeeks(monthyFiltered))
         setCookie("today", getIndexOfThisWeek(weeks))
     }, [selectedMonth]);
+
+    function deleteReminder(reminder) {
+        return api.deleteReminder(reminder)
+            .then(() => reloadReminders());
+    }
 
     //function responsible for posting a reminder to the database upon form submission
     function addReminder(e) {
@@ -149,15 +175,9 @@ function Home() {
         let start = e.target[2].value;
         let end = e.target[3].value;
         let type = e.target[4].value;
-        let user = (cookies.user.map(users => users.id)).pop()
-        fetch("http://localhost:3030/reminders", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            mode: "cors",
-            body: JSON.stringify({ description, date, start, end, type, user }),
-        })
-            .then(res => console.log(res))
-        window.location.reload()
+
+        return api.createReminder({ description, date, start, end, type })
+            .then(() => setShow(false));
     }
 
     //function called when selecting a month(creates cookie for month/ sets a state with selected mmonth)
@@ -243,6 +263,7 @@ function Home() {
                                 return (
                                     <Carousel.Item key={index}>
                                         {thisIsChaos.map((day, index) => {
+                                            const dailyReminders = filterReminders(reminders, selectedMonth, day.dayNum);
                                             return (
                                                 <div key={index} className='day'>
                                                     <div className="date">
@@ -252,7 +273,10 @@ function Home() {
                                                     {Object.keys(day).length === 0 ?
                                                         <div className='placeholderCard'></div>
                                                         :
-                                                        <Reminder dayNum={day.dayNum} selectedMonth={selectedMonth} />
+                                                        <Reminder
+                                                            reminders={dailyReminders}
+                                                            deleteReminder={deleteReminder}
+                                                        />
                                                     }
                                                 </div>
                                             )
