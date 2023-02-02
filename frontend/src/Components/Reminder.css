@@ -1,0 +1,213 @@
+.events {
+  display: grid;
+  grid-template-rows: repeat(9, 60px);
+  border-radius: 5px;
+  background-color: #e2fbff;
+  padding: 0.5rem 0;
+}
+
+.events p {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.today {
+  background-color: #adf4ff !important;
+}
+
+.past {
+  background-color: #73ecff !important;
+}
+
+.future {
+  background-color: #e2fbff;
+}
+
+.start-9 {
+  grid-row-start: 1;
+}
+
+.start-10 {
+  grid-row-start: 2;
+}
+
+.start-11 {
+  grid-row-start: 3
+}
+
+.start-12 {
+  grid-row-start: 4
+}
+
+.start-1 {
+  grid-row-start: 5;
+}
+
+.start-2 {
+  grid-row-start: 6;
+}
+
+.start-3 {
+  grid-row-start: 7;
+}
+
+.start-4 {
+  grid-row-start: 8;
+}
+
+.start-5 {
+  grid-row-start: 9;
+}
+
+.start-6 {
+  grid-row-start: 10;
+}
+
+.end-9 {
+  grid-row-end: 1;
+}
+
+.end-10 {
+  grid-row-end: 2;
+}
+
+.end-11 {
+  grid-row-end: 3;
+}
+
+.end-12 {
+  grid-row-end: 4;
+}
+
+.end-1 {
+  grid-row-end: 5;
+}
+
+.end-2 {
+  grid-row-end: 6;
+}
+
+.end-3 {
+  grid-row-end: 7;
+}
+
+.end-4 {
+  grid-row-end: 8;
+}
+
+.end-5 {
+  grid-row-end: 9;
+}
+
+.end-6 {
+  grid-row-end: 10;
+}
+
+.title {
+  font-weight: 600;
+  margin: 0;
+}
+
+.event {
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 0.5rem;
+  margin: 0 0.5rem;
+  background: white;
+  cursor: pointer;
+  transition: all .2s ease-in-out;
+}
+
+.event:hover {
+  box-shadow: 0 2px 5px rgb(0 0 0 / 1);
+  transform: scale(1.02);
+}
+
+.modalevent {
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 0.5rem;
+  margin: 0 0.5rem;
+  background: white;
+}
+
+.time {
+  margin: 0;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+}
+
+.Personal {
+  background-color: #ffd6d1;
+}
+
+.Meeting {
+  background-color: #fafaa3;
+}
+
+.General {
+  background-color: #fff2e2;
+}
+
+.Appointment {
+  background-color: #d1ffe6;
+}
+
+.modal-content {
+  text-align: center;
+}
+
+.close {
+  background-color: #c5c5c5;
+  border: 1px solid black;
+  border-radius: 0.375rem;
+  transition: all .3s ease-in-out;
+  line-height: 1.75;
+  width: 15%;
+}
+
+.close:hover {
+  transform: scale(1.1);
+  background-color: #dbdbdb;
+}
+
+.delete {
+  background-color: #ff7979;
+  border: 1px solid black;
+  border-radius: 0.375rem;
+  transition: all .3s ease-in-out;
+  line-height: 1.75;
+  width: 15%;
+}
+
+.delete:hover {
+  transform: scale(1.1);
+  background-color: #ff9595;
+}
+
+.edit {
+  background-color: #79ffb5;
+  border: 1px solid black;
+  border-radius: 0.375rem;
+  transition: all .3s ease-in-out;
+  line-height: 1.75;
+  width: 15%;
+}
+
+.edit:hover {
+  transform: scale(1.1);
+  background-color: #95ffc5;
+}
+
+.editModal {
+  background-color: #f3f3f3 !important;
+  border-radius: 0.375rem;
+}
+
+.modal-content {
+  background-color: #f3f3f3 !important;
+}

@@ -1,0 +1,186 @@
+.calendar {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto 1fr;
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+.content {
+  animation-name: fadeInOpacity;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-in;
+  animation-duration: 1s;
+}
+
+@keyframes fadeInOpacity {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.content h1 {
+  font-weight: 100;
+  text-align: center;
+  font-size: 75px;
+  margin: 0;
+}
+
+.timeline {
+  display: grid;
+  grid-template-rows: repeat(10, 59.5px);
+}
+
+.days {
+  display: grid;
+  grid-column: 2;
+  gap: 5px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.date {
+  display: flex;
+  gap: 1em;
+  padding-bottom: 50px;
+  height: 60px
+}
+
+.date-num {
+  font-size: 3rem;
+  font-weight: 600;
+  display: inline;
+}
+
+.date-day {
+  display: inline;
+  font-size: 3rem;
+  font-weight: 100;
+}
+
+.bottom {
+  display: grid;
+  grid-template-columns: 2fr 2fr;
+  text-align: center;
+}
+
+.bottom h2 {
+  font-size: 60px;
+}
+
+.bottom select {
+  border: none;
+}
+
+.bottom select:focus {
+  outline: none;
+}
+
+.midBody {
+  display: grid;
+  grid-template-columns: 80px auto 80px;
+}
+
+.modal-content {
+  padding: 25px;
+  text-align: center;
+}
+
+.modal-content button {
+  margin-top: 7px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.day {
+  width: 14%;
+  padding-left: 10px;
+  display: inline-block;
+  vertical-align: top;
+  justify-content: space-between;
+}
+
+.screenshotModalContent {
+  text-align: center !important;
+  max-width: none !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+.modal-header {
+  display: block !important;
+  text-align: center !important;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.header svg {
+  margin-left: 46%;
+  margin-right: 50%;
+  cursor: pointer;
+  transition: all .3s ease-in-out;
+  cursor: pointer;
+}
+
+
+.header svg:hover {
+  transform: scale(1.25);
+}
+
+.carousel-indicators {
+  margin-bottom: -2.5% !important;
+}
+
+.carousel-indicators button {
+  border-radius: 50% !important;
+  height: 30px !important;
+  width: 30px !important;
+  background-color: #ff6450 !important;
+}
+
+.carousel-control-prev {
+  margin-left: -13%;
+}
+
+.carousel-control-next {
+  margin-right: -10%;
+}
+
+.carousel-control-prev-icon {
+  background-color: #ff8474 !important;
+  height: 60px !important;
+  width: 60px !important;
+  border-radius: 100%;
+}
+
+.carousel-control-next-icon {
+  background-color: #ff8474 !important;
+  height: 60px !important;
+  width: 60px !important;
+  border-radius: 100%;
+}
+
+.placeholderCard {
+  display: grid;
+  grid-template-rows: repeat(9, 60px);
+  border-radius: 5px;
+  background-color: #f3f3f3;
+  padding: 0.5rem 0;
+}
+
+.bottom select {
+  cursor: pointer;
+}
+
+.modal-backdrop.show {
+  opacity: 0 !important;
+}
