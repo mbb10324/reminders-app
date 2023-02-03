@@ -1,0 +1,150 @@
+.helpContent {
+    /* background-color: #c0f7ff; */
+    background: linear-gradient(270deg, #a0f2ff, #ffada2);
+    height: 100vh;
+    text-align: left !important;
+}
+
+.helpBody {
+    display: grid;
+    grid-template-columns: 49.5% 1% 49.5%;
+}
+
+.helpContent h1 {
+    font-weight: 100;
+    text-align: center;
+    font-size: 75px;
+    margin: 0;
+    text-decoration: none;
+    color: black;
+}
+
+.helpContent h2 {
+    text-decoration: underline;
+    font-weight: 400;
+}
+
+.helpContent p {
+    margin-bottom: 0 !important;
+}
+
+.helpContent a:link {
+    text-decoration: none;
+}
+
+.helpContent a:visited {
+    text-decoration: none;
+}
+
+.helpContent a:hover {
+    text-decoration: none;
+}
+
+.helpContent a:active {
+    text-decoration: none;
+}
+
+.faq {
+    margin-left: 20%;
+    margin-top: 30px;
+}
+
+.faq h2 {
+    padding-left: 120px;
+}
+
+.faq li {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.faq p {
+    font-size: 14px;
+}
+
+.Remoftheday {
+    width: 50% !important;
+    margin: auto !important;
+    margin-top: 50px !important;
+    margin-bottom: 50px !important;
+}
+
+.rightSide {
+    margin-top: 110px;
+    display: block;
+    text-align: center;
+    align-items: center;
+    justify-items: center;
+}
+
+.rightSide h6 {
+    margin-bottom: 50px;
+}
+
+.middleLine {
+    width: 2px;
+    margin-top: 40px;
+    height: 95%;
+    background-color: black;
+    border-radius: 50%;
+}
+
+.spans {
+    text-decoration: underline;
+    margin-left: 10px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.license {
+    margin-top: 50px;
+}
+
+.socials {
+    margin-top: 50px;
+}
+
+.SocialIcons {
+    margin-top: 40px;
+}
+
+.FooterIcons {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.FooterIcons svg {
+    color: #ff6868;
+    width: 30px;
+    height: 30px
+}
+
+.FooterIcons svg:hover {
+    color: #ff3a3a;
+    -webkit-transform: scale(1.2);
+    -moz-transform: scale(1.2);
+    -o-transform: scale(1.2);
+    transform: scale(1.2);
+    transition: 200ms;
+    transition-timing-function: ease-in-out;
+    -webkit-transition: 200ms;
+    -webkit-transition-timing-function: ease-in-out;
+}
+
+.Footer a {
+    color: #ff6868;
+    text-decoration: none;
+}
+
+.Footer p:hover {
+    cursor: pointer;
+    color: #ff3a3a;
+    transition: 200ms;
+    transition-timing-function: ease-in-out;
+    -webkit-transition: 200ms;
+    -webkit-transition-timing-function: ease-in-out;
+}
+
+.thankYou {
+    margin-top: 40px;
+}

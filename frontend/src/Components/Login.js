@@ -12,17 +12,6 @@ import Alert from "react-bootstrap/Alert";
 import * as api from '../Functions/api';
 import * as util from '../Functions/util'
 
-// let timeoutId;
-// function debounce(ms, action) {  
-//     return (...args) => {
-//         if (timeoutId) clearTimeout(timeoutId);
-
-//         timeoutId = setTimeout(() => {
-//             action(...args);
-//         }, ms);
-//     };    
-// }
-
 function Login() {
     //VIEW
     const navigate = useNavigate(); //navigate var
@@ -143,7 +132,7 @@ function Login() {
             }
             {/* login form */}
             <div className='loginForm'>
-                <Form noValidate validated={validated} className="login" onSubmit={tryLogin}>
+                <Form className="login" onSubmit={tryLogin}>
                     <Row className="mb-3">
                         <Form.Group as={Col} controlId="formGridInitialUser">
                             <Form.Label>Username</Form.Label>

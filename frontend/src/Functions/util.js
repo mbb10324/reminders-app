@@ -85,7 +85,6 @@ export function getInitialMonth(cookies, date) {
 
 //function responsible for filtering reminders per day
 export function filterReminders(allReminders, selectedMonth, dayNum) {
-    console.log({dayNum})
     if (!dayNum) return [];
     return allReminders.filter((reminder) => {
         const date = new Date((reminder.date).replace(/-/g, '\/'));

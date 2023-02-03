@@ -6,6 +6,7 @@
     background-size: 600% 100%;
     animation: gradient 8s linear infinite;
     animation-direction: alternate;
+    overflow-x: auto !important;
 }
 
 @keyframes gradient {

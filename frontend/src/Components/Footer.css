@@ -37,3 +37,12 @@
 .logout h5 {
     font-weight: 300
 }
+
+.help {
+    text-align: center;
+    background-color: transparent;
+    border: none;
+    border-radius: 0.375rem;
+    height: 27px;
+    margin-right: 2.8%; 
+}
