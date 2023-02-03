@@ -13,109 +13,103 @@ import Form from 'react-bootstrap/Form';
 import Carousel from 'react-bootstrap/Carousel';
 import Tooltip from "react-bootstrap/Tooltip";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import * as api from '../api';
+import * as api from '../Functions/api';
+import * as util from '../Functions/util'
 
+// //creates a dates array with all the days in a month
+// function getAllDaysInMonth(year, month) {
+//     const date = new Date(year, month, 1);
+//     const dates = [];
+//     while (date.getMonth() === month) {
+//         let temp = new Date(date)
+//         let tempDay = date.toLocaleString('default', { weekday: 'short' })
+//         dates.push(
+//             {
+//                 "dayNum": temp.getDate(),
+//                 "dayName": tempDay
+//             }
+//         );
+//         date.setDate(date.getDate() + 1);
+//     };
+//     return dates;
+// }
+// //identifys first monday of every week
+// function findFirstMonday(list) {
+//     return list.find(item => item.dayName === 'Mon');
+// }
+// //seperates array into smaller arrays
+// function chunk(length, list) {
+//     const chunks = [];
+//     for (let i = 0; i < list.length; i += length) {
+//         chunks.push(list.slice(i, i + length))
+//     }
+//     return chunks;
+// }
+// //determines where to split up array
+// function splitAt(index, list) {
+//     return [
+//         list.slice(0, index),
+//         list.slice(index),
+//     ];
+// }
+// //splits array of all the days in a month into array of the month with array of week with days in the weeks
+// function splitMonthIntoWeeks(daysOfTheMonth) {
+//     const firstMonday = findFirstMonday(daysOfTheMonth);
+//     const firstMondayIndex = daysOfTheMonth.indexOf(firstMonday);
+//     const [daysBeforeFirstMonday, daysStartingAtFirstMonday] = splitAt(firstMondayIndex, daysOfTheMonth);
+//     if (daysBeforeFirstMonday.length === 0) {
+//         return chunk(7, daysOfTheMonth);
+//     }
+//     return [daysBeforeFirstMonday, ...chunk(7, daysStartingAtFirstMonday)];
+// }
+// //final formatting of our month array
+// function getInitialWeeks(date) {
+//     return splitMonthIntoWeeks(getAllDaysInMonth(date.getFullYear(), date.getMonth()));
+// }
+// //fills a week with 5 days whether days exist or not ex:({}, {}, {}, {Thu}, {Fri})
+// function buildWeek(week) {
+//     if (week.length === 7) {
+//         return week;
+//     }
+//     if (week.find(w => w.dayName === 'Mon')) {
+//         return [...week, ...(new Array(7 - week.length)).fill({})];
+//     }
+//     return [...(new Array(7 - week.length)).fill({}), ...week];
+// }
+// //finds the index of the current week
+// function getIndexOfThisWeek(weeks) {
+//     const today = new Date();
+//     const dayName = today.toLocaleString('default', { weekday: 'short' });
+//     const thisWeek = weeks.find((week) => {
+//         return week.find(day => day.dayNum === today.getDate() && day.dayName === dayName);
+//     });
+//     const index = weeks.indexOf(thisWeek);
+//     return index === -1 ? undefined : index;
+// }
+// //determines what week we are on based off irl week or if user has been to app before
+// function getInitialWeek(cookies, weeks) {
+//     if (!cookies.month && !cookies.index) {
+//         return getIndexOfThisWeek(weeks);
+//     }
+//     if (cookies.index) {
+//         return parseInt(cookies.index);
+//     }
+//     return 0;
+// }
+// //determines what month it should be on render based off irl month or if user has been to app before
+// function getInitialMonth(cookies, date) {
+//     return cookies.month ? parseInt(cookies.month) : date.getMonth()
+// }
 
-//creates a dates array with all the days in a month
-function getAllDaysInMonth(year, month) {
-    const date = new Date(year, month, 1);
-    const dates = [];
-    while (date.getMonth() === month) {
-        let temp = new Date(date)
-        let tempDay = date.toLocaleString('default', { weekday: 'short' })
-        // if (tempDay !== "Sun" && tempDay !== "Sat") {
-        dates.push(
-            {
-                "dayNum": temp.getDate(),
-                "dayName": tempDay
-            }
-        );
-        // }
-        date.setDate(date.getDate() + 1);
-    };
-    return dates;
-}
-//identifys first monday of every week
-function findFirstMonday(list) {
-    return list.find(item => item.dayName === 'Mon');
-}
-//seperates array into smaller arrays
-function chunk(length, list) {
-    const chunks = [];
-    for (let i = 0; i < list.length; i += length) {
-        chunks.push(list.slice(i, i + length))
-    }
-    return chunks;
-}
-//determines where to split up array
-function splitAt(index, list) {
-    return [
-        list.slice(0, index),
-        list.slice(index),
-    ];
-}
-//splits array of all the days in a month into array of the month with array of week with days in the weeks
-function splitMonthIntoWeeks(daysOfTheMonth) {
-    const firstMonday = findFirstMonday(daysOfTheMonth);
-    const firstMondayIndex = daysOfTheMonth.indexOf(firstMonday);
-    const [daysBeforeFirstMonday, daysStartingAtFirstMonday] = splitAt(firstMondayIndex, daysOfTheMonth);
-    if (daysBeforeFirstMonday.length === 0) {
-        return chunk(7, daysOfTheMonth);
-    }
-    return [daysBeforeFirstMonday, ...chunk(7, daysStartingAtFirstMonday)];
-}
-//final formatting of our month array
-function getInitialWeeks(date) {
-    return splitMonthIntoWeeks(getAllDaysInMonth(date.getFullYear(), date.getMonth()));
-}
-//fills a week with 5 days whether days exist or not ex:({}, {}, {}, {Thu}, {Fri})
-function buildWeek(week) {
-    if (week.length === 7) {
-        return week;
-    }
-    if (week.find(w => w.dayName === 'Mon')) {
-        return [...week, ...(new Array(7 - week.length)).fill({})];
-    }
-    return [...(new Array(7 - week.length)).fill({}), ...week];
-}
-//finds the index of the current week
-function getIndexOfThisWeek(weeks) {
-    const today = new Date();
-    const dayName = today.toLocaleString('default', { weekday: 'short' });
-    const thisWeek = weeks.find((week) => {
-        return week.find(day => day.dayNum === today.getDate() && day.dayName === dayName);
-    });
-    const index = weeks.indexOf(thisWeek);
-    return index === -1 ? undefined : index;
-}
-//determines what week we are on based off irl week or if user has been to app before
-function getInitialWeek(cookies, weeks) {
-    if (!cookies.month && !cookies.index) {
-        return getIndexOfThisWeek(weeks);
-    }
-    if (cookies.index) {
-        return parseInt(cookies.index);
-    }
-    return 0;
-}
-//determines what month it should be on render based off irl month or if user has been to app before
-function getInitialMonth(cookies, date) {
-    return cookies.month ? parseInt(cookies.month) : date.getMonth()
-}
-
-function filterReminders(allReminders, selectedMonth, dayNum) {
-    if (!dayNum) return [];
-
-    console.log({allReminders, dayNum, selectedMonth})
-    
-    return allReminders.filter((reminder) => {
-        const date = new Date(reminder.date);
-        
-        return date.getDate() + 1 === dayNum
-            && date.getMonth() === selectedMonth;
-    });
-}
-
+// //function responsible for filtering reminders per day
+// function filterReminders(allReminders, selectedMonth, dayNum) {
+//     if (!dayNum) return [];
+//     return allReminders.filter((reminder) => {
+//         const date = new Date(reminder.date);
+//         return date.getDate() + 1 === dayNum
+//             && date.getMonth() === selectedMonth;
+//     });
+// }
 
 //COMPONENT START ---------------------------------------------------------------------------------------------------------------------
 function Home() {
@@ -124,18 +118,17 @@ function Home() {
     const [reminders, setReminders] = useState([]);
     // Date Stuff
     const date = new Date //todays date
-    const thisMonth = date.getMonth()
     const thisYear = date.getFullYear() //this year (ex: 2023)
     // Data stuff
-    const [weeks, setWeeks] = useState(getInitialWeeks(date));
+    const [weeks, setWeeks] = useState(util.getInitialWeeks(date));
     // View stuff
     const navigate = useNavigate();
-    const [selectedMonth, setSelectedMonth] = useState(getInitialMonth(cookies, date)); //state of the current month that is selected
-    const [focusedWeekIndex, setFocusedWeekIndex] = useState(getInitialWeek(cookies, weeks));
+    const [selectedMonth, setSelectedMonth] = useState(util.getInitialMonth(cookies, date)); //state of the current month that is selected
+    const [focusedWeekIndex, setFocusedWeekIndex] = useState(util.getInitialWeek(cookies, weeks));
     const [show, setShow] = useState(false); //handles the visibility state for adding a new reminder
+    const [showScreenshot, setShowScreenshot] = useState(false) //screenshot modal view state
     const handleClose = () => setShow(false); //function to toggle closing add reminder modal
     const handleShow = () => setShow(true); //function to toggle showing add reminder modal
-    const [showScreenshot, setShowScreenshot] = useState(false) //screenshot modal view state
     const handleCloseScreenshot = () => setShowScreenshot(false); //function to close screenshot modal
     const handleShowScreenshot = () => setShowScreenshot(true); //function to show screenshot modal
 
@@ -145,8 +138,9 @@ function Home() {
         setCookie("index", selectedIndex)
     };
 
+    //fetch for all reminders
     function reloadReminders() {
-        api.fetchReminders().then(setReminders);
+        api.fetchReminders().then(reminders => setReminders(reminders));
     }
 
     //useeffect fired on render and each time month is changed
@@ -156,13 +150,20 @@ function Home() {
         } else {
             reloadReminders();
         }
-        const monthyFiltered = getAllDaysInMonth(date.getFullYear(), selectedMonth)
-        setWeeks(splitMonthIntoWeeks(monthyFiltered))
-        setCookie("today", getIndexOfThisWeek(weeks))
+        const monthyFiltered = util.getAllDaysInMonth(date.getFullYear(), selectedMonth)
+        setWeeks(util.splitMonthIntoWeeks(monthyFiltered))
+        setCookie("today", util.getIndexOfThisWeek(weeks))
     }, [selectedMonth]);
 
+    //middle man to delete reminder
     function deleteReminder(reminder) {
         return api.deleteReminder(reminder)
+            .then(() => reloadReminders());
+    }
+
+    //middle man to edit reminder
+    function editReminder({description, date, start, end, type}) {
+        return api.createReminder({ description, date, start, end, type })
             .then(() => reloadReminders());
     }
 
@@ -175,12 +176,26 @@ function Home() {
         let start = e.target[2].value;
         let end = e.target[3].value;
         let type = e.target[4].value;
-
         return api.createReminder({ description, date, start, end, type })
-            .then(() => setShow(false));
+            .then(() => setShow(false))
+            .then(() => reloadReminders());
     }
 
-    //function called when selecting a month(creates cookie for month/ sets a state with selected mmonth)
+    //past present future
+    function inception(dayNum) {
+        let date = new Date
+        let dateNum = date.getDate()
+        let dateMonth = date.getMonth()
+        if (dateNum === dayNum && dateMonth === selectedMonth) {
+            return 'today events'
+        } else if (dateNum > dayNum || dateMonth > selectedMonth) {
+            return 'past events'
+        } else {
+            return 'events'
+        }
+    }
+
+    //function called when selecting a month
     function pickMonth(e) {
         const idkSomeMonth = JSON.parse(e.target.value)
         e.preventDefault()
@@ -259,11 +274,12 @@ function Home() {
                     to display reminders to the reminder component */}
                     <div className="days">
                         <Carousel activeIndex={focusedWeekIndex} onSelect={handleSelect} interval={null} indicators={false}>
-                            {weeks.map(buildWeek).map((thisIsChaos, index) => {
+                            {weeks.map(util.buildWeek).map((thisIsChaos, index) => {
                                 return (
                                     <Carousel.Item key={index}>
                                         {thisIsChaos.map((day, index) => {
-                                            const dailyReminders = filterReminders(reminders, selectedMonth, day.dayNum);
+                                            const dailyReminders = util.filterReminders(reminders, selectedMonth, day.dayNum);
+                                            const pastPresentFuture = inception(day.dayNum)
                                             return (
                                                 <div key={index} className='day'>
                                                     <div className="date">
@@ -276,6 +292,9 @@ function Home() {
                                                         <Reminder
                                                             reminders={dailyReminders}
                                                             deleteReminder={deleteReminder}
+                                                            editReminder={editReminder}
+                                                            dayNum={day.dayNum}
+                                                            pastPresentFuture={pastPresentFuture}
                                                         />
                                                     }
                                                 </div>

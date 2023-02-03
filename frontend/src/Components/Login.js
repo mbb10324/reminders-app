@@ -9,21 +9,21 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Modal from 'react-bootstrap/Modal';
 import Alert from "react-bootstrap/Alert";
+import * as api from '../Functions/api';
+import * as util from '../Functions/util'
 
-let timeoutId;
-function debounce(ms, action) {  
-    return (...args) => {
-        if (timeoutId) clearTimeout(timeoutId);
-  
-        timeoutId = setTimeout(() => {
-            action(...args);
-        }, ms);
-    };    
-}
+// let timeoutId;
+// function debounce(ms, action) {  
+//     return (...args) => {
+//         if (timeoutId) clearTimeout(timeoutId);
+
+//         timeoutId = setTimeout(() => {
+//             action(...args);
+//         }, ms);
+//     };    
+// }
 
 function Login() {
-    //DATA
-    const [cookies, setCookie] = useCookies(['user']); //cookies
     //VIEW
     const navigate = useNavigate(); //navigate var
     const [lock, setLock] = useState(false); //controls lock view
@@ -37,6 +37,8 @@ function Login() {
     const handleShow = () => setShow(true); //shows create account modal
     const toggleLock = () => setLock(!lock); //toggles the lock view
 
+    const checkIdentityDebounced = util.debounce(500, checkIdentity);
+
     useEffect(() => {
         if (localStorage.getItem('token')) {
             navigate('/');
@@ -48,9 +50,6 @@ function Login() {
         setShow(false)
         setForm({})
         setErrors({})
-        if (showSuccess === true) {
-            window.location.reload()
-        }
     };
 
     //create an object that holds all form entries
@@ -62,18 +61,13 @@ function Login() {
     //identifys form erros
     function findFormErrors() {
         let { firstName, lastName, email, username, password, confirm } = form;
-        console.log(form)
         let strongPassword = new RegExp("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})");
-        let newErrors = { ...errors };
-        // let usernamesDB = user.map(u => u.username);
-        // let emailsDB = user.map(u => u.email);
+        let newErrors = {};
         if (!firstName || firstName === "") newErrors.firstName = "This is a required field.";
         if (!lastName || lastName === "") newErrors.lastName = "This is a required field.";
         if (!email || email === "") newErrors.email = "This is a required field.";
         else if (!email.includes("@")) newErrors.email = "Please provide a valid E-mail address.";
-        // else if (emailsDB.includes(email)) newErrors.email = "That email address is already registered with us.";
         if (!username || username === "") newErrors.username = "This is a required field.";
-        // else if (usernamesDB.includes(username)) newErrors.username = "That username already exists in our database, please choose another username.";
         if (!password || password === "") newErrors.password = "This is a required field.";
         else if (!password.match(strongPassword)) newErrors.password = "Must be at least 8 characters, contain at least one uppercase, one lowercase, one digit, and one special character.";
         if (!confirm || confirm === "") newErrors.confirm = "This is a required field.";
@@ -85,23 +79,14 @@ function Login() {
     function tryLogin(e) {
         e.preventDefault();
         e.stopPropagation();
-
-
         let username = e.target[0].value;
         let password = e.target[1].value;
-        
-        fetch('http://localhost:3030/login', {
-            method: 'POST',
-            headers: {'content-type': 'application/json'},
-            body: JSON.stringify({ username, password }),
-        })
-            .then(res => res.json())
+        return api.checkLogin({ username, password })
             .then((result) => {
                 if (!result) {
                     setShowAlert(true);
                     return;
                 }
-
                 toggleLock();
                 localStorage.setItem('token', result.token);
                 setTimeout(() => { navigate("/") }, 2000);
@@ -109,8 +94,7 @@ function Login() {
     }
 
     function checkIdentity(email, username) {
-        return fetch(`http://localhost:3030/identities?email=${email}&username=${username}`)
-            .then(res => res.json())
+        api.doesThisExist(email, username)
             .then((existingIdentity) => {
                 if (existingIdentity.email || existingIdentity.username) {
                     setErrors({
@@ -121,11 +105,8 @@ function Login() {
                     setValidated(false);
                     return;
                 }
-    
             });
     }
-
-    const checkIdentityDebounced = debounce(500, checkIdentity);
 
     //function called when attempting to create an account
     async function createAccount(e) {
@@ -136,23 +117,15 @@ function Login() {
             setErrors(newErrors);
             setValidated(false);
         } else {
-            e.preventDefault();
-            setValidated(true);
-            fetch("http://localhost:3030/user", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                mode: "cors",
-                body: JSON.stringify({
-                    fname: form.firstName,
-                    lname: form.lastName,
-                    email: form.email,
-                    username: form.username,
-                    password: form.password,
-                }),
-            })
-                .then(res => console.log(res))
-            setShowSuccess(true);
-            setDisableButton(true)
+            let fname = form.firstName
+            let lname = form.lastName
+            let email = form.email
+            let username = form.username
+            let password = form.password
+            return api.createUser({ fname, lname, email, username, password })
+                .then(setShowSuccess(true))
+                .then(setValidated(true))
+                .then(setDisableButton(true))
         }
     }
 
@@ -209,7 +182,7 @@ function Login() {
                     keyboard={false}
                     dialogClassName={"createaccountModal"}
                 >
-                    <Form onSubmit={createAccount}>
+                    <Form noValidate validated={validated} onSubmit={createAccount}>
                         <Form.Group className="mb-3" controlId="formFName">
                             <Form.Label>First Name</Form.Label>
                             <Form.Control isInvalid={!!errors.firstName} type="Fname" value={form.firstName} onChange={(e) => setField("firstName", e.target.value)} />
@@ -282,3 +255,5 @@ function Login() {
 }
 
 export default Login;
+
+//EOD

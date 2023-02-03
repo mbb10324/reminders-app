@@ -1,7 +1,5 @@
 import './Reminder.css';
-import Context from '../Context';
-import React, { useState, useEffect, useContext } from 'react';
-import { useCookies } from "react-cookie";
+import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
@@ -10,53 +8,37 @@ import Form from 'react-bootstrap/Form';
 function Reminder(props) {
     //Data Stuff
     const todaysReminders = props.reminders;
-    // const [todaysReminders, setTodaysReminders] = useState([]); //array containing reminders for todays date
-    //View Stuff
-    const [cookies, setCookie] = useCookies(['index', 'month', 'today', 'user']);
-    const [events, setEvents] = useState();
-    const [deleteCheck, setDeleteCheck] = useState(false); //handles the visibility state for deleting a reminder
-    const [editorView, setEditorView] = useState(false);
-    const handleClose = () => setDeleteCheck(false); //function to toggle closing delete modal
-    const handleShow = () => setDeleteCheck(true); //function to toggle showing delete modal
-    const handleCloseEditor = () => setEditorView(false);
     const [modalRem, setModalRem] = useState({});
+    //View Stuff
     const [modalRemClass, setModalRemClass] = useState('');
-    const [show, setShow] = useState(false); //handles the visibility state for adding a new reminder
-    const handleCloseEdit = () => setShow(false); //function to toggle closing delete modal
-    const handleShowEdit = () => setShow(true); //function to toggle showing delete modal
+    const [showDelete, setShowDelete] = useState(false); //handles the visibility state for deleting a reminder
+    const [showEdit, setShowEdit] = useState(false); //handles the visibility state for adding a new reminder
+    const [showReminder, setShowReminder] = useState(false);
+    const handleCloseDelete = () => setShowDelete(false); //function to toggle closing delete modal
+    const handleShowDelete = () => setShowDelete(true); //function to toggle showing delete modal
+    const handleCloseEdit = () => setShowEdit(false); //function to toggle closing delete modal
+    const handleShowEdit = () => setShowEdit(true); //function to toggle showing delete modal
+    const handleCloseReminder = () => setShowReminder(false);
 
-    //toggles showing the edit modal with proper parameters for the selected reminder
-    function handleShowEditor(rem, thisClass) {
-        setEditorView(true);
+    //toggles showing the reminder modal with proper parameters for the selected reminder
+    function handleShowReminder(rem, thisClass) {
+        setShowReminder(true);
         setModalRem(rem)
         let addModalEvent = "modal" + thisClass
         setModalRemClass(addModalEvent)
     }
 
+    //closes all of the modals
     function closeAll() {
-        setEditorView(false);
-        setShow(false);
-        setDeleteCheck(false);
+        setShowReminder(false);
+        setShowEdit(false);
+        setShowDelete(false);
     }
-
-    //calls function to filter reminders into daily reminders then sets state, contains logic to determine past present and future
-    useEffect(() => {
-        // setTodaysReminders(filterReminders(reminders, props, cookies))
-        let date = new Date
-        let dateNum = date.getDate()
-        let dateMonth = date.getMonth()
-        if (dateNum === props.dayNum && dateMonth === props.selectedMonth) {
-            setEvents('today events')
-        } else if (dateNum > props.dayNum  || dateMonth > props.selectedMonth) {
-            setEvents('past events')
-        } else {
-            setEvents('events')
-        }
-    }, [props, cookies]);
 
     //function responsible for deleting a reminder from the database
     function deleteReminder(modalRem) {
-        props.deleteReminder(modalRem);
+        props.deleteReminder(modalRem)
+            .then(() => closeAll())
     }
 
     //function responsible for posting a reminder to the database upon form submission
@@ -69,14 +51,12 @@ function Reminder(props) {
         let end = e.target[3].value;
         let type = e.target[4].value;
         props.editReminder({ description, date, start, end, type })
-            .then(() => props.deleteReminder(modalRem))
-            .then(() => props.fetchReminders())
-            .then(() => closeAll());
+            .then(() => deleteReminder(modalRem))
     }
 
     //start of HTML
     return (
-        <div className={events}>
+        <div className={props.pastPresentFuture}>
             {/* Map through todays reminders */}
             {todaysReminders.map((rem) => {
                 let start = rem.start
@@ -87,13 +67,13 @@ function Reminder(props) {
                 return (
                     <React.Fragment key={rem.id}>
                         {/* Creates a reminder */}
-                        <div className={thisClass} onClick={() => handleShowEditor(rem, thisClass)}>
+                        <div className={thisClass} onClick={() => handleShowReminder(rem, thisClass)}>
                             <p className="title">{rem.description}</p>
                             <p className="time">{rem.start}-{rem.end}</p>
                         </div>
                         <Modal
-                            show={editorView}
-                            onHide={handleCloseEditor}
+                            show={showReminder}
+                            onHide={handleCloseReminder}
                             dialogClassName={"editModal"}
                             contentClassName={"editModal"}
                         >
@@ -105,18 +85,18 @@ function Reminder(props) {
                                 <button className='edit' onClick={handleShowEdit}>
                                     Edit
                                 </button>
-                                <button className='close' onClick={handleCloseEditor}>
+                                <button className='close' onClick={handleCloseReminder}>
                                     Close
                                 </button>
-                                <button className='delete' onClick={handleShow}>
+                                <button className='delete' onClick={handleShowDelete}>
                                     Delete
                                 </button>
                             </div>
                         </Modal>
                         {/* Pop up modal when deleting a reminder */}
                         <Modal
-                            show={deleteCheck}
-                            onHide={handleClose}
+                            show={showDelete}
+                            onHide={handleCloseDelete}
                             backdrop="static"
                             keyboard={false}
                         >
@@ -127,7 +107,7 @@ function Reminder(props) {
                                 You are about to delete a {modalRem.type} reminder, are you sure you want to do that?
                             </Modal.Body>
                             <Modal.Footer>
-                                <Button variant="secondary" onClick={handleClose}>
+                                <Button variant="secondary" onClick={handleCloseDelete}>
                                     No
                                 </Button>
                                 <Button variant="primary" onClick={() => { deleteReminder(modalRem) }}>
@@ -135,10 +115,10 @@ function Reminder(props) {
                                 </Button>
                             </Modal.Footer>
                         </Modal>
-                       {/* Pop up modal to edit a reminder */}
+                        {/* Pop up modal to edit a reminder */}
                         <div className="Modal">
                             <Modal
-                                show={show}
+                                show={showEdit}
                                 onHide={handleCloseEdit}
                                 backdrop="static"
                                 keyboard={false}
