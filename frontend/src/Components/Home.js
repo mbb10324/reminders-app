@@ -186,13 +186,10 @@ function Home() {
         let date = new Date
         let dateNum = date.getDate()
         let dateMonth = date.getMonth()
-        if (dateNum === dayNum && dateMonth === selectedMonth) {
-            return 'today events'
-        } else if (dateNum > dayNum || dateMonth > selectedMonth) {
-            return 'past events'
-        } else {
-            return 'events'
-        }
+        if (dateNum === dayNum && dateMonth === selectedMonth) return 'today events'
+        else if (dateMonth > selectedMonth) return 'past events'
+        else if (dateNum > dayNum && dateMonth >= selectedMonth) return 'past events'
+        else return 'events'
     }
 
     //function called when selecting a month
