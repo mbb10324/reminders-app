@@ -11,6 +11,7 @@
   animation-iteration-count: 1;
   animation-timing-function: ease-in;
   animation-duration: 1s;
+  height: 100vh;
 }
 
 @keyframes fadeInOpacity {
@@ -179,6 +180,7 @@
 
 .bottom select {
   cursor: pointer;
+  background-color: transparent;
 }
 
 .modal-backdrop.show {

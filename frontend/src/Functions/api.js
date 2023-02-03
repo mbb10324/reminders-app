@@ -53,3 +53,12 @@ export function doesThisExist(email, username) {
     return fetch(`http://localhost:3030/identities?email=${email}&username=${username}`)
     .then(res => res.json())
 }
+
+export function handleLogout() {
+    return fetch('http://localhost:3030/logout', {
+        method: 'GET',
+        headers: {
+            'Authorization': localStorage.getItem('token'),
+        },
+    })
+}

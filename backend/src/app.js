@@ -76,29 +76,21 @@ app.use(cors())
 
 async function requireUser(req, res, next) {
     const token = req.headers.authorization?.replace('Bearer ', '');
-
     // Ensure a token is present.
     if (!token) {
         return res.status(401).json({ message: 'Not Authorized' });
     }
-
     // Ensure we know about the token.
     const savedToken = await knex('tokens').select('*').where('value', token).first();
-
     if (!savedToken) {
         return res.status(401).json({ message: 'Not Authorized' });
     }
-
     // Ensure the token is valid and decode it.
-
     try {
         const { email } = await verify(token, JWT_SECRET);
-
         const user = await knex('user_table').select('*').where({ email }).first();
-
         req.user = user;
         req.token = token;
-
         return next();
     } catch (e) {
         return res.status(401).json({ message: 'Not Authorized' });
@@ -117,43 +109,19 @@ app.get('/', (req, res) => {
     res.send('API running')
 });
 
-app.get('/emails/:email', async (req, res) => {
-    knex('user_table')
-        .select('email')
-        .where('email', req.params.email)
-        .first()
-        .then(userEmail => {
-            if (!userEmail) {
-                res.json(null)
-            } else {
-                res.json(userEmail)
-            }
-        })
-});
-
 app.get('/identities', async (req, res) => {
     const email = await knex('user_table')
         .select('email')
         .where('email', req.query.email)
         .first();
-    
     const username = await knex('user_table')
         .select('username')
         .where('username', req.query.username)
         .first();
-    
     res.json({
         email: email?.email,
         username: username?.username,
     });
-});
-
-app.get('/user', (req, res) => {
-    knex('user_table')
-        .select('*')
-        .then(user => {
-            res.json(user)
-        });
 });
 
 app.get('/logout', requireUser, async (req, res) => {
@@ -169,23 +137,16 @@ app.post('/login', async (req, res) => {
         .select('*')
         .where('username', username)
         .first();
-    
     if (!user) {
         return res.json(null)
     }
-
     const passwordMatch = await bcrypt.compare(password, user.password)
-
     if (!passwordMatch) {
         return res.json(null)
     }
-
     const sanitizedUser = sanitizeUser(user);
-
     const token = await sign(sanitizedUser, JWT_SECRET);
-
     await knex('tokens').insert({ value: token });
-
     res.json({
         user: sanitizedUser,
         token,

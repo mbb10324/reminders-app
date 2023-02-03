@@ -1,11 +1,13 @@
 import './Footer.css';
 import React, { useState } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import { MdLogout } from "react-icons/md";
+import { MdLogout, MdHelpOutline } from "react-icons/md";
+import { FiHelpCircle } from "react-icons/fi";
 import Tooltip from "react-bootstrap/Tooltip";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Modal from 'react-bootstrap/Modal';
+import * as api from '../Functions/api';
 
 function Footer() {
     const navigate = useNavigate(); //navigate var
@@ -16,12 +18,7 @@ function Footer() {
 
     //function fired when logging out
     function logout() {
-        fetch('http://localhost:3030/logout', {
-            method: 'GET',
-            headers: {
-                'Authorization': localStorage.getItem('token'),
-            },
-        })
+        api.handleLogout()
             .then((response) => {
                 if (response.status !== 200) {
                     console.log('WARNING server did not successfully logout.');
@@ -38,6 +35,12 @@ function Footer() {
     const renderTooltip = (props) => (
         <Tooltip id="button-tooltip" {...props}>
             Logout
+        </Tooltip>
+    );
+
+    const renderHelpTooltip = (props) => (
+        <Tooltip id="button-tooltip" {...props}>
+            Help
         </Tooltip>
     );
 
@@ -66,6 +69,13 @@ function Footer() {
             <p>Present</p>
             <div className='Foot future'></div>
             <p>Future</p>
+            <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={renderHelpTooltip}>
+                <Link to={`/Help`}>
+                <div className='help'>
+                    <FiHelpCircle style={{ width: "28px", height: "28px", cursor: "pointer", color: "black" }} />
+                </div>
+                </Link>
+            </OverlayTrigger>
             {/* pop up modal to confirm logout */}
             <Modal
                 show={logoutCheck}
