@@ -7,17 +7,20 @@
 - [x] inquire about using the utils.js
 - [x] move footer fetch to api file
 - [x] remove validation on login form
-- [ ] further testing creating account form validation
 - [x] clean backend app.js
-- [ ] fix hover on legend
+- [x] token check on help page
+- [x] further testing creating account form validation
+- [x] fix hover on legend
 
 # Moderate
+- [x] create custom tooltips
 - [x] add help page with admin contact and useful info
+- [x] figure out how to replace default bootstrap arrows, to better control index of slides
 - [ ] create validation for reminder creating forms
 - [ ] token over 256
-- [ ] review edge cases when fetch's fail
 
 # Hard
+- [ ] review edge cases when fetch's fail(prevent api from crashing, instead show not found or something)
 - [ ] create tests for all functions
 
 # Stretch

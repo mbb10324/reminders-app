@@ -1,7 +1,9 @@
 .helpContent {
-    /* background-color: #c0f7ff; */
     background: linear-gradient(270deg, #a0f2ff, #ffada2);
-    height: 100vh;
+    background-size: cover;
+    min-height: 100vh;
+    width: 100%;
+    background-size: auto 100%;
     text-align: left !important;
 }
 
@@ -65,12 +67,12 @@
 .Remoftheday {
     width: 50% !important;
     margin: auto !important;
-    margin-top: 50px !important;
-    margin-bottom: 50px !important;
+    margin-top: 60px !important;
+    margin-bottom: 60px !important;
 }
 
 .rightSide {
-    margin-top: 110px;
+    margin-top: 80px;
     display: block;
     text-align: center;
     align-items: center;
@@ -78,15 +80,16 @@
 }
 
 .rightSide h6 {
-    margin-bottom: 50px;
+    margin-bottom: 60px;
 }
 
 .middleLine {
     width: 2px;
-    margin-top: 40px;
+    margin-top: 40px !important;
     height: 95%;
     background-color: black;
     border-radius: 50%;
+    margin: auto;
 }
 
 .spans {
@@ -97,29 +100,29 @@
 }
 
 .license {
-    margin-top: 50px;
+    margin-top: 60px;
 }
 
 .socials {
-    margin-top: 50px;
+    margin-top: 60px;
 }
 
 .SocialIcons {
-    margin-top: 40px;
+    margin-top: 60px;
 }
 
-.FooterIcons {
-    padding-left: 30px;
-    padding-right: 30px;
+.indivSocialIcons {
+    padding-left: 4%;
+    padding-right: 4%;
 }
 
-.FooterIcons svg {
+.indivSocialIcons svg {
     color: #ff6868;
     width: 30px;
     height: 30px
 }
 
-.FooterIcons svg:hover {
+.indivSocialIcons svg:hover {
     color: #ff3a3a;
     -webkit-transform: scale(1.2);
     -moz-transform: scale(1.2);
@@ -131,20 +134,6 @@
     -webkit-transition-timing-function: ease-in-out;
 }
 
-.Footer a {
-    color: #ff6868;
-    text-decoration: none;
-}
-
-.Footer p:hover {
-    cursor: pointer;
-    color: #ff3a3a;
-    transition: 200ms;
-    transition-timing-function: ease-in-out;
-    -webkit-transition: 200ms;
-    -webkit-transition-timing-function: ease-in-out;
-}
-
 .thankYou {
-    margin-top: 40px;
+    margin-top: 60px;
 }

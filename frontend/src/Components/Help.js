@@ -1,11 +1,19 @@
-import React from "react"
 import "./Help.css"
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react"
+import { useNavigate, Link } from "react-router-dom";
 import { BsArrowUpLeft } from "react-icons/bs"
-import { FaFacebook, FaTwitter, FaInstagram, FaYoutube } from "react-icons/fa"
 import { MdEmail } from "react-icons/md";
+import { FaFacebook, FaTwitter, FaInstagram, FaYoutube } from "react-icons/fa"
 
 function Help() {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!localStorage.getItem('token')) {
+            navigate("/Login")
+        }
+    }, [])
+
     return (
         <div className="helpContent">
             <Link to={"/"}>
@@ -81,11 +89,11 @@ function Help() {
                     <span className="spans">security</span>
                     <h2 className="socials">Socials</h2>
                     <div className="SocialIcons">
-                        <a className="FooterIcons" href="https://fb.me/GalvanizeHQ/" target="_blank" rel="noopener noreferrer"><FaFacebook /></a>
-                        <a className="FooterIcons" href="https://twitter.com/galvanize/" target="_blank" rel="noopener noreferrer"><FaTwitter /></a>
-                        <a className="FooterIcons" href="https://instagr.am/GalvanizeHQ/" target="_blank" rel="noopener noreferrer"><FaInstagram /></a>
-                        <a className="FooterIcons" href="https://www.youtube.com/@Galvanize_HackReactor/videos/" target="_blank" rel="noopener noreferrer"><FaYoutube /></a>
-                        <a className="FooterIcons" href="mailto:marketing@galvanize.com" rel="noopener noreferrer"><MdEmail /></a>
+                        <a className="indivSocialIcons" href="https://fb.me/GalvanizeHQ/" target="_blank" rel="noopener noreferrer"><FaFacebook /></a>
+                        <a className="indivSocialIcons" href="https://twitter.com/galvanize/" target="_blank" rel="noopener noreferrer"><FaTwitter /></a>
+                        <a className="indivSocialIcons" href="https://instagr.am/GalvanizeHQ/" target="_blank" rel="noopener noreferrer"><FaInstagram /></a>
+                        <a className="indivSocialIcons" href="https://www.youtube.com/@Galvanize_HackReactor/videos/" target="_blank" rel="noopener noreferrer"><FaYoutube /></a>
+                        <a className="indivSocialIcons" href="mailto:marketing@galvanize.com" rel="noopener noreferrer"><MdEmail /></a>
                     </div>
                     <h6 className="thankYou">Thank you for visiting!</h6>
                 </div>

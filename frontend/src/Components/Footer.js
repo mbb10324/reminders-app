@@ -2,14 +2,13 @@ import './Footer.css';
 import React, { useState } from 'react';
 import { useNavigate, Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import { MdLogout, MdHelpOutline } from "react-icons/md";
+import { MdLogout } from "react-icons/md";
 import { FiHelpCircle } from "react-icons/fi";
-import Tooltip from "react-bootstrap/Tooltip";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Modal from 'react-bootstrap/Modal';
 import * as api from '../Functions/api';
 
 function Footer() {
+    
     const navigate = useNavigate(); //navigate var
     const [cookies, setCookie, removeCookie] = useCookies(['index', 'month', 'today', 'user']) //cookies
     const [logoutCheck, setLogoutCheck] = useState(false); //handles the visibility state for deleting a reminder
@@ -31,27 +30,14 @@ function Footer() {
             });
     }
 
-    //tooltip for logout button
-    const renderTooltip = (props) => (
-        <Tooltip id="button-tooltip" {...props}>
-            Logout
-        </Tooltip>
-    );
-
-    const renderHelpTooltip = (props) => (
-        <Tooltip id="button-tooltip" {...props}>
-            Help
-        </Tooltip>
-    );
-
     return (
         <div className='Footer'>
             {/* tooltip for logout button */}
-            <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={renderTooltip}>
+            <div class ="tooltip2"><span class="tooltiptext">Logout</span>
                 <div className='logout'>
                     <MdLogout style={{ width: "27px", height: "27px", cursor: "pointer" }} onClick={handleShow} />
                 </div>
-            </OverlayTrigger>
+            </div>
             {/* Legend */}
             <h5>Types:</h5>
             <div className="Foot Appointment"></div>
@@ -69,13 +55,13 @@ function Footer() {
             <p>Present</p>
             <div className='Foot future'></div>
             <p>Future</p>
-            <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={renderHelpTooltip}>
+            <div class ="tooltip1"><span class="tooltiptext">Help</span>
                 <Link to={`/Help`}>
                 <div className='help'>
                     <FiHelpCircle style={{ width: "28px", height: "28px", cursor: "pointer", color: "black" }} />
                 </div>
                 </Link>
-            </OverlayTrigger>
+                </div>
             {/* pop up modal to confirm logout */}
             <Modal
                 show={logoutCheck}

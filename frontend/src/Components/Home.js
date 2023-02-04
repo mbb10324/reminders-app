@@ -6,13 +6,12 @@ import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { FiCamera } from "react-icons/fi";
 import { MdOutlineAddBox } from "react-icons/md";
+import { BsCaretRight, BsCaretLeft } from "react-icons/bs"
 import html2canvas from "html2canvas";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import Carousel from 'react-bootstrap/Carousel';
-import Tooltip from "react-bootstrap/Tooltip";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import * as api from '../Functions/api';
 import * as util from '../Functions/util'
 
@@ -45,6 +44,25 @@ function Home() {
     //fetch for all reminders
     function reloadReminders() {
         api.fetchReminders().then(reminders => setReminders(reminders));
+    }
+
+    console.log(focusedWeekIndex)
+    function addIndex() {
+        let monthLength = weeks.length
+        if (!(focusedWeekIndex + 1 === monthLength)) {
+            setFocusedWeekIndex(focusedWeekIndex + 1)
+        } else {
+            setFocusedWeekIndex(0)
+        }
+    }
+
+    function subIndex() {
+        let monthLength = weeks.length
+        if (focusedWeekIndex === 0) {
+            setFocusedWeekIndex(monthLength - 1)
+        } else {
+            setFocusedWeekIndex(focusedWeekIndex - 1)
+        }
     }
 
     //useeffect fired on render and each time month is changed
@@ -120,41 +138,27 @@ function Home() {
         });
     }
 
-    //tooltip for add reminder button
-    const renderAddTooltip = (props) => (
-        <Tooltip id="add-tooltip" {...props}>
-            Add a reminder!
-        </Tooltip>
-    );
-
-    //tooltip for screenshot button
-    const renderScreenshotTooltip = (props) => (
-        <Tooltip id="screenshot-tooltip" {...props}>
-            Screenshot of currently selected week
-        </Tooltip>
-    );
-
     //start of HTML
     return (
         <div className="content">
             {/* Title */}
             <div className='header'>
-                <OverlayTrigger placement="bottom" delay={{ show: 250, hide: 400 }} overlay={renderAddTooltip}>
+            <div class ="tooltip3"><span class="tooltiptext">Add a reminder!</span>
                     <div>
                         <MdOutlineAddBox style={{ width: "47px", height: "47px" }} onClick={handleShow} />
                     </div>
-                </OverlayTrigger>
+                    </div>
                 <h1>Reminders</h1>
-                <OverlayTrigger placement="bottom" delay={{ show: 250, hide: 400 }} overlay={renderScreenshotTooltip}>
+                <div class ="tooltip3"><span class="tooltiptext">Take a screenshot!</span>
                     <div>
                         <FiCamera onClick={() => { handleShowScreenshot(); screenshot() }} style={{ width: "40px", height: "40px" }} />
                     </div>
-                </OverlayTrigger>
+                </div>
             </div>
             <div className="midBody">
 
                 {/* Left side arrow */}
-                <div className="caret"></div>
+                <div className="caretLeft"><BsCaretLeft style={{ width: "120px", height: "120px", cursor: "pointer" }} onClick={() => subIndex()}/></div>
                 <div className="calendar" id='capture'>
                     {/* Time markers on left side of calendar */}
                     <div className="timeline">
@@ -174,7 +178,7 @@ function Home() {
                     and maps through days of the week and passes responsibility 
                     to display reminders to the reminder component */}
                     <div className="days">
-                        <Carousel activeIndex={focusedWeekIndex} onSelect={handleSelect} interval={null} indicators={false}>
+                        <Carousel activeIndex={focusedWeekIndex} onSelect={handleSelect} interval={null} indicators={false} controls={false}>
                             {weeks.map(util.buildWeek).map((thisIsChaos, index) => {
                                 return (
                                     <Carousel.Item key={index}>
@@ -208,7 +212,7 @@ function Home() {
                     </div>
                 </div>
                 {/* Right side arrow */}
-                <div className="caret"></div>
+                <div className="caretRight"><BsCaretRight style={{ width: "120px", height: "120px", cursor: "pointer" }} onClick={() => addIndex()}/></div>
             </div>
             {/* Below the calendar, contains month, button to add reminder, and year */}
             <div className="bottom">

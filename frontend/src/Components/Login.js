@@ -1,7 +1,6 @@
 import "./Login.css";
 import React, { useEffect, useState, } from 'react';
 import { useNavigate } from "react-router-dom";
-import { useCookies } from 'react-cookie';
 import { FiLock, FiUnlock } from 'react-icons/fi';
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -13,7 +12,7 @@ import * as api from '../Functions/api';
 import * as util from '../Functions/util'
 
 function Login() {
-    //VIEW
+    
     const navigate = useNavigate(); //navigate var
     const [lock, setLock] = useState(false); //controls lock view
     const [show, setShow] = useState(false); //show or close create account modal
@@ -51,7 +50,7 @@ function Login() {
     function findFormErrors() {
         let { firstName, lastName, email, username, password, confirm } = form;
         let strongPassword = new RegExp("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})");
-        let newErrors = {};
+        let newErrors = { ...errors };
         if (!firstName || firstName === "") newErrors.firstName = "This is a required field.";
         if (!lastName || lastName === "") newErrors.lastName = "This is a required field.";
         if (!email || email === "") newErrors.email = "This is a required field.";
@@ -143,24 +142,25 @@ function Login() {
                             <Form.Control type="password" />
                         </Form.Group>
                     </Row>
-                    <button>
-                        Login
-                    </button>
+                    {/*toggles the login button and the alert pop up when login failure*/}
+                    {showAlert ?
+                        <div>
+                            <br></br>
+                            <Alert className="text-center" variant="danger">
+                                <Alert.Heading>We could not find an account matching that username and password.</Alert.Heading>
+                                <p>Please try again, or create an account by pressing the "Create Account" button below.</p>
+                                <button className="delete" onClick={() => setShowAlert(false)}>Got it!</button>
+                            </Alert>
+                        </div>
+                        :
+                        <button>
+                            Login
+                        </button>
+                    }
                 </Form>
-                {/* alert pop up when login failure */}
-                {showAlert && (
-                    <div>
-                        <br></br>
-                        <Alert className="text-center" variant="danger">
-                            <Alert.Heading>We could not find an account matching that username and password.</Alert.Heading>
-                            <p>Please try again, or create an account by pressing the "Create Account" button below.</p>
-                            <button className="delete" onClick={() => setShowAlert(false)}>Got it!</button>
-                        </Alert>
-                    </div>
-                )}
                 <p>or</p>
                 {/* button to create an account */}
-                <button onClick={handleShow}>
+                <button onClick={() => { handleShow(); setShowAlert(false) }}>
                     Create Account
                 </button>
                 {/* pop up modal to create an account */}

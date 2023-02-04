@@ -4,7 +4,6 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 
-//COMPONENT START -------------------------------------------------------------------------------------------------------
 function Reminder(props) {
     //Data Stuff
     const todaysReminders = props.reminders;
