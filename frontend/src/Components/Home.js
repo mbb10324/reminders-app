@@ -34,6 +34,10 @@ function Home() {
     const handleShow = () => setShow(true); //function to toggle showing add reminder modal
     const handleCloseScreenshot = () => setShowScreenshot(false); //function to close screenshot modal
     const handleShowScreenshot = () => setShowScreenshot(true); //function to show screenshot modal
+    //Validation stuff
+    const [errors, setErrors] = useState([]); //holds error strings
+    const [form, setForm] = useState([]); //contains create account form entries in seperate objects
+    const [validated, setValidated] = useState(false); //toggles input validation alerts(just the styling)
 
     //function fired each time the slide is changed
     function handleSelect(selectedIndex) {
@@ -41,21 +45,63 @@ function Home() {
         setCookie("index", selectedIndex)
     };
 
+    function setField(field, value) {
+        setForm({ ...form, [field]: value });
+        if (errors[field]) setErrors({ ...errors, [field]: null });
+    }
+
+    function findFormErrors() {
+        let { description, date, start, end } = form;
+        console.log(description)
+        let startNum = 0
+        let endNum = 0
+        let newErrors = {};
+        if (!description || description === "") newErrors.description = "This is a required field.";
+        else if (description.length > 200) newErrors.description = "Your description must be under 200 charaters in length."
+        if (start) {
+        if (start.length === 5) { startNum = parseInt(start.slice(0, 2)) }
+        else { startNum = parseInt(start.slice(0, 1)) }
+        }
+        if (end) {
+        if (end.length === 5) { endNum = parseInt(end.slice(0, 2)) }
+        else { endNum = parseInt(end.slice(0, 1)) }
+        }
+        if (startNum === endNum && startNum !== 0 && endNum !== 0) newErrors.start = "Make sure you have at least a 1 hour seperation between start and end."
+        if (startNum > endNum && !((startNum >= 9) && (endNum <= 6))) newErrors.end = "Make sure your start time is before your end time."
+        else if ((startNum >= 1 && startNum <= 6) && (endNum >= 9 && endNum <= 12)) newErrors.end = "Make sure your start time is before your end time."
+        if (!date || date === "") newErrors.date = "Please choose a date.";
+        return newErrors;
+    }
+
     //fetch for all reminders
     function reloadReminders() {
         api.fetchReminders().then(reminders => setReminders(reminders));
     }
 
     function addIndex() {
-        let monthLength = weeks.length
-        if (!(focusedWeekIndex + 1 === monthLength)) { setFocusedWeekIndex(focusedWeekIndex + 1)} 
-        else { setFocusedWeekIndex(0) }
+        let newIndex = focusedWeekIndex + 1
+        let weekIndex = weeks[newIndex]
+        let lastDay = weekIndex.slice(-1).pop()
+        let monthIndexName = lastDay.dayMonth
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const monthNumber = monthNames.indexOf(monthIndexName)
+        setCookie('month', monthNumber)
+        setSelectedMonth(monthNumber)
+        setFocusedWeekIndex(newIndex)
+        setCookie("index", newIndex)
     }
 
     function subIndex() {
-        let monthLength = weeks.length
-        if (focusedWeekIndex === 0) { setFocusedWeekIndex(monthLength - 1) } 
-        else { setFocusedWeekIndex(focusedWeekIndex - 1) }
+        let newIndex = focusedWeekIndex - 1
+        let weekIndex = weeks[newIndex]
+        let lastDay = weekIndex.slice(-1).pop()
+        let monthIndexName = lastDay.dayMonth
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const monthNumber = monthNames.indexOf(monthIndexName)
+        setCookie('month', monthNumber)
+        setSelectedMonth(monthNumber)
+        setFocusedWeekIndex(newIndex)
+        setCookie('index', newIndex)
     }
 
     //useeffect fired on render and each time month is changed
@@ -65,7 +111,7 @@ function Home() {
         } else {
             reloadReminders();
         }
-        const monthyFiltered = util.getAllDaysInMonth(date.getFullYear(), selectedMonth)
+        const monthyFiltered = util.getAllDaysInMonth(date.getFullYear())
         setWeeks(util.splitMonthIntoWeeks(monthyFiltered))
         setCookie("today", util.getIndexOfThisWeek(weeks))
     }, [selectedMonth]);
@@ -77,7 +123,7 @@ function Home() {
     }
 
     //middle man to edit reminder
-    function editReminder({description, date, start, end, type}) {
+    function editReminder({ description, date, start, end, type }) {
         return api.createReminder({ description, date, start, end, type })
             .then(() => reloadReminders());
     }
@@ -86,36 +132,48 @@ function Home() {
     function addReminder(e) {
         e.preventDefault();
         e.stopPropagation();
-        let description = e.target[0].value;
-        let date = e.target[1].value;
-        let start = e.target[2].value;
-        let end = e.target[3].value;
-        let type = e.target[4].value;
-        return api.createReminder({ description, date, start, end, type })
-            .then(() => setShow(false))
-            .then(() => reloadReminders());
+        const newErrors = findFormErrors();
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            setValidated(false);
+        } else {
+            setForm([])
+            let description = e.target[0].value;
+            let date = e.target[1].value;
+            let start = e.target[2].value;
+            let end = e.target[3].value;
+            let type = e.target[4].value;
+            return api.createReminder({ description, date, start, end, type })
+                .then(() => setShow(false))
+                .then(() => setValidated(true))
+                .then(() => reloadReminders());
+        }
     }
 
     //past present future
-    function inception(dayNum) {
+    function inception(dayNum, dayMonth) {
         let date = new Date
         let dateNum = date.getDate()
         let dateMonth = date.getMonth()
-        if (dateNum === dayNum && dateMonth === selectedMonth) return 'today events'
-        else if (dateMonth > selectedMonth) return 'past events'
-        else if (dateNum > dayNum && dateMonth >= selectedMonth) return 'past events'
+        let findMonth = new Date(Date.parse(dayMonth + " 1, 2023")).getMonth()
+        if (dateNum === dayNum && dateMonth === findMonth) return 'today events'
+        else if (dateMonth > findMonth) return 'past events'
+        else if (dateNum > dayNum && dateMonth >= findMonth) return 'past events'
         else return 'events'
     }
 
     //function called when selecting a month
     function pickMonth(e) {
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         const idkSomeMonth = JSON.parse(e.target.value)
+        const selectedMonthName = monthNames[idkSomeMonth]
+        const findFirstWeekOfMonth = weeks.findIndex(week => week.some(month => month.dayMonth === selectedMonthName))
         e.preventDefault()
         e.stopPropagation()
         setCookie("month", idkSomeMonth)
         setSelectedMonth(idkSomeMonth)
-        setCookie("index", 0)
-        setFocusedWeekIndex(0)
+        setCookie("index", findFirstWeekOfMonth)
+        setFocusedWeekIndex(findFirstWeekOfMonth)
     }
 
     //called when selecting screenshot
@@ -136,13 +194,13 @@ function Home() {
         <div className="content">
             {/* Title */}
             <div className='header'>
-            <div class ="tooltip3"><span class="tooltiptext">Add a reminder!</span>
+                <div class="tooltip3"><span class="tooltiptext">Add a reminder!</span>
                     <div>
                         <MdOutlineAddBox style={{ width: "47px", height: "47px" }} onClick={handleShow} />
                     </div>
-                    </div>
+                </div>
                 <h1>Reminders</h1>
-                <div class ="tooltip3"><span class="tooltiptext">Take a screenshot!</span>
+                <div class="tooltip3"><span class="tooltiptext">Take a screenshot!</span>
                     <div>
                         <FiCamera onClick={() => { handleShowScreenshot(); screenshot() }} style={{ width: "40px", height: "40px" }} />
                     </div>
@@ -151,7 +209,7 @@ function Home() {
             <div className="midBody">
 
                 {/* Left side arrow */}
-                <div className="caretLeft"><BsCaretLeft style={{ width: "120px", height: "120px", cursor: "pointer" }} onClick={() => subIndex()}/></div>
+                <div className="caretLeft"><BsCaretLeft style={{ width: "120px", height: "120px", cursor: "pointer" }} onClick={() => subIndex()} /></div>
                 <div className="calendar" id='capture'>
                     {/* Time markers on left side of calendar */}
                     <div className="timeline">
@@ -176,26 +234,26 @@ function Home() {
                                 return (
                                     <Carousel.Item key={index}>
                                         {thisIsChaos.map((day, index) => {
-                                            const dailyReminders = util.filterReminders(reminders, selectedMonth, day.dayNum);
-                                            const pastPresentFuture = inception(day.dayNum)
+                                            const dailyReminders = util.filterReminders(reminders, day.dayMonth, day.dayNum);
+                                            const pastPresentFuture = inception(day.dayNum, day.dayMonth)
                                             return (
                                                 <div key={index} className='day'>
-                                                    <div className="date">
-                                                        {/* <p className="date-num">{day.dayNum}</p> */}
-                                                        <p className="date-day">{day.dayName}</p>
-                                                        <p className="date-mon">Mar, {day.dayNum}</p>
-                                                        {/* <p className="date-num">{day.dayNum}</p> */}
-                                                    </div>
                                                     {Object.keys(day).length === 0 ?
                                                         <div className='placeholderCard'></div>
                                                         :
-                                                        <Reminder
-                                                            reminders={dailyReminders}
-                                                            deleteReminder={deleteReminder}
-                                                            editReminder={editReminder}
-                                                            dayNum={day.dayNum}
-                                                            pastPresentFuture={pastPresentFuture}
-                                                        />
+                                                        <>
+                                                            <div className="date">
+                                                                <p className="date-day">{day.dayName}</p>
+                                                                <p className="date-mon">{day.dayMonth}, {day.dayNum}</p>
+                                                            </div>
+                                                            <Reminder
+                                                                reminders={dailyReminders}
+                                                                deleteReminder={deleteReminder}
+                                                                editReminder={editReminder}
+                                                                dayNum={day.dayNum}
+                                                                pastPresentFuture={pastPresentFuture}
+                                                            />
+                                                        </>
                                                     }
                                                 </div>
                                             )
@@ -207,7 +265,7 @@ function Home() {
                     </div>
                 </div>
                 {/* Right side arrow */}
-                <div className="caretRight"><BsCaretRight style={{ width: "120px", height: "120px", cursor: "pointer" }} onClick={() => addIndex()}/></div>
+                <div className="caretRight"><BsCaretRight style={{ width: "120px", height: "120px", cursor: "pointer" }} onClick={() => addIndex()} /></div>
             </div>
             {/* Below the calendar, contains month, button to add reminder, and year */}
             <div className="bottom">
@@ -243,13 +301,15 @@ function Home() {
                     <Form onSubmit={addReminder}>
                         <Form.Group className="mb-3" controlId="formDescription">
                             <Form.Label>Brief Description:</Form.Label>
-                            <Form.Control type="description" placeholder='200 Character Limit' />
+                            <Form.Control type="description" placeholder='200 Character Limit' onChange={(e) => setField("description", e.target.value)} />
+                            {!!errors.date ? <p className='formErrors'>{errors.description}</p> : ""}
                         </Form.Group>
-                        <Form.Group className="mb-3" controlId="formDate">
+                        <Form.Group className="mb-3" controlId="formDate" onChange={(e) => setField("date", e.target.value)}>
                             <Form.Label>Date:</Form.Label>
                             <Form.Control type="date" />
+                            {!!errors.date ? <p className='formErrors'>{errors.date}</p> : ""}
                         </Form.Group>
-                        <Form.Group className="mb-3" controlId="formStart">
+                        <Form.Group className="mb-3" controlId="formStart" onChange={(e) => setField("start", e.target.value)}>
                             <Form.Label>Start:</Form.Label>
                             <Form.Select aria-label="Default select example">
                                 <option value="9 AM">9 AM</option>
@@ -263,8 +323,9 @@ function Home() {
                                 <option value="5 PM">5 PM</option>
                                 <option value="6 PM">6 PM</option>
                             </Form.Select>
+                            {!!errors.start ? <p className='formErrors'>{errors.start}</p> : ""}
                         </Form.Group>
-                        <Form.Group className="mb-3" controlId="formEnd">
+                        <Form.Group className="mb-3" controlId="formEnd" onChange={(e) => setField("end", e.target.value)}>
                             <Form.Label>End:</Form.Label>
                             <Form.Select aria-label="Default select example">
                                 <option value="9 AM">9 AM</option>
@@ -278,6 +339,7 @@ function Home() {
                                 <option value="5 PM">5 PM</option>
                                 <option value="6 PM">6 PM</option>
                             </Form.Select>
+                            {!!errors.end ? <p className='formErrors'>{errors.end}</p> : ""}
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="formType">
                             <Form.Label>Type:</Form.Label>
@@ -305,6 +367,7 @@ function Home() {
                 >
                     <Modal.Header closeButton>This is a screenshot of your schedule this week, it should also be in your downloads! Save it, send it to co-workers, or post it on the fridge. The world is your oyster!</Modal.Header>
                     <div id='output'></div>
+                    <Modal.Footer><button>test</button></Modal.Footer>
                 </Modal>
             </div>
             <Footer />

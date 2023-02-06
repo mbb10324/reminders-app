@@ -1,14 +1,17 @@
-//creates a dates array with all the days in a month
-export function getAllDaysInMonth(year, month) {
-    const date = new Date(year, month, 1);
+//creates a dates array with all the days in a year
+export function getAllDaysInMonth(year) {
+    const date = new Date(year, 0, 1);
+    const end =  new Date(date);
+    end.setFullYear(end.getFullYear() + 1);
     const dates = [];
-    while (date.getMonth() === month) {
+    while(date < end){
         let temp = new Date(date)
         let tempDay = date.toLocaleString('default', { weekday: 'short' })
         dates.push(
             {
                 "dayNum": temp.getDate(),
-                "dayName": tempDay
+                "dayName": tempDay,
+                "dayMonth": temp.toLocaleString('default', { month: 'short'})
             }
         );
         date.setDate(date.getDate() + 1);
@@ -84,12 +87,12 @@ export function getInitialMonth(cookies, date) {
 }
 
 //function responsible for filtering reminders per day
-export function filterReminders(allReminders, selectedMonth, dayNum) {
+export function filterReminders(allReminders, dayMonth, dayNum) {
     if (!dayNum) return [];
     return allReminders.filter((reminder) => {
         const date = new Date((reminder.date).replace(/-/g, '\/'));
         return date.getDate() === dayNum
-            && date.getMonth() === selectedMonth;
+            && date.toLocaleString('default', { month: 'short'}) === dayMonth;
     });
 }
 

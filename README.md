@@ -2,29 +2,36 @@
 ### To-Do
 
 # Easy
-- [x] reminders not registering on first day of the month
-- [x] first day of the month always showing past
-- [x] inquire about using the utils.js
-- [x] move footer fetch to api file
-- [x] remove validation on login form
-- [x] clean backend app.js
-- [x] token check on help page
-- [x] further testing creating account form validation
-- [x] fix hover on legend
+- [x] reminders not registering on first day of the month -01/02
+- [x] first day of the month always showing past -01/02
+- [x] inquire about using the utils.js -01/03
+- [x] move footer fetch to api file -01/03
+- [x] remove validation on login form -01/04
+- [x] clean backend app.js -01/03
+- [x] token check on help page -01/03
+- [x] further testing creating account form validation -01/04
+- [x] fix hover on legend -01/04
+- [ ] create validation boundary for the year
+- [ ] change close button on screenshot modal
+- [x] add css fade animation when editing a reminder and set timeout for smoother transition -01/06
 
 # Moderate
-- [x] create custom tooltips
-- [x] add help page with admin contact and useful info
-- [x] figure out how to replace default bootstrap arrows, to better control index of slides
-- [ ] create validation for reminder creating forms
+- [x] create custom tooltips -01/04
+- [x] add help page with admin contact and useful info -01/03
+- [x] figure out how to replace default bootstrap arrows, to better control index of slides -01/04
+- [ ] change color palette
+- [x] create validation for reminder creating forms -01/06
 - [ ] token over 256
+- [ ] add ability to copy a reminder
+- [ ] replace bootstrap buttons with custom buttons
 
 # Hard
 - [ ] review edge cases when fetch's fail(prevent api from crashing, instead show not found or something)
 - [ ] create tests for all functions
+- [x] refactor arrays and selectedmonth logic to account for scrolling into next/previous months -01/06
 
 # Stretch
-- [ ] nest months so that when side scrolling it rolls over to next month
+- [x] nest months so that when side scrolling it rolls over to next month -01/06
 - [ ] Docker containerize
 - [ ] Deploy application
 

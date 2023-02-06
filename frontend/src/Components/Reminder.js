@@ -16,8 +16,21 @@ function Reminder(props) {
     const handleCloseDelete = () => setShowDelete(false); //function to toggle closing delete modal
     const handleShowDelete = () => setShowDelete(true); //function to toggle showing delete modal
     const handleCloseEdit = () => setShowEdit(false); //function to toggle closing delete modal
-    const handleShowEdit = () => setShowEdit(true); //function to toggle showing delete modal
     const handleCloseReminder = () => setShowReminder(false);
+
+    const [errors, setErrors] = useState([]); //holds error strings
+    const [form, setForm] = useState([]); //contains create account form entries in seperate objects
+    const [validated, setValidated] = useState(false); //toggles input validation alerts(just the styling)
+
+    function handleShowEdit() {
+        setForm({
+            "description": modalRem.description,
+            "date": modalRem.date,
+            "start": modalRem.start,
+            "end": modalRem.end
+        })
+        setShowEdit(true);
+    }
 
     //toggles showing the reminder modal with proper parameters for the selected reminder
     function handleShowReminder(rem, thisClass) {
@@ -40,17 +53,51 @@ function Reminder(props) {
             .then(() => closeAll())
     }
 
+    function setField(field, value) {
+        setForm({ ...form, [field]: value });
+        if (errors[field]) setErrors({ ...errors, [field]: null });
+    }
+
+    function findFormErrors() {
+        let { description, date, start, end } = form;
+        let startNum = 0
+        let endNum = 0
+        if (start.length === 5) { startNum = parseInt(start.slice(0, 2)) }
+        else { startNum = parseInt(start.slice(0, 1)) }
+        if (end.length === 5) { endNum = parseInt(end.slice(0, 2)) }
+        else { endNum = parseInt(end.slice(0, 1)) }
+        let newErrors = {};
+        if (!description || description === "") newErrors.description = "This is a required field.";
+        else if (description.length > 200) newErrors.description = "Your description must be under 200 charaters in length."
+        if (startNum === endNum) newErrors.start = "Make sure you have at least a 1 hour seperation between start and end."
+        if (startNum > endNum && !((startNum >= 9) && (endNum <= 6))) newErrors.end = "Make sure your start time is before your end time."
+        else if ((startNum >= 1 && startNum <= 6) && (endNum >= 9 && endNum <= 12)) newErrors.end = "Make sure your start time is before your end time."
+        if (!date || date === "") newErrors.date = "Please choose a date.";
+        return newErrors;
+    }
+
     //function responsible for posting a reminder to the database upon form submission
     function editReminder(e) {
         e.preventDefault();
         e.stopPropagation();
-        let description = e.target[0].value;
-        let date = e.target[1].value;
-        let start = e.target[2].value;
-        let end = e.target[3].value;
-        let type = e.target[4].value;
-        props.editReminder({ description, date, start, end, type })
-            .then(() => deleteReminder(modalRem))
+        const newErrors = findFormErrors();
+        if (Object.keys(newErrors).length > 0) {
+            console.log("nope")
+            setErrors(newErrors);
+            setValidated(false);
+        } else {
+            setForm([])
+            let description = e.target[0].value;
+            let date = e.target[1].value;
+            let start = e.target[2].value;
+            let end = e.target[3].value;
+            let type = e.target[4].value;
+            deleteReminder(modalRem)
+            setTimeout(() => { 
+                props.editReminder({ description, date, start, end, type })
+                .then(() => setValidated(true))
+            }, 1000);  
+        }
     }
 
     //start of HTML
@@ -124,15 +171,17 @@ function Reminder(props) {
                                 dialogClassName={"addReminderModal"}
                             >
                                 <Form onSubmit={editReminder}>
-                                    <Form.Group className="mb-3" controlId="formDescription">
+                                    <Form.Group className="mb-3" controlId="formDescription" onChange={(e) => setField("description", e.target.value)}>
                                         <Form.Label>Brief Description:</Form.Label>
                                         <Form.Control type="description" defaultValue={modalRem.description} />
+                                        {!!errors.description ? <p className='formErrors'>{errors.description}</p> : ""}
                                     </Form.Group>
-                                    <Form.Group className="mb-3" controlId="formDate">
+                                    <Form.Group className="mb-3" controlId="formDate" onChange={(e) => setField("date", e.target.value)}>
                                         <Form.Label>Date:</Form.Label>
                                         <Form.Control type="date" defaultValue={modalRem.date} />
+                                        {!!errors.date ? <p className='formErrors'>{errors.date}</p> : ""}
                                     </Form.Group>
-                                    <Form.Group className="mb-3" controlId="formStart">
+                                    <Form.Group className="mb-3" controlId="formStart" onChange={(e) => setField("start", e.target.value)}>
                                         <Form.Label>Start:</Form.Label>
                                         <Form.Select aria-label="Default select example" defaultValue={modalRem.start}>
                                             <option value="9 AM">9 AM</option>
@@ -146,8 +195,9 @@ function Reminder(props) {
                                             <option value="5 PM">5 PM</option>
                                             <option value="6 PM">6 PM</option>
                                         </Form.Select>
+                                        {!!errors.start ? <p className='formErrors'>{errors.start}</p> : ""}
                                     </Form.Group>
-                                    <Form.Group className="mb-3" controlId="formEnd">
+                                    <Form.Group className="mb-3" controlId="formEnd" onChange={(e) => setField("end", e.target.value)}>
                                         <Form.Label>End:</Form.Label>
                                         <Form.Select aria-label="Default select example" defaultValue={modalRem.end}>
                                             <option value="9 AM">9 AM</option>
@@ -161,6 +211,7 @@ function Reminder(props) {
                                             <option value="5 PM">5 PM</option>
                                             <option value="6 PM">6 PM</option>
                                         </Form.Select>
+                                        {!!errors.end ? <p className='formErrors'>{errors.end}</p> : ""}
                                     </Form.Group>
                                     <Form.Group className="mb-3" controlId="formType">
                                         <Form.Label>Type:</Form.Label>

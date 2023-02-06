@@ -41,10 +41,10 @@ function Login() {
     };
 
     //create an object that holds all form entries
-    function setField(field, value) {
+   function setField(field, value) {
         setForm({ ...form, [field]: value });
         if (errors[field]) setErrors({ ...errors, [field]: null });
-    }
+    } 
 
     //identifys form erros
     function findFormErrors() {

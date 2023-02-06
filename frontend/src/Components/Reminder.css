@@ -118,6 +118,16 @@
   background: white;
   cursor: pointer;
   transition: all .2s ease-in-out;
+  animation: fadein 1s linear;
+}
+
+@keyframes fadein {
+  0% { 
+    opacity: 0; 
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .event:hover {
