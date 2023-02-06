@@ -46,23 +46,16 @@ function Home() {
         api.fetchReminders().then(reminders => setReminders(reminders));
     }
 
-    console.log(focusedWeekIndex)
     function addIndex() {
         let monthLength = weeks.length
-        if (!(focusedWeekIndex + 1 === monthLength)) {
-            setFocusedWeekIndex(focusedWeekIndex + 1)
-        } else {
-            setFocusedWeekIndex(0)
-        }
+        if (!(focusedWeekIndex + 1 === monthLength)) { setFocusedWeekIndex(focusedWeekIndex + 1)} 
+        else { setFocusedWeekIndex(0) }
     }
 
     function subIndex() {
         let monthLength = weeks.length
-        if (focusedWeekIndex === 0) {
-            setFocusedWeekIndex(monthLength - 1)
-        } else {
-            setFocusedWeekIndex(focusedWeekIndex - 1)
-        }
+        if (focusedWeekIndex === 0) { setFocusedWeekIndex(monthLength - 1) } 
+        else { setFocusedWeekIndex(focusedWeekIndex - 1) }
     }
 
     //useeffect fired on render and each time month is changed
@@ -188,8 +181,10 @@ function Home() {
                                             return (
                                                 <div key={index} className='day'>
                                                     <div className="date">
-                                                        <p className="date-num">{day.dayNum}</p>
+                                                        {/* <p className="date-num">{day.dayNum}</p> */}
                                                         <p className="date-day">{day.dayName}</p>
+                                                        <p className="date-mon">Mar, {day.dayNum}</p>
+                                                        {/* <p className="date-num">{day.dayNum}</p> */}
                                                     </div>
                                                     {Object.keys(day).length === 0 ?
                                                         <div className='placeholderCard'></div>

@@ -53,14 +53,22 @@
 .date-num {
   font-size: 3rem;
   font-weight: 600;
-  display: inline;
+  align-self: flex-end;
 }
 
 .date-day {
   display: inline;
-  font-size: 3rem;
-  font-weight: 100;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-top: 19px;
 }
+
+.date-mon {
+    display: inline;
+    font-size: 1.5rem;
+    font-weight: 350;
+    margin-top: 28px;
+  }
 
 .bottom {
   display: grid;
