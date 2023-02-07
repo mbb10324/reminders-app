@@ -60,36 +60,49 @@ function Reminder(props) {
     }
 
     function findFormErrors() {
+        setErrors([])
         let { description, date, start, end } = form;
-        let startNum = 0
-        let endNum = 0
-        if (start.length === 5) { startNum = parseInt(start.slice(0, 2)) }
-        else { startNum = parseInt(start.slice(0, 1)) }
-        if (end.length === 5) { endNum = parseInt(end.slice(0, 2)) }
-        else { endNum = parseInt(end.slice(0, 1)) }
+        let times = ["9 AM","10 AM","11 AM","12 PM","1 PM","2 PM","3 PM","4 PM","5 PM","6 PM"]
+        let startTime = times.indexOf(start)
+        let endTime = times.indexOf(end)
         let newErrors = {};
         if (!description || description === "") newErrors.description = "This is a required field.";
         else if (description.length > 200) newErrors.description = "Your description must be under 200 charaters in length."
-        if (startNum === endNum) newErrors.start = "Make sure you have at least a 1 hour seperation between start and end."
-        if (startNum > endNum && !((startNum >= 9) && (endNum <= 6))) newErrors.end = "Make sure your start time is before your end time."
-        else if ((startNum >= 1 && startNum <= 6) && (endNum >= 9 && endNum <= 12)) newErrors.end = "Make sure your start time is before your end time."
+        if (startTime === endTime) newErrors.start = "Make sure you have at least a 1 hour seperation between start and end."
+        if (startTime > endTime) newErrors.end = "Make sure your start time is before your end time."
+        if (isWithinRange([startTime,endTime], times)) newErrors.time = "This time frame falls within the range of another reminder, please choose another time frame."
         let year = parseInt(date.slice(0, 4))
         if (!date || date === "") newErrors.date = "Please choose a date.";
         else if (year !== 2023) newErrors.date = "Please choose a date that is within this year."
         return newErrors;
     }
 
+    function isWithinRange(range2, times) {
+        for (let i = 0; i < todaysReminders.length; i++) {
+            console.log(todaysReminders)
+            let todaysStart = times.indexOf(todaysReminders[i].start)
+            let todaysEnd = times.indexOf(todaysReminders[i].end)
+            let range1 = [todaysStart, todaysEnd]
+            console.log("1", range1)
+            console.log("2", range2)
+            if (range1[0] > range1[1]) [range1[0], range1[1]] = [range1[1], range1[0]];
+            if (range2[0] > range2[1]) [range2[0], range2[1]] = [range2[1], range2[0]];
+            return range2[0] < range1[1] && range2[1] > range1[0];
+        }
+      }
+
     //function responsible for posting a reminder to the database upon form submission
     function editReminder(e) {
         e.preventDefault();
         e.stopPropagation();
+        setErrors([])
+        setField([])
         const newErrors = findFormErrors();
         if (Object.keys(newErrors).length > 0) {
             console.log("nope")
             setErrors(newErrors);
             setValidated(false);
         } else {
-            setForm([])
             let description = e.target[0].value;
             let date = e.target[1].value;
             let start = e.target[2].value;
@@ -233,6 +246,7 @@ function Reminder(props) {
                                             <option value="Personal">Personal</option>
                                         </Form.Select>
                                     </Form.Group>
+                                    {!!errors.time ? <p className='formErrors'>{errors.time}</p> : ""}
                                     <button type="button" className='closeIt' onClick={handleCloseEdit}>
                                         Close
                                     </button>
