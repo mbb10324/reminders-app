@@ -2,8 +2,9 @@
   display: grid;
   grid-template-rows: repeat(9, 60px);
   border-radius: 5px;
-  background-color: #e2fbff;
+  background-color: #b6b6b6;
   padding: 0.5rem 0;
+  color: BLACK;
 }
 
 .events p {
@@ -14,15 +15,15 @@
 }
 
 .today {
-  background-color: #adf4ff !important;
+  background-color: #858585 !important;
 }
 
 .past {
-  background-color: #73ecff !important;
+  background-color: #5f5f5f !important;
 }
 
 .future {
-  background-color: #e2fbff;
+  background-color: #b6b6b6;
 }
 
 .start-9 {
@@ -152,27 +153,31 @@ body {
 }
 
 .Personal {
-  background-color: #ffd6d1;
+  background-color: #06E19E;
+  color: #063170;
 }
 
 .Meeting {
-  background-color: #fafaa3;
+  background-color: #02B3FC;
+  color: #F8CE27;
 }
 
 .General {
-  background-color: #fff2e2;
+    background-color: #063170;
+    color: #06E19E;
 }
 
 .Appointment {
-  background-color: #d1ffe6;
+    background-color: #F8CE27;
+    color: #02B3FC;
 }
 
 .modal-content {
   text-align: center;
 }
 
-.close {
-  background-color: #c5c5c5;
+.closeIt {
+  background-color: #9c9c9c;
   border: 1px solid black;
   border-radius: 0.375rem;
   transition: all .3s ease-in-out;
@@ -180,13 +185,13 @@ body {
   width: 15%;
 }
 
-.close:hover {
+.closeIt:hover {
   transform: scale(1.1);
-  background-color: #dbdbdb;
+  background-color: #b4b4b4;
 }
 
 .delete {
-  background-color: #ff7979;
+  background-color: #cc3434;
   border: 1px solid black;
   border-radius: 0.375rem;
   transition: all .3s ease-in-out;
@@ -196,11 +201,28 @@ body {
 
 .delete:hover {
   transform: scale(1.1);
-  background-color: #ff9595;
+  background-color: #d85151;
+}
+
+.copy {
+    background-color: rgb(206, 206, 47) !important;
+}
+
+.copy:hover {
+    background-color: rgb(214, 214, 79) !important;;
+}
+
+.makeCopy {
+    background-color: rgb(206, 206, 47) !important;
+    width: 29% !important;
+}
+
+.makeCopy:hover {
+    background-color: rgb(214, 214, 79) !important;;
 }
 
 .edit {
-  background-color: #79ffb5;
+  background-color: #0cb458;
   border: 1px solid black;
   border-radius: 0.375rem;
   transition: all .3s ease-in-out;
@@ -210,14 +232,27 @@ body {
 
 .edit:hover {
   transform: scale(1.1);
-  background-color: #95ffc5;
+  background-color: #1cca6b;
 }
 
 .editModal {
-  background-color: #f3f3f3 !important;
+  background-color: #dddddd !important;
   border-radius: 0.375rem;
 }
 
 .modal-content {
-  background-color: #f3f3f3 !important;
+  background-color: #dddddd !important;
+}
+
+.commit {
+    width: 20% !important;
+}
+
+.deleteModal {
+    text-align: center !important;
+    justify-content: center !important;
+}
+
+.deleteButtons {
+    text-align: center !important;
 }

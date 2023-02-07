@@ -35,7 +35,7 @@ function Footer() {
             {/* tooltip for logout button */}
             <div class ="tooltip2"><span class="tooltiptext">Logout</span>
                 <div className='logout'>
-                    <MdLogout style={{ width: "27px", height: "27px", cursor: "pointer" }} onClick={handleShow} />
+                    <MdLogout style={{ width: "30px", height: "30px", cursor: "pointer", color: "#02B3FC" }} onClick={handleShow} />
                 </div>
             </div>
             {/* Legend */}
@@ -58,7 +58,7 @@ function Footer() {
             <div class ="tooltip1"><span class="tooltiptext">Help</span>
                 <Link to={`/Help`}>
                 <div className='help'>
-                    <FiHelpCircle style={{ width: "28px", height: "28px", cursor: "pointer", color: "black" }} />
+                    <FiHelpCircle style={{ width: "28px", height: "28px", cursor: "pointer", color: "#02B3FC" }} />
                 </div>
                 </Link>
                 </div>
@@ -76,7 +76,7 @@ function Footer() {
                     Are you sure you would like to logout?
                 </Modal.Body>
                 <div className='modalbuttons'>
-                    <button className='close' onClick={handleClose}>
+                    <button type="button" className='closeIt' onClick={handleClose}>
                         Nope
                     </button>
                     <button className='edit' onClick={logout}>

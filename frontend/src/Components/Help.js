@@ -76,7 +76,7 @@ function Help() {
                 <div className="rightSide">
                     <h6><BsArrowUpLeft />&nbsp;&nbsp;&nbsp;&nbsp;Click the title to go back to your calendar</h6>
                     <h2>Reminder of the day!</h2>
-                    <div className="modalevent Meeting Remoftheday">
+                    <div className="modalevent General Remoftheday">
                         <p className="title">Drink water, workout, dont suck.</p>
                         <p className="time">6 AM - 9 PM</p>
                     </div>

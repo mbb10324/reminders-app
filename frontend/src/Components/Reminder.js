@@ -13,9 +13,10 @@ function Reminder(props) {
     const [showDelete, setShowDelete] = useState(false); //handles the visibility state for deleting a reminder
     const [showEdit, setShowEdit] = useState(false); //handles the visibility state for adding a new reminder
     const [showReminder, setShowReminder] = useState(false);
+    const [copy, setCopy] = useState(false)
     const handleCloseDelete = () => setShowDelete(false); //function to toggle closing delete modal
     const handleShowDelete = () => setShowDelete(true); //function to toggle showing delete modal
-    const handleCloseEdit = () => setShowEdit(false); //function to toggle closing delete modal
+    const handleCloseEdit = () => {setShowEdit(false);  setTimeout(() => { setCopy(false) }, 600)} //function to toggle closing delete modal
     const handleCloseReminder = () => setShowReminder(false);
 
     const [errors, setErrors] = useState([]); //holds error strings
@@ -31,7 +32,7 @@ function Reminder(props) {
         })
         setShowEdit(true);
     }
-
+    
     //toggles showing the reminder modal with proper parameters for the selected reminder
     function handleShowReminder(rem, thisClass) {
         setShowReminder(true);
@@ -72,7 +73,9 @@ function Reminder(props) {
         if (startNum === endNum) newErrors.start = "Make sure you have at least a 1 hour seperation between start and end."
         if (startNum > endNum && !((startNum >= 9) && (endNum <= 6))) newErrors.end = "Make sure your start time is before your end time."
         else if ((startNum >= 1 && startNum <= 6) && (endNum >= 9 && endNum <= 12)) newErrors.end = "Make sure your start time is before your end time."
+        let year = parseInt(date.slice(0, 4))
         if (!date || date === "") newErrors.date = "Please choose a date.";
+        else if (year !== 2023) newErrors.date = "Please choose a date that is within this year."
         return newErrors;
     }
 
@@ -92,11 +95,15 @@ function Reminder(props) {
             let start = e.target[2].value;
             let end = e.target[3].value;
             let type = e.target[4].value;
-            deleteReminder(modalRem)
-            setTimeout(() => { 
+            if (!copy) {
+                deleteReminder(modalRem)
+            } else {
+                closeAll()
+            }
+            setTimeout(() => {
                 props.editReminder({ description, date, start, end, type })
-                .then(() => setValidated(true))
-            }, 1000);  
+                    .then(() => setValidated(true))
+            }, 1000);
         }
     }
 
@@ -128,10 +135,13 @@ function Reminder(props) {
                                 <p className="time">{modalRem.start}-{modalRem.end}</p>
                             </div>
                             <div className='modalbuttons'>
+                                <button className='edit copy' onClick={() => { handleShowEdit(); setCopy(true) }}>
+                                    Copy
+                                </button>
                                 <button className='edit' onClick={handleShowEdit}>
                                     Edit
                                 </button>
-                                <button className='close' onClick={handleCloseReminder}>
+                                <button className='closeIt' onClick={handleCloseReminder}>
                                     Close
                                 </button>
                                 <button className='delete' onClick={handleShowDelete}>
@@ -145,6 +155,7 @@ function Reminder(props) {
                             onHide={handleCloseDelete}
                             backdrop="static"
                             keyboard={false}
+                            dialogClassName={"addReminderModal"}
                         >
                             <Modal.Header>
                                 <Modal.Title>Are you sure?</Modal.Title>
@@ -152,14 +163,14 @@ function Reminder(props) {
                             <Modal.Body>
                                 You are about to delete a {modalRem.type} reminder, are you sure you want to do that?
                             </Modal.Body>
-                            <Modal.Footer>
-                                <Button variant="secondary" onClick={handleCloseDelete}>
-                                    No
-                                </Button>
-                                <Button variant="primary" onClick={() => { deleteReminder(modalRem) }}>
-                                    Yes, delete it!
-                                </Button>
-                            </Modal.Footer>
+                            <div className='deleteButtons'>
+                                <button className='closeIt' onClick={handleCloseDelete}>
+                                    Close
+                                </button>
+                                <button className='delete' onClick={() => { deleteReminder(modalRem) }}>
+                                    Delete
+                                </button>
+                            </div>
                         </Modal>
                         {/* Pop up modal to edit a reminder */}
                         <div className="Modal">
@@ -222,10 +233,18 @@ function Reminder(props) {
                                             <option value="Personal">Personal</option>
                                         </Form.Select>
                                     </Form.Group>
-                                    <Button variant="secondary" onClick={handleCloseEdit}>
+                                    <button type="button" className='closeIt' onClick={handleCloseEdit}>
                                         Close
-                                    </Button>
-                                    <Button variant="primary" type="submit">Commit changes!</Button>
+                                    </button>
+                                    {!copy ?
+                                        <button className='edit commit' type='submit'>
+                                            Commit!
+                                        </button>
+                                        :
+                                        <button className='edit makeCopy' type='submit'>
+                                            Make a Copy!
+                                        </button>
+                                    }
                                 </Form>
                             </Modal>
                         </div>

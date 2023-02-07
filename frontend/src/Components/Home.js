@@ -52,24 +52,28 @@ function Home() {
 
     function findFormErrors() {
         let { description, date, start, end } = form;
-        console.log(description)
         let startNum = 0
         let endNum = 0
         let newErrors = {};
         if (!description || description === "") newErrors.description = "This is a required field.";
         else if (description.length > 200) newErrors.description = "Your description must be under 200 charaters in length."
         if (start) {
-        if (start.length === 5) { startNum = parseInt(start.slice(0, 2)) }
-        else { startNum = parseInt(start.slice(0, 1)) }
+            if (start.length === 5) { startNum = parseInt(start.slice(0, 2)) }
+            else { startNum = parseInt(start.slice(0, 1)) }
         }
         if (end) {
-        if (end.length === 5) { endNum = parseInt(end.slice(0, 2)) }
-        else { endNum = parseInt(end.slice(0, 1)) }
+            if (end.length === 5) { endNum = parseInt(end.slice(0, 2)) }
+            else { endNum = parseInt(end.slice(0, 1)) }
         }
         if (startNum === endNum && startNum !== 0 && endNum !== 0) newErrors.start = "Make sure you have at least a 1 hour seperation between start and end."
         if (startNum > endNum && !((startNum >= 9) && (endNum <= 6))) newErrors.end = "Make sure your start time is before your end time."
         else if ((startNum >= 1 && startNum <= 6) && (endNum >= 9 && endNum <= 12)) newErrors.end = "Make sure your start time is before your end time."
+        let year = 2023
+        if (date) {
+            year = parseInt(date.slice(0, 4))
+        }
         if (!date || date === "") newErrors.date = "Please choose a date.";
+        else if (year !== 2023) newErrors.date = "Please choose a date that is within this year."
         return newErrors;
     }
 
@@ -167,7 +171,7 @@ function Home() {
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         const idkSomeMonth = JSON.parse(e.target.value)
         const selectedMonthName = monthNames[idkSomeMonth]
-        const findFirstWeekOfMonth = weeks.findIndex(week => week.some(month => month.dayMonth === selectedMonthName))
+        const findFirstWeekOfMonth = weeks.findIndex(week => week.some(day => day.dayMonth === selectedMonthName))
         e.preventDefault()
         e.stopPropagation()
         setCookie("month", idkSomeMonth)
@@ -194,22 +198,22 @@ function Home() {
         <div className="content">
             {/* Title */}
             <div className='header'>
-                <div class="tooltip3"><span class="tooltiptext">Add a reminder!</span>
+                <div className="tooltip3"><span className="tooltiptext">Add a reminder!</span>
                     <div>
-                        <MdOutlineAddBox style={{ width: "47px", height: "47px" }} onClick={handleShow} />
+                        <MdOutlineAddBox style={{ width: "47px", height: "47px", color: "#02B3FC" }} onClick={handleShow} />
                     </div>
                 </div>
                 <h1>Reminders</h1>
-                <div class="tooltip3"><span class="tooltiptext">Take a screenshot!</span>
+                <div className="tooltip3"><span className="tooltiptext">Take a screenshot!</span>
                     <div>
-                        <FiCamera onClick={() => { handleShowScreenshot(); screenshot() }} style={{ width: "40px", height: "40px" }} />
+                        <FiCamera onClick={() => { handleShowScreenshot(); screenshot() }} style={{ width: "40px", height: "40px", color: "#02B3FC" }} />
                     </div>
                 </div>
             </div>
             <div className="midBody">
 
                 {/* Left side arrow */}
-                <div className="caretLeft"><BsCaretLeft style={{ width: "120px", height: "120px", cursor: "pointer" }} onClick={() => subIndex()} /></div>
+                <div className="caretLeft"><BsCaretLeft style={{ width: "120px", height: "120px", color: "#F8CE27", cursor: "pointer" }} onClick={() => subIndex()} /></div>
                 <div className="calendar" id='capture'>
                     {/* Time markers on left side of calendar */}
                     <div className="timeline">
@@ -265,7 +269,7 @@ function Home() {
                     </div>
                 </div>
                 {/* Right side arrow */}
-                <div className="caretRight"><BsCaretRight style={{ width: "120px", height: "120px", cursor: "pointer" }} onClick={() => addIndex()} /></div>
+                <div className="caretRight"><BsCaretRight style={{ width: "120px", height: "120px", color: "#F8CE27", cursor: "pointer" }} onClick={() => addIndex()} /></div>
             </div>
             {/* Below the calendar, contains month, button to add reminder, and year */}
             <div className="bottom">
@@ -350,10 +354,12 @@ function Home() {
                                 <option value="Personal">Personal</option>
                             </Form.Select>
                         </Form.Group>
-                        <Button variant="secondary" onClick={handleClose}>
+                        <button type="button" className='closeIt' onClick={handleClose}>
                             Close
-                        </Button>
-                        <Button variant="primary" type="submit">Add Reminder</Button>
+                        </button>
+                        <button className='addIt' type='submit'>
+                            Add Reminder
+                        </button>
                     </Form>
                 </Modal>
             </div>
@@ -361,13 +367,15 @@ function Home() {
                 {/* Pop up modal to create a screenshot */}
                 <Modal
                     show={showScreenshot}
-                    onHide={handleCloseScreenshot}
-                    backdrop="static"
                     dialogClassName={"screenshotModalContent"}
                 >
-                    <Modal.Header closeButton>This is a screenshot of your schedule this week, it should also be in your downloads! Save it, send it to co-workers, or post it on the fridge. The world is your oyster!</Modal.Header>
+                    <Modal.Header>This is a screenshot of your schedule this week, it should also be in your downloads! Save it, send it to co-workers, or post it on the fridge. The world is your oyster!</Modal.Header>
                     <div id='output'></div>
-                    <Modal.Footer><button>test</button></Modal.Footer>
+                    <Modal.Footer>
+                        <button type="button" className='closeIt' onClick={handleCloseScreenshot}>
+                            Close
+                        </button>
+                    </Modal.Footer>
                 </Modal>
             </div>
             <Footer />

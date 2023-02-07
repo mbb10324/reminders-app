@@ -11,19 +11,20 @@
 - [x] token check on help page -01/03
 - [x] further testing creating account form validation -01/04
 - [x] fix hover on legend -01/04
-- [ ] create validation boundary for the year
-- [ ] change close button on screenshot modal
+- [x] create validation boundary for the year -01/06
+- [x] change close button on screenshot modal -01/06
 - [x] add css fade animation when editing a reminder and set timeout for smoother transition -01/06
 
 # Moderate
 - [x] create custom tooltips -01/04
 - [x] add help page with admin contact and useful info -01/03
 - [x] figure out how to replace default bootstrap arrows, to better control index of slides -01/04
-- [ ] change color palette
+- [x] change color palette -01/06
 - [x] create validation for reminder creating forms -01/06
 - [ ] token over 256
-- [ ] add ability to copy a reminder
-- [ ] replace bootstrap buttons with custom buttons
+- [x] add ability to copy a reminder -01/06
+- [x] replace bootstrap buttons with custom buttons -01/06
+- [ ] fix all html2canvas bugs
 
 # Hard
 - [ ] review edge cases when fetch's fail(prevent api from crashing, instead show not found or something)

@@ -7,11 +7,9 @@
   background-size: cover;
   min-height: 100vh;
   width: 100%;
-  background-color: rgb(255, 255, 255);
-  /* -webkit-filter: invert(100%) !important;
-    filter: invert(100%) !important; */
+  background-color: rgb(39, 39, 39);
   overflow-x: hidden;
-  color: #252627;
+  color: #ffffff;
   text-align: center;
   cursor: default;
   animation-name: fadeInOpacity;

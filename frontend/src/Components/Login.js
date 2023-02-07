@@ -12,7 +12,7 @@ import * as api from '../Functions/api';
 import * as util from '../Functions/util'
 
 function Login() {
-    
+
     const navigate = useNavigate(); //navigate var
     const [lock, setLock] = useState(false); //controls lock view
     const [show, setShow] = useState(false); //show or close create account modal
@@ -41,10 +41,10 @@ function Login() {
     };
 
     //create an object that holds all form entries
-   function setField(field, value) {
+    function setField(field, value) {
         setForm({ ...form, [field]: value });
         if (errors[field]) setErrors({ ...errors, [field]: null });
-    } 
+    }
 
     //identifys form erros
     function findFormErrors() {
@@ -149,7 +149,7 @@ function Login() {
                             <Alert className="text-center" variant="danger">
                                 <Alert.Heading>We could not find an account matching that username and password.</Alert.Heading>
                                 <p>Please try again, or create an account by pressing the "Create Account" button below.</p>
-                                <button className="delete" onClick={() => setShowAlert(false)}>Got it!</button>
+                                <button type="button" className="delete" onClick={() => setShowAlert(false)}>Got it!</button>
                             </Alert>
                         </div>
                         :
@@ -232,10 +232,16 @@ function Login() {
                         </Form.Group>
                         {showSuccess ? <p>Account created, please close this window and login!</p>
                             : ""}
-                        <Button variant="secondary" onClick={handleClose}>
+                        <button type="button" className='closeIt' onClick={handleClose}>
+                            Close
+                        </button>
+                        <button disabled={disableButton} className='addIt create' type='submit'>
+                            Create Account
+                        </button>
+                        {/* <Button variant="secondary" onClick={handleClose}>
                             Close
                         </Button>
-                        <Button disabled={disableButton} variant="primary" type="submit">Create Account</Button>
+                        <Button disabled={disableButton} variant="primary" type="submit">Create Account</Button> */}
                     </Form>
                 </Modal>
             </div>

@@ -1,10 +1,11 @@
 .helpContent {
-    background: linear-gradient(270deg, #a0f2ff, #ffada2);
+    background: linear-gradient(270deg, #02B3FC, #F8CE27);
     background-size: cover;
     min-height: 100vh;
     width: 100%;
     background-size: auto 100%;
     text-align: left !important;
+    color: black;
 }
 
 .helpBody {
@@ -18,7 +19,7 @@
     font-size: 75px;
     margin: 0;
     text-decoration: none;
-    color: black;
+    color: #063170;
 }
 
 .helpContent h2 {
@@ -87,7 +88,7 @@
     width: 2px;
     margin-top: 40px !important;
     height: 95%;
-    background-color: black;
+    background-color: #063170;
     border-radius: 50%;
     margin: auto;
 }
@@ -117,13 +118,13 @@
 }
 
 .indivSocialIcons svg {
-    color: #ff6868;
+    color: #063170;
     width: 30px;
     height: 30px
 }
 
 .indivSocialIcons svg:hover {
-    color: #ff3a3a;
+    color: #084299;
     -webkit-transform: scale(1.2);
     -moz-transform: scale(1.2);
     -o-transform: scale(1.2);
