@@ -25,6 +25,7 @@
 - [x] add ability to copy a reminder -01/06
 - [x] replace bootstrap buttons with custom buttons -01/06
 - [ ] fix all html2canvas bugs
+- [ ] figure out logic to prevent individuals from posting a reminder within the same time frame as another reminder.
 
 # Hard
 - [ ] review edge cases when fetch's fail(prevent api from crashing, instead show not found or something)
