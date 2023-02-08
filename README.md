@@ -25,6 +25,7 @@
 - [x] add ability to copy a reminder -01/06
 - [x] replace bootstrap buttons with custom buttons -01/06
 - [ ] fix all html2canvas bugs
+- [x] added middle line animation to help page
 
 # Hard
 - [ ] review edge cases when fetch's fail(prevent api from crashing, instead show not found or something)

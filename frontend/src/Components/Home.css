@@ -11,7 +11,9 @@
   animation-iteration-count: 1;
   animation-timing-function: ease-in;
   animation-duration: 1s;
-  height: 100vh;
+  height: 100%;
+  overflow: hidden;
+
 }
 
 @keyframes fadeInOpacity {
@@ -179,7 +181,7 @@
   /* Tooltip text */
   .tooltip3 .tooltiptext {
     visibility: hidden;
-    width: 200px;
+    width: 160px;
     background-color: rgb(75, 75, 75);
     color: #ffffff;
     text-align: center;
@@ -187,7 +189,7 @@
     border-radius: 6px;
     overflow: visible;
     top: 120%;
-    left: 30%;
+    left: 34%;
   
     /* Position the tooltip text */
     position: absolute;
@@ -211,7 +213,7 @@
   /* Tooltip text */
   .tooltip4 .tooltiptext {
     visibility: hidden;
-    width: 180px;
+    width: 80px;
     background-color: rgb(75, 75, 75);
     color: #ffffff;
     text-align: center;
@@ -219,7 +221,7 @@
     border-radius: 6px;
     overflow: visible;
     top: 120%;
-    left: 30%;
+    left: 43%;
   
     /* Position the tooltip text */
     position: absolute;
@@ -299,3 +301,5 @@
     transform: scale(1.1);
     background-color: #1cca6b;
   }
+
+ 

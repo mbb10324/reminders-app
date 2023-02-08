@@ -1,6 +1,5 @@
 import './Reminder.css';
 import React, { useState } from 'react';
-import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 
@@ -21,7 +20,6 @@ function Reminder(props) {
 
     const [errors, setErrors] = useState([]); //holds error strings
     const [form, setForm] = useState([]); //contains create account form entries in seperate objects
-    const [validated, setValidated] = useState(false); //toggles input validation alerts(just the styling)
 
     function handleShowEdit() {
         setForm({
@@ -70,26 +68,26 @@ function Reminder(props) {
         else if (description.length > 200) newErrors.description = "Your description must be under 200 charaters in length."
         if (startTime === endTime) newErrors.start = "Make sure you have at least a 1 hour seperation between start and end."
         if (startTime > endTime) newErrors.end = "Make sure your start time is before your end time."
-        if (isWithinRange([startTime,endTime], times)) newErrors.time = "This time frame falls within the range of another reminder, please choose another time frame."
+        // if (isWithinRange([startTime,endTime], times)) newErrors.time = "This time frame falls within the range of another reminder, please choose another time frame."
         let year = parseInt(date.slice(0, 4))
         if (!date || date === "") newErrors.date = "Please choose a date.";
         else if (year !== 2023) newErrors.date = "Please choose a date that is within this year."
         return newErrors;
     }
 
-    function isWithinRange(range2, times) {
-        for (let i = 0; i < todaysReminders.length; i++) {
-            console.log(todaysReminders)
-            let todaysStart = times.indexOf(todaysReminders[i].start)
-            let todaysEnd = times.indexOf(todaysReminders[i].end)
-            let range1 = [todaysStart, todaysEnd]
-            console.log("1", range1)
-            console.log("2", range2)
-            if (range1[0] > range1[1]) [range1[0], range1[1]] = [range1[1], range1[0]];
-            if (range2[0] > range2[1]) [range2[0], range2[1]] = [range2[1], range2[0]];
-            return range2[0] < range1[1] && range2[1] > range1[0];
-        }
-      }
+    // function isWithinRange(range2, times) {
+    //     for (let i = 0; i < todaysReminders.length; i++) {
+    //         console.log(todaysReminders)
+    //         let todaysStart = times.indexOf(todaysReminders[i].start)
+    //         let todaysEnd = times.indexOf(todaysReminders[i].end)
+    //         let range1 = [todaysStart, todaysEnd]
+    //         console.log("1", range1)
+    //         console.log("2", range2)
+    //         if (range1[0] > range1[1]) [range1[0], range1[1]] = [range1[1], range1[0]];
+    //         if (range2[0] > range2[1]) [range2[0], range2[1]] = [range2[1], range2[0]];
+    //         return range2[0] < range1[1] && range2[1] > range1[0];
+    //     }
+    //   }
 
     //function responsible for posting a reminder to the database upon form submission
     function editReminder(e) {
@@ -101,7 +99,6 @@ function Reminder(props) {
         if (Object.keys(newErrors).length > 0) {
             console.log("nope")
             setErrors(newErrors);
-            setValidated(false);
         } else {
             let description = e.target[0].value;
             let date = e.target[1].value;
@@ -115,7 +112,7 @@ function Reminder(props) {
             }
             setTimeout(() => {
                 props.editReminder({ description, date, start, end, type })
-                    .then(() => setValidated(true))
+                    .then(() =>console.log("updated"))
             }, 1000);
         }
     }

@@ -1,14 +1,12 @@
 import './Home.css';
 import Reminder from './Reminder.js';
+import Menu from './Menu.js'
 import Footer from './Footer.js';
 import React, { useState, useEffect } from 'react';
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
-import { FiCamera } from "react-icons/fi";
 import { MdOutlineAddBox } from "react-icons/md";
 import { BsCaretRight, BsCaretLeft } from "react-icons/bs"
-import html2canvas from "html2canvas";
-import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import Carousel from 'react-bootstrap/Carousel';
@@ -33,11 +31,9 @@ function Home() {
     const handleClose = () => setShow(false); //function to toggle closing add reminder modal
     const handleShow = () => setShow(true); //function to toggle showing add reminder modal
     const handleCloseScreenshot = () => setShowScreenshot(false); //function to close screenshot modal
-    const handleShowScreenshot = () => setShowScreenshot(true); //function to show screenshot modal
     //Validation stuff
     const [errors, setErrors] = useState([]); //holds error strings
     const [form, setForm] = useState([]); //contains create account form entries in seperate objects
-    const [validated, setValidated] = useState(false); //toggles input validation alerts(just the styling)
 
     //function fired each time the slide is changed
     function handleSelect(selectedIndex) {
@@ -51,29 +47,21 @@ function Home() {
     }
 
     function findFormErrors() {
+        setErrors([])
         let { description, date, start, end } = form;
-        let startNum = 0
-        let endNum = 0
+        let times = ["9 AM","10 AM","11 AM","12 PM","1 PM","2 PM","3 PM","4 PM","5 PM","6 PM"]
+        let startTime = times.indexOf(start)
+        let endTime = times.indexOf(end)
         let newErrors = {};
         if (!description || description === "") newErrors.description = "This is a required field.";
         else if (description.length > 200) newErrors.description = "Your description must be under 200 charaters in length."
-        if (start) {
-            if (start.length === 5) { startNum = parseInt(start.slice(0, 2)) }
-            else { startNum = parseInt(start.slice(0, 1)) }
-        }
-        if (end) {
-            if (end.length === 5) { endNum = parseInt(end.slice(0, 2)) }
-            else { endNum = parseInt(end.slice(0, 1)) }
-        }
-        if (startNum === endNum && startNum !== 0 && endNum !== 0) newErrors.start = "Make sure you have at least a 1 hour seperation between start and end."
-        if (startNum > endNum && !((startNum >= 9) && (endNum <= 6))) newErrors.end = "Make sure your start time is before your end time."
-        else if ((startNum >= 1 && startNum <= 6) && (endNum >= 9 && endNum <= 12)) newErrors.end = "Make sure your start time is before your end time."
-        let year = 2023
-        if (date) {
-            year = parseInt(date.slice(0, 4))
-        }
+        if (startTime === endTime) newErrors.start = "Make sure you have at least a 1 hour seperation between start and end."
+        if (startTime > endTime) newErrors.end = "Make sure your start time is before your end time."
+        let year = parseInt(date.slice(0, 4))
         if (!date || date === "") newErrors.date = "Please choose a date.";
-        else if (year !== 2023) newErrors.date = "Please choose a date that is within this year."
+        if (year) {
+        if (year !== 2023) newErrors.date = "Please choose a date that is within this year."
+        }
         return newErrors;
     }
 
@@ -139,7 +127,6 @@ function Home() {
         const newErrors = findFormErrors();
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
-            setValidated(false);
         } else {
             setForm([])
             let description = e.target[0].value;
@@ -149,7 +136,6 @@ function Home() {
             let type = e.target[4].value;
             return api.createReminder({ description, date, start, end, type })
                 .then(() => setShow(false))
-                .then(() => setValidated(true))
                 .then(() => reloadReminders());
         }
     }
@@ -157,7 +143,7 @@ function Home() {
     //past present future
     function inception(dayNum, dayMonth) {
         let date = new Date
-        let dateNum = date.getDate()
+        let dateNum = date.getDate() 
         let dateMonth = date.getMonth()
         let findMonth = new Date(Date.parse(dayMonth + " 1, 2023")).getMonth()
         if (dateNum === dayNum && dateMonth === findMonth) return 'today events'
@@ -180,19 +166,6 @@ function Home() {
         setFocusedWeekIndex(findFirstWeekOfMonth)
     }
 
-    //called when selecting screenshot
-    function screenshot() {
-        html2canvas(document.querySelector("#capture")).then(canvas => {
-            const output = document.getElementById("output")
-            output.appendChild(canvas)
-            const image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-            const a = document.createElement("a");
-            a.setAttribute("download", `Reminders.png`);
-            a.setAttribute("href", image);
-            a.click();
-        });
-    }
-
     //start of HTML
     return (
         <div className="content">
@@ -204,9 +177,10 @@ function Home() {
                     </div>
                 </div>
                 <h1>Reminders</h1>
-                <div className="tooltip3"><span className="tooltiptext">Take a screenshot!</span>
+                <div className="tooltip4"><span className="tooltiptext">Menu</span>
                     <div>
-                        <FiCamera onClick={() => { handleShowScreenshot(); screenshot() }} style={{ width: "40px", height: "40px", color: "#02B3FC" }} />
+                    <Menu/>
+                        {/* <FiCamera onClick={() => { handleShowScreenshot(); screenshot() }} style={{ width: "40px", height: "40px", color: "#02B3FC" }} /> */}
                     </div>
                 </div>
             </div>
