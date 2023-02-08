@@ -177,7 +177,18 @@ app.get('/reminders', requireUser, (req, res) => {
 })
 
 app.post('/reminders', requireUser, async (req, res) => {
-    knex('reminder_table')
+    // Validate that the new reminder data is all valid
+    // Send back validation errors to the client if it's not
+
+    // CAN FAIL
+
+    // Perform the insert
+
+    // CAN FAIL
+
+    // Send the response
+
+    await knex('reminder_table')
         .insert(
             {
                 description: req.body.description,
@@ -192,6 +203,8 @@ app.post('/reminders', requireUser, async (req, res) => {
             res.status(201).send("add complete")
         });
 });
+
+
 
 app.delete('/reminders/:id', requireUser, async (req, res) => {
     const id = req.params.id;
