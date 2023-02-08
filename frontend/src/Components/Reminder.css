@@ -112,7 +112,6 @@
 }
 
 .event {
-  border: 1px solid black;
   border-radius: 5px;
   padding: 0.5rem;
   margin: 0 0.5rem;
@@ -169,7 +168,7 @@ body {
 
 .Appointment {
     background-color: #F8CE27;
-    color: #02B3FC;
+    color: #063170;
 }
 
 .modal-content {

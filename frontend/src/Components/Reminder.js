@@ -1,6 +1,5 @@
 import './Reminder.css';
 import React, { useState } from 'react';
-import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 
@@ -21,7 +20,6 @@ function Reminder(props) {
 
     const [errors, setErrors] = useState([]); //holds error strings
     const [form, setForm] = useState([]); //contains create account form entries in seperate objects
-    const [validated, setValidated] = useState(false); //toggles input validation alerts(just the styling)
 
     function handleShowEdit() {
         setForm({
@@ -61,6 +59,7 @@ function Reminder(props) {
 
     function findFormErrors() {
         setErrors([])
+        setErrors([])
         let { description, date, start, end } = form;
         let times = ["9 AM","10 AM","11 AM","12 PM","1 PM","2 PM","3 PM","4 PM","5 PM","6 PM"]
         let startTime = times.indexOf(start)
@@ -93,13 +92,13 @@ function Reminder(props) {
     function editReminder(e) {
         e.preventDefault();
         e.stopPropagation();
+        setErrors([])
+        setField([])
         const newErrors = findFormErrors();
         if (Object.keys(newErrors).length > 0) {
             console.log("nope")
             setErrors(newErrors);
-            setValidated(false);
         } else {
-            setForm([])
             let description = e.target[0].value;
             let date = e.target[1].value;
             let start = e.target[2].value;
@@ -112,7 +111,7 @@ function Reminder(props) {
             }
             setTimeout(() => {
                 props.editReminder({ description, date, start, end, type })
-                    .then(() => setValidated(true))
+                    .then(() =>console.log("updated"))
             }, 1000);
         }
     }

@@ -1,101 +1,251 @@
 import "./Help.css"
-import React, { useEffect } from "react"
-import { useNavigate, Link } from "react-router-dom";
-import { BsArrowUpLeft } from "react-icons/bs"
+import React, { useState, useEffect } from "react"
+import Menu from './Menu.js'
+import { useNavigate } from "react-router-dom";
 import { MdEmail } from "react-icons/md";
 import { FaFacebook, FaTwitter, FaInstagram, FaYoutube } from "react-icons/fa"
+import { FiPlus, FiMinus } from "react-icons/fi"
 
 function Help() {
     const navigate = useNavigate();
+    const [first, setFirst] = useState(true)
+    const toggleFirst = () => setFirst(!first)
+    const [second, setSecond] = useState(true)
+    const toggleSecond = () => setSecond(!second)
+    const [third, setThird] = useState(true)
+    const toggleThird = () => setThird(!third)
+    const [fourth, setFourth] = useState(true)
+    const toggleFourth = () => setFourth(!fourth)
+    const [fifth, setFifth] = useState(true)
+    const toggleFifth = () => setFifth(!fifth)
+    const [sixth, setSixth] = useState(true)
+    const toggleSixth = () => setSixth(!sixth)
 
     useEffect(() => {
         if (!localStorage.getItem('token')) {
             navigate("/Login")
         }
+        function scrollRotate() {
+            let navimg = document.getElementById("faqscroll");
+            navimg.style.transform = "rotate(" + (window.pageYOffset / 40) + "deg)"
+        }
+        window.addEventListener('scroll', scrollRotate)
+        return () => window.removeEventListener('scroll', scrollRotate)
     }, [])
 
     return (
         <div className="helpContent">
-            <Link to={"/"}>
+            {/* <div className="middleLine lineRight"></div> */}
+            <div className="middleLine lineLeft"></div>
+            <div className="testLine"></div>
+            <div className="helpHeader">
+                <div className="blank"><span></span></div>
                 <h1>Reminders</h1>
-            </Link>
+                <Menu />
+            </div>
+            <div className="help-design-column1">
+                <div className="Generaldeco"><p>note</p></div>
+                <div className="Appointmentdeco"><p>token</p></div>
+                <div className="Meetingdeco"><p>memento</p></div>
+            </div>
+            <div className="help-design-column2">
+                <div className="Appointmentdeco"><p>reminisce</p></div>
+                <div className="Personaldeco"><p>marker</p></div>
+                <div className="Generaldeco"><p>suggestion</p></div>
+            </div>
+            <div className="help-design-column3">
+                <div className="Generaldeco"><p>bethink</p></div>
+                <div className="Meetingdeco"><p>recall</p></div>
+                <div className="Personaldeco"><p>nudge</p></div>
+            </div>
             <div className="helpBody">
                 <div className="faq">
-                    <h2>FAQ</h2>
-                    <ul>
-                        <br></br>
-                        <li>How does the calendar work?</li>
-                        <p>
-                            Use the caret symbols on the left and right of the screen <br />
-                            to scroll to the following/previous week. To change months <br />
-                            simply click the month on the bottom left and <br />
-                            select a month to switch to.
-                        </p>
-                        <br></br>
-                        <li>How do I add a reminder?</li>
-                        <p>
-                            On the top left of the page, click the icon that <br />
-                            has a plus sign on it. A pop up should appear; fill <br />
-                            out the form on the pop up and your new reminder <br />
-                            will appear on the calendar.
-                        </p>
-                        <br></br>
-                        <li>What happens when the year ends?</li>
-                        <p>
-                            Each year the reminders will all be deleted and a fresh <br />
-                            calendar year will begin. It is recommended that you <br />
-                            take screenshots or externally save any reminders <br />
-                            that you would like to hold onto before Jan 1st the following year.
-                        </p>
-                        <br></br>
-                        <li>Whats up with the camera button?</li>
-                        <p>
-                            The camera button is to take a screenshot of your calendar. <br />
-                            When you click it, it will open up the screenshot In a <br />
-                            pop up and save the screenshots to your downloads.
-                        </p>
-                        <br></br>
-                        <li>How do I edit or delete a reminder?</li>
-                        <p>
-                            Click on the reminder you would like to make changes to. <br />
-                            It will open in a pop-up, and from there you can <br />
-                            choose to either edit or delete it.
-                        </p>
-                        <br></br>
-                        <li>What do I do if I have an issue with my account?</li>
-                        <p>
-                            You can reach out to an admin by emailing them at <br />
-                            reminderapp@email.com. You can expect a response <br />
-                            within 3-7 business weeks.
-                        </p>
-                    </ul>
-                </div>
-                <div>
-                    <div className="middleLine"></div>
-                </div>
-                <div className="rightSide">
-                    <h6><BsArrowUpLeft />&nbsp;&nbsp;&nbsp;&nbsp;Click the title to go back to your calendar</h6>
-                    <h2>Reminder of the day!</h2>
-                    <div className="modalevent General Remoftheday">
-                        <p className="title">Drink water, workout, dont suck.</p>
-                        <p className="time">6 AM - 9 PM</p>
+                    <h2 id="faqscroll">FREQUENTLY ASKED QUESTIONS</h2>
+                    <div className="answers firstanswer" onClick={() => { toggleFirst() }}>
+                        <div className="answersHeader">
+                            <h4>How does the calendar work?</h4>
+                            {first ?
+                                <button className="hiddenButton">
+                                    <FiPlus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                </button>
+                                :
+                                <button className="hiddenButton">
+                                    <FiMinus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                </button>
+                            }
+                        </div>
+                        {!first ?
+                            <div className='answersPara'>
+                                <p>
+                                    Use the caret symbols on the left and right of the screen <br />
+                                    to scroll to the following/previous week. You can also <br />
+                                    navigate to a particular month by clicking on whichever month <br />
+                                    you would like to see.
+                                </p>
+                            </div>
+                            :
+                            ""
+                        }
                     </div>
-                    <h2 className="license">License and contact</h2>
-                    <p>Email: reminderapp@email.com</p>
-                    <p>Phone: (123) 456-7890</p>
-                    <p>@2023 ReminderApp, inc.</p>
-                    <span className="spans">privacy</span>
-                    <span className="spans">terms</span>
-                    <span className="spans">security</span>
-                    <h2 className="socials">Socials</h2>
-                    <div className="SocialIcons">
-                        <a className="indivSocialIcons" href="https://fb.me/GalvanizeHQ/" target="_blank" rel="noopener noreferrer"><FaFacebook /></a>
-                        <a className="indivSocialIcons" href="https://twitter.com/galvanize/" target="_blank" rel="noopener noreferrer"><FaTwitter /></a>
-                        <a className="indivSocialIcons" href="https://instagr.am/GalvanizeHQ/" target="_blank" rel="noopener noreferrer"><FaInstagram /></a>
-                        <a className="indivSocialIcons" href="https://www.youtube.com/@Galvanize_HackReactor/videos/" target="_blank" rel="noopener noreferrer"><FaYoutube /></a>
-                        <a className="indivSocialIcons" href="mailto:marketing@galvanize.com" rel="noopener noreferrer"><MdEmail /></a>
+                    <div className="answers" onClick={() => { toggleSecond() }}>
+                        <div className="answersHeader">
+                            <h4>How does the calendar work?</h4>
+                            {second ?
+                                <button className="hiddenButton">
+                                    <FiPlus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                </button>
+                                :
+                                <button className="hiddenButton">
+                                    <FiMinus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                </button>
+                            }
+                        </div>
+                        {!second ?
+                            <div className='answersPara'>
+                                <p>
+                                    Use the caret symbols on the left and right of the screen <br />
+                                    to scroll to the following/previous week. You can also <br />
+                                    navigate to a particular month by clicking on whichever month <br />
+                                    you would like to see.
+                                </p>
+                            </div>
+                            :
+                            ""
+                        }
                     </div>
-                    <h6 className="thankYou">Thank you for visiting!</h6>
+                    <div className="answers" onClick={() => { toggleThird() }}>
+                        <div className="answersHeader">
+                            <h4>What happens when the year ends?</h4>
+                            {third ?
+                                <button className="hiddenButton">
+                                    <FiPlus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                </button>
+                                :
+                                <button className="hiddenButton">
+                                    <FiMinus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                </button>
+                            }
+                        </div>
+                        {!third ?
+                            <div className='answersPara'>
+                                <p>
+                                    Each year the reminders will all be deleted and a fresh <br />
+                                    calendar year will begin. It is recommended that you <br />
+                                    take screenshots or externally save any reminders <br />
+                                    that you would like to hold onto before Jan 1st the following year.
+                                </p>
+                            </div>
+                            :
+                            ""
+                        }
+                    </div>
+                    <div className="answers" onClick={() => { toggleFourth() }}>
+                        <div className="answersHeader">
+                            <h4>How do I edit or delete a reminder?</h4>
+                            {fourth ?
+                                <button className="hiddenButton">
+                                    <FiPlus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                </button>
+                                :
+                                <button className="hiddenButton">
+                                    <FiMinus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                </button>
+                            }
+                        </div>
+                        {!fourth ?
+                            <div className='answersPara'>
+                                <p>
+                                    Click on the reminder you would like to make changes to. <br />
+                                    It will open in a pop-up, and from there you can <br />
+                                    choose to either edit or delete it.
+                                </p>
+                            </div>
+                            :
+                            ""
+                        }
+                    </div>
+                    <div className="answers" onClick={() => { toggleFifth() }}>
+                        <div className="answersHeader">
+                            <h4>What do I do if I have an issue with my account?</h4>
+                            {fifth ?
+                                <button className="hiddenButton">
+                                    <FiPlus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                </button>
+                                :
+                                <button className="hiddenButton">
+                                    <FiMinus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                </button>
+                            }
+                        </div>
+                        {!fifth ?
+                            <div className='answersPara'>
+                                <p>
+                                    You can reach out to an admin by emailing them at <br />
+                                    reminderapp@email.com. You can expect a response <br />
+                                    within 3-7 business weeks.
+                                </p>
+                            </div>
+                            :
+                            ""
+                        }
+                    </div>
+                    <div className="answers lastanswer" onClick={() => { toggleSixth() }}>
+                        <div className="answersHeader">
+                            <h4>This will be my last faw answer?</h4>
+                            {sixth ?
+                                <button className="hiddenButton">
+                                    <FiPlus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                </button>
+                                :
+                                <button className="hiddenButton">
+                                    <FiMinus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                </button>
+                            }
+                        </div>
+                        {!sixth ?
+                            <div className='answersPara'>
+                                <p>
+                                    You can reach out to an admin by emailing them at <br />
+                                    reminderapp@email.com. You can expect a response <br />
+                                    within 3-7 business weeks.
+                                </p>
+                            </div>
+                            :
+                            ""
+                        }
+                    </div>
+                </div>
+                <div className="modalevent General Remoftheday">
+                    <p className="title">Drink water, workout, smile more</p>
+                    <p className="time">9 AM - 5 PM</p>
+                </div>
+                <div class="moon">
+                    <p class="eyes lefteye"></p>
+                    <p class="eyes righteye"></p>
+                    <div class="smile"></div>
+                    <h3>Thank you for visiting!</h3>
+                    <div class="satellite"></div>
+                    <div class="satellite orbitOther"></div>
+                </div>
+                <div className="Contact">
+                    <h2 className="license">Contact Us!</h2>
+                    <h4>Email: reminderapp@email.com</h4>
+                    <h4>Phone: (123) 456-7890</h4>
+                    <div className="gutter">
+                        <p>@2023 ReminderApp, inc.</p>
+                        <div className="SocialIcons">
+                            <a className="indivSocialIcons" href="https://fb.me/GalvanizeHQ/" target="_blank" rel="noopener noreferrer"><FaFacebook /></a>
+                            <a className="indivSocialIcons" href="https://twitter.com/galvanize/" target="_blank" rel="noopener noreferrer"><FaTwitter /></a>
+                            <a className="indivSocialIcons" href="https://instagr.am/GalvanizeHQ/" target="_blank" rel="noopener noreferrer"><FaInstagram /></a>
+                            <a className="indivSocialIcons" href="https://www.youtube.com/@Galvanize_HackReactor/videos/" target="_blank" rel="noopener noreferrer"><FaYoutube /></a>
+                            <a className="indivSocialIcons" href="mailto:marketing@galvanize.com" rel="noopener noreferrer"><MdEmail /></a>
+                        </div>
+                        <div className="legalLinks">
+                            <span className="spans">privacy</span>
+                            <span className="spans">terms</span>
+                            <span className="spans">security</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

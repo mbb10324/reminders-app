@@ -30,6 +30,7 @@
 # Hard
 - [ ] review edge cases when fetch's fail(prevent api from crashing, instead show not found or something)
 - [ ] create tests for all functions
+- [ ] check to make sure there isnt allready a reminder during that time
 - [x] refactor arrays and selectedmonth logic to account for scrolling into next/previous months -01/06
 
 # Stretch

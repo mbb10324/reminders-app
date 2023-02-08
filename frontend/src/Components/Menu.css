@@ -1,0 +1,285 @@
+.menuContainer {
+    position: fixed;
+    width: 100%;
+    overflow: hidden;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: all ;
+    z-index: 2;
+}
+
+.menuIcon svg {
+    top: 0;
+}
+
+.allowBack {
+    pointer-events: none;
+}
+
+.firstBlock {
+    height: 6.25%;
+    width: 3.125%;
+    top: 0;
+    right: 0;
+    position: absolute;
+    background-color: #F8CE27;
+    animation: .5s slide-up;
+    z-index: 10;
+    overflow: hidden;
+}
+
+.secondBlock {
+    height: 6.25%;
+    width: 3.125%;
+    top: 0;
+    right: 3.125%;
+    position: absolute;
+    background-color: #06E19E;
+    animation: .75s slide-right;
+    z-index: 9;
+    overflow: hidden;
+}
+
+.thirdBlock {
+    height: 6.25%;
+    width: 6.25%;
+    top: 6.25%;
+    right: 0;
+    position: absolute;
+    background-color: #5f5f5f;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: 1s slide-up;
+    z-index: 8;
+    overflow: hidden;
+}
+
+.thirdBlock button {
+    transition: all .3s ease-in-out;
+}
+
+.thirdBlock button:hover {
+    transform: scale(1.1);
+}
+
+.fourthBlock {
+    height: 12.5%;
+    width: 6.25%;
+    top: 0;
+    right: 6.25%;
+    position: absolute;
+    background-color: #063170;
+    animation: 1.25s slide-right;
+    z-index: 7;
+    overflow: hidden;
+}
+
+.fifthBlock {
+    height: 12.5%;
+    width: 12.5%;
+    top: 12.5%;
+    right: 0;
+    position: absolute;
+    background-color: #F8CE27;
+    animation: 1.5s slide-up;
+    z-index: 6;
+    overflow: hidden;
+}
+
+.sixthBlock {
+    height: 25%;
+    width: 12.5%;
+    top: 0;
+    right: 12.5%;
+    position: absolute;
+    background-color: #06E19E;
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: 2s slide-right;
+    z-index: 5;
+    overflow: hidden;
+}
+
+.sixthBlock button {
+    color: #063170;
+    transition: all .3s ease-in-out;
+}
+
+.sixthBlock button:hover {
+    transform: scale(1.1);
+}
+
+.seventhBlock {
+    height: 25%;
+    width: 25%;
+    top: 25%;
+    right: 0;
+    position: absolute;
+    background-color: #02B3FC;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: 3s slide-up;
+    z-index: 4;
+    overflow: hidden;
+}
+
+.seventhBlock button {
+    color: #F8CE27;
+    font-size: 35px;
+    transition: all .3s ease-in-out;
+}
+
+.seventhBlock button:hover {
+    transform: scale(1.1);
+}
+
+
+.seventhBlock p {
+    font-size: 13px;
+    color: #F8CE27;
+}
+
+.eighthBlock {
+    height: 50%;
+    width: 25%;
+    top: 0;
+    right: 25%;
+    position: absolute;
+    background-color: #063170;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: 3.5s slide-right;
+    z-index: 3;
+    overflow: hidden;
+}
+
+.eighthBlock button {
+    font-size: 40px;
+    color: #06E19E;
+    transition: all .3s ease-in-out;
+}
+
+.eighthBlock button:hover {
+    transform: scale(1.1);
+}
+
+.eighthBlock p {
+    font-size: 15px;
+    color: #06E19E;
+}
+
+
+.ninthBlock {
+    height: 50%;
+    width: 50%;
+    top: 50%;
+    right: 0;
+    position: absolute;
+    background-color: #06E19E;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    animation: 3.5s slide-down;
+    z-index: 2;
+    overflow: hidden;
+}
+
+
+.ninthBlock button {
+    font-size: 50px;
+    color: #063170;
+    transition: all .3s ease-in-out;
+}
+
+.ninthBlock button:hover {
+    transform: scale(1.1);
+}
+
+.ninthBlock p {
+    font-size: 18px;
+    color: #063170;
+}
+
+@keyframes slide-down {
+    from {
+        margin-top: 100%;
+    }
+    to {
+        margin-top: 0%;
+    }
+}
+
+@keyframes slide-up {
+    from {
+        margin-top: -100%;
+    }
+    to {
+        margin-top: 0%;
+    }
+}
+
+.tenthBlock {
+    height: 100%;
+    width: 50%;
+    top: 0;
+    right: 50%;
+    position: absolute;
+    background-color: #F8CE27;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    animation: 3.5s slide-left;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.tenthBlock button {
+    cursor: default;
+    font-size: 70px;
+    color: #02B3FC;
+}
+
+.tenthBlock button:hover {
+    cursor: default;
+}
+
+.tenthBlock p {
+    font-size: 20px;
+    color: #02B3FC;
+}
+
+@keyframes slide-left {
+    from {
+        margin-right: 100%;
+    }
+    to {
+        margin-right: 0%;
+    }
+}
+
+
+@keyframes slide-right {
+    from {
+        margin-right: -500%;
+    }
+
+    to {
+        margin-right: 0%;
+    }
+}
+
+.menuClose {
+    border: none;
+    background-color: transparent;
+}
