@@ -6,8 +6,28 @@
     bottom: 0;
     left: 0;
     pointer-events: all ;
-    z-index: 2;
+    z-index: 10;
 }
+
+.background {
+    position: relative;
+    background-color: rgb(25, 25, 25);
+    width: 10px;
+    height: 10px;
+    margin-left: 100%;
+    border-radius: 50%;
+    animation: 4s grow;
+    z-index: 1;
+}
+
+@keyframes grow {
+    from {
+      transform: scale(0);
+    }
+    to {
+      transform: scale(1000);
+    }
+  }
 
 .menuIcon svg {
     top: 0;

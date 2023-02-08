@@ -21,16 +21,42 @@ function Help() {
     const [sixth, setSixth] = useState(true)
     const toggleSixth = () => setSixth(!sixth)
 
+    const [offset, setOffset] = useState(0)
+    const [offset2, setOffset2] = useState(0)
+
+    // const scrollPosition = 0
+    const sectionPosition = 1000
+
     useEffect(() => {
         if (!localStorage.getItem('token')) {
             navigate("/Login")
         }
         function scrollRotate() {
             let navimg = document.getElementById("faqscroll");
-            navimg.style.transform = "rotate(" + (window.pageYOffset / 40) + "deg)"
+            navimg.style.transform = "rotate(" + (window.pageYOffset / 130) + "deg)"
         }
         window.addEventListener('scroll', scrollRotate)
         return () => window.removeEventListener('scroll', scrollRotate)
+    }, [])
+
+    useEffect(() => {
+        function handleScroll() {
+            setOffset(window.pageYOffset)
+        }
+        window.addEventListener("scroll", handleScroll)
+        return () => { window.removeEventListener("scroll", handleScroll) }
+    }, [])
+
+    useEffect(() => {
+        function handleScroll2() {
+            setOffset2(window.pageYOffset)
+        }
+        window.addEventListener("scroll", function () {
+            const scrollPosition = window.scrollY;
+            if (scrollPosition > sectionPosition) {
+                handleScroll2()
+            }})
+        return () => { window.removeEventListener("scroll", handleScroll2) }
     }, [])
 
     return (
@@ -43,21 +69,29 @@ function Help() {
                 <h1>Reminders</h1>
                 <Menu />
             </div>
-            <div className="help-design-column1">
-                <div className="Generaldeco"><p>note</p></div>
-                <div className="Appointmentdeco"><p>token</p></div>
-                <div className="Meetingdeco"><p>memento</p></div>
+            <div className='parallaxSection1' style={{
+                transform: `translateY(${offset * 0.5}px)`,
+            }}>
+                <div className="help-design-column1">
+                    <div className="Generaldeco"><p>note</p></div>
+                    <div className="Appointmentdeco"><p>token</p></div>
+                    <div className="Meetingdeco"><p>memento</p></div>
+                </div>
+
+                <div className="help-design-column2">
+                    <div className="Appointmentdeco"><p>reminisce</p></div>
+                    <div className="Personaldeco"><p>marker</p></div>
+                    <div className="Generaldeco"><p>suggestion</p></div>
+                </div>
+                <div className="help-design-column3">
+                    <div className="Generaldeco"><p>bethink</p></div>
+                    <div className="Meetingdeco"><p>recall</p></div>
+                    <div className="Personaldeco"><p>nudge</p></div>
+                </div>
             </div>
-            <div className="help-design-column2">
-                <div className="Appointmentdeco"><p>reminisce</p></div>
-                <div className="Personaldeco"><p>marker</p></div>
-                <div className="Generaldeco"><p>suggestion</p></div>
-            </div>
-            <div className="help-design-column3">
-                <div className="Generaldeco"><p>bethink</p></div>
-                <div className="Meetingdeco"><p>recall</p></div>
-                <div className="Personaldeco"><p>nudge</p></div>
-            </div>
+            {/* <div className="chatBubble1">
+                <h3>You have posted 34 reminders this year!</h3>
+            </div> */}
             <div className="helpBody">
                 <div className="faq">
                     <h2 id="faqscroll">FREQUENTLY ASKED QUESTIONS</h2>
@@ -66,11 +100,11 @@ function Help() {
                             <h4>How does the calendar work?</h4>
                             {first ?
                                 <button className="hiddenButton">
-                                    <FiPlus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                    <FiPlus className="rotate" style={{ width: "40px", height: "40px", color: "#063170" }} />
                                 </button>
                                 :
                                 <button className="hiddenButton">
-                                    <FiMinus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                    <FiMinus className="rotate" style={{ width: "40px", height: "40px", color: "#063170" }} />
                                 </button>
                             }
                         </div>
@@ -92,11 +126,11 @@ function Help() {
                             <h4>How does the calendar work?</h4>
                             {second ?
                                 <button className="hiddenButton">
-                                    <FiPlus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                    <FiPlus className="rotate" style={{ width: "40px", height: "40px", color: "#063170" }} />
                                 </button>
                                 :
                                 <button className="hiddenButton">
-                                    <FiMinus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                    <FiMinus className="rotate" style={{ width: "40px", height: "40px", color: "#063170" }} />
                                 </button>
                             }
                         </div>
@@ -118,11 +152,11 @@ function Help() {
                             <h4>What happens when the year ends?</h4>
                             {third ?
                                 <button className="hiddenButton">
-                                    <FiPlus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                    <FiPlus className="rotate" style={{ width: "40px", height: "40px", color: "#063170" }} />
                                 </button>
                                 :
                                 <button className="hiddenButton">
-                                    <FiMinus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                    <FiMinus className="rotate" style={{ width: "40px", height: "40px", color: "#063170" }} />
                                 </button>
                             }
                         </div>
@@ -144,11 +178,11 @@ function Help() {
                             <h4>How do I edit or delete a reminder?</h4>
                             {fourth ?
                                 <button className="hiddenButton">
-                                    <FiPlus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                    <FiPlus className="rotate" style={{ width: "40px", height: "40px", color: "#063170" }} />
                                 </button>
                                 :
                                 <button className="hiddenButton">
-                                    <FiMinus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                    <FiMinus className="rotate" style={{ width: "40px", height: "40px", color: "#063170" }} />
                                 </button>
                             }
                         </div>
@@ -169,11 +203,11 @@ function Help() {
                             <h4>What do I do if I have an issue with my account?</h4>
                             {fifth ?
                                 <button className="hiddenButton">
-                                    <FiPlus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                    <FiPlus className="rotate" style={{ width: "40px", height: "40px", color: "#063170" }} />
                                 </button>
                                 :
                                 <button className="hiddenButton">
-                                    <FiMinus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                    <FiMinus className="rotate" style={{ width: "40px", height: "40px", color: "#063170" }} />
                                 </button>
                             }
                         </div>
@@ -194,11 +228,11 @@ function Help() {
                             <h4>This will be my last faw answer?</h4>
                             {sixth ?
                                 <button className="hiddenButton">
-                                    <FiPlus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                    <FiPlus className="rotate" style={{ width: "40px", height: "40px", color: "#063170" }} />
                                 </button>
                                 :
                                 <button className="hiddenButton">
-                                    <FiMinus style={{ width: "40px", height: "40px", color: "#063170" }} />
+                                    <FiMinus className="rotate" style={{ width: "40px", height: "40px", color: "#063170" }} />
                                 </button>
                             }
                         </div>
@@ -215,39 +249,51 @@ function Help() {
                         }
                     </div>
                 </div>
+            </div>
+            <div className="inspoReminder" style={{
+                transform: `translateY(${offset2 * 0.3}px)`,
+            }}>
                 <div className="modalevent General Remoftheday">
                     <p className="title">Drink water, workout, smile more</p>
                     <p className="time">9 AM - 5 PM</p>
                 </div>
-                <div class="moon">
-                    <p class="eyes lefteye"></p>
-                    <p class="eyes righteye"></p>
-                    <div class="smile"></div>
+            </div>
+            {/* <div className="chatBubble2">
+                <h3>In total over 21,000 reminders have been posted on our site!</h3>
+            </div> */}
+            <div className="thanks">
+                <div className="moon">
+                    <p className="eyes lefteye"></p>
+                    <p className="eyes righteye"></p>
+                    <div className="smile"></div>
                     <h3>Thank you for visiting!</h3>
-                    <div class="satellite"></div>
-                    <div class="satellite orbitOther"></div>
+                    <div className="satellite"></div>
+                    <div className="satellite orbitOther"></div>
                 </div>
-                <div className="Contact">
-                    <h2 className="license">Contact Us!</h2>
-                    <h4>Email: reminderapp@email.com</h4>
-                    <h4>Phone: (123) 456-7890</h4>
-                    <div className="gutter">
-                        <p>@2023 ReminderApp, inc.</p>
-                        <div className="SocialIcons">
-                            <a className="indivSocialIcons" href="https://fb.me/GalvanizeHQ/" target="_blank" rel="noopener noreferrer"><FaFacebook /></a>
-                            <a className="indivSocialIcons" href="https://twitter.com/galvanize/" target="_blank" rel="noopener noreferrer"><FaTwitter /></a>
-                            <a className="indivSocialIcons" href="https://instagr.am/GalvanizeHQ/" target="_blank" rel="noopener noreferrer"><FaInstagram /></a>
-                            <a className="indivSocialIcons" href="https://www.youtube.com/@Galvanize_HackReactor/videos/" target="_blank" rel="noopener noreferrer"><FaYoutube /></a>
-                            <a className="indivSocialIcons" href="mailto:marketing@galvanize.com" rel="noopener noreferrer"><MdEmail /></a>
-                        </div>
-                        <div className="legalLinks">
-                            <span className="spans">privacy</span>
-                            <span className="spans">terms</span>
-                            <span className="spans">security</span>
-                        </div>
+            </div>
+            <div className="Contact">
+                <h2 className="license" style={{
+                    transform: `translateX(-${offset2 * 2.5}px)`,
+                }}>Contact Us! Contact Us! Contact Us! Contact Us! Contact Us!</h2>
+                <h4>Email: reminderapp@email.com</h4>
+                <h4>Phone: (123) 456-7890</h4>
+                <div className="gutter">
+                    <p>@2023 ReminderApp, inc.</p>
+                    <div className="SocialIcons">
+                        <a className="indivSocialIcons" href="https://fb.me/GalvanizeHQ/" target="_blank" rel="noopener noreferrer"><FaFacebook /></a>
+                        <a className="indivSocialIcons" href="https://twitter.com/galvanize/" target="_blank" rel="noopener noreferrer"><FaTwitter /></a>
+                        <a className="indivSocialIcons" href="https://instagr.am/GalvanizeHQ/" target="_blank" rel="noopener noreferrer"><FaInstagram /></a>
+                        <a className="indivSocialIcons" href="https://www.youtube.com/@Galvanize_HackReactor/videos/" target="_blank" rel="noopener noreferrer"><FaYoutube /></a>
+                        <a className="indivSocialIcons" href="mailto:marketing@galvanize.com" rel="noopener noreferrer"><MdEmail /></a>
+                    </div>
+                    <div className="legalLinks">
+                        <span className="spans">privacy</span>
+                        <span className="spans">terms</span>
+                        <span className="spans">security</span>
                     </div>
                 </div>
             </div>
+
         </div>
     )
 }

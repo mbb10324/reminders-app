@@ -1,5 +1,4 @@
 .helpContent {
-    background: linear-gradient(270deg, #F8CE27, #02B3FC);
     background-size: cover;
     min-height: 100vh;
     width: 100%;
@@ -16,6 +15,14 @@
     text-align: center;
     width: 100%;
     margin-bottom: 50px;
+}
+
+.helpHeader svg {
+    transition: all .3s ease-in-out;
+}
+
+.helpHeader svg:hover {
+    transform: scale(1.25);
 }
 
 .help-design-column1 {
@@ -115,7 +122,7 @@
     font-size: 75px;
     margin: 0;
     text-decoration: none;
-    color: #063170;
+    color:#06E19E;
 }
 
 .helpContent p {
@@ -140,14 +147,15 @@
 
 .faq {
     text-align: center;
-    margin-top: 60px;
+    margin-top: 140px;
     margin-left: 5%;
     margin-right: 5%;
 }
 
 .faq h2 {
+    padding-top: 70px;
     font-weight: 100;
-    font-size: 60px;
+    font-size: 90px;
     text-shadow: #06E19E 5px 3px;
 }
 
@@ -159,6 +167,25 @@
 .faq p {
     font-size: 14px;
 }
+
+.rotate {
+    -webkit-animation:spin .5s ease 1;
+    -moz-animation:spin .5s ease 1;
+    animation:spin .5s ease 1;
+  }
+
+  @-moz-keyframes spin { 
+    100% { -moz-transform: rotate(360deg); } 
+  }
+  @-webkit-keyframes spin { 
+    100% { -webkit-transform: rotate(360deg); } 
+  }
+  @keyframes spin { 
+    100% { 
+        -webkit-transform: rotate(360deg); 
+        transform:rotate(360deg); 
+    } 
+  }
 
 .Remoftheday {
     width: 90% !important;
@@ -172,8 +199,8 @@
     align-items: center;
     justify-content: center;
     margin: auto !important;
-    margin-top: 150px !important;
-    margin-bottom: 60px !important;
+    /* margin-top: 150px !important; */
+    /* margin-bottom: 60px !important; */
 }
 
 .Contact {
@@ -182,6 +209,7 @@
     text-align: center;
     align-items: center;
     justify-items: center;
+    overflow: hidden;
 }
 
 .Contact h2 {
@@ -197,6 +225,7 @@
     top: 0;
     background: #063170;
     overflow: hidden;
+    z-index: 10;
 }
 
 .lineRight {
@@ -231,22 +260,30 @@
 }
 
 .spans {
-    text-decoration: underline;
+    text-decoration: none;
     margin-left: 10px;
     margin-right: 10px;
     cursor: pointer;
 }
 
+.spans:hover {
+    text-decoration: underline;
+}
+
 .license {
     margin-top: 200px;
+    margin-right: -1000%;
+    overflow: hidden;
 }
+
+
 
 .socials {
     margin-top: 60px;
 }
 
 .indivSocialIcons svg {
-    color: #063170;
+    color: #02B3FC;
     width: 30px;
     height: 30px;
     margin-left: 30px;
@@ -254,7 +291,7 @@
 }
 
 .indivSocialIcons svg:hover {
-    color: #084299;
+    color: #F8CE27;
     -webkit-transform: scale(1.2);
     -moz-transform: scale(1.2);
     -o-transform: scale(1.2);
@@ -332,7 +369,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 200px !important;
+    /* margin-top: 200px !important; */
     margin: auto;
     position: relative;
     animation: bounce 3s infinite;
@@ -348,6 +385,7 @@
 
 .moon h3 {
     color: #063170;
+    font-weight: 300;
 }
 
 .satellite {
@@ -454,12 +492,13 @@ div.smile {
         justify-content: space-around;
         padding-top: 250px;
         padding-bottom: 20px;
-        color: rgb(78, 78, 78);
+        color: rgb(130, 130, 130);
     }
 
     .Contact h4 {
-        font-size: 30px;
-        color:#063170;
+        font-size: 35px;
+        font-weight: 200;
+        color:#02B3FC;
         margin: 30px;
     }
 
@@ -477,5 +516,83 @@ div.smile {
       border-radius: 1rem;
       /* outline: 1px solid slategrey; */
     }
+
+    .chatBubble1 {
+        position: absolute;
+        width: 200px;
+        height: 120px;
+        margin-left: 100px;
+        margin-top: 120px;
+        transform: rotateZ(-20deg);
+        border-radius: 50%;
+        background-color: #F8CE27;
+        box-shadow: 5px -10px 20px 2px #06E19E;
+        display: flex;
+        text-align: center;
+        align-items: center;
+        justify-content: space-around;
+        z-index: 4;
+    }
+
+    .chatBubble1 h3 {
+        color: #063170;
+        font-size: 17px;
+    }
+
+    .chatBubble2 {
+        position: absolute;
+        width: 200px;
+        height: 120px;
+        right: 0;
+        margin-right: 100px;
+        margin-top: 180px;
+        transform: rotateZ(10deg);
+        border-radius: 50%;
+        background-color: #02B3FC;
+        box-shadow: 5px -10px 20px 2px #06E19E;
+        display: flex;
+        text-align: center;
+        align-items: center;
+        justify-content: space-around;
+        z-index: 4;
+    }
+
+    .chatBubble2 h3 {
+        color: #063170;
+        font-size: 17px;
+    }
+
+    .parallaxSection1 {
+        position: relative;
+        z-index: 0;
+    }
+
+    .helpBody {
+        position: relative;
+        background: linear-gradient(270deg, #F8CE27, #02B3FC);
+        z-index: 3;
+        padding-bottom: 80px;
+    }
+
+    .thanks {
+        position: relative;
+        background: linear-gradient(270deg, #F8CE27, #02B3FC);
+        z-index: 3;
+        height: 1000px;
+        margin-top: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .inspoReminder {
+        position: relative;
+        background-color: rgb(39, 39, 39);
+        padding-top: 350px;
+        padding-bottom: 400px;
+        z-index: 1;
+        margin-top: -800px;
+    }
+  
 
 	

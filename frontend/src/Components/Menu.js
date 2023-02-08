@@ -41,12 +41,13 @@ function Menu() {
 
     return (
         <>
-        <div className='menuIcon'>
-            <RxHamburgerMenu onClick={toggleMenu} style={{ width: "47px", height: "47px", cursor: "pointer", color: "#02B3FC" }} />
+            <div className='menuIcon'>
+                <RxHamburgerMenu onClick={toggleMenu} style={{ width: "47px", height: "47px", cursor: "pointer", color: "#02B3FC" }} />
             </div>
             <div className={`menuContainer ${!showMenuNav ? "allowBack" : ""}`}>
                 {showMenuNav ?
                     <div>
+                        <div className='background'></div>
                         <div className='firstBlock'></div>
                         <div className='secondBlock'></div>
                         <div className='thirdBlock'>
@@ -66,7 +67,7 @@ function Menu() {
                             <p>questions, answers</p>
                         </div>
                         <div className='ninthBlock'>
-                            <button className='menuClose'onClick={handleShow}>Logout</button>
+                            <button className='menuClose' onClick={handleShow}>Logout</button>
                             <p>thanks for visiting</p>
                             <p>&#x2022;&#x2022;&#x2022;</p>
                         </div>

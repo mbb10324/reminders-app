@@ -152,9 +152,7 @@
   margin-right: 50%;
   cursor: pointer;
   transition: all .3s ease-in-out;
-  cursor: pointer;
 }
-
 
 .header svg:hover {
   transform: scale(1.25);
@@ -226,7 +224,6 @@
     /* Position the tooltip text */
     position: absolute;
     z-index: 1;
-  
     opacity: 0;
     transition: opacity 1s;
   }
