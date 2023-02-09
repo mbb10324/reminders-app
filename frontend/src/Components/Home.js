@@ -12,6 +12,7 @@ import Form from 'react-bootstrap/Form';
 import Carousel from 'react-bootstrap/Carousel';
 import * as api from '../Functions/api';
 import * as util from '../Functions/util'
+import ReactScrollWheelHandler from "react-scroll-wheel-handler";
 
 function Home() {
     //Cookie stuff
@@ -33,7 +34,7 @@ function Home() {
     const handleCloseScreenshot = () => setShowScreenshot(false); //function to close screenshot modal
     //Validation stuff
     const [errors, setErrors] = useState([]); //holds error strings
-    const [form, setForm] = useState([]); //contains create account form entries in seperate objects
+    const [form, setForm] = useState([]); //contains create account form entries in seperate object
 
     //function fired each time the slide is changed
     function handleSelect(selectedIndex) {
@@ -170,6 +171,9 @@ function Home() {
     return (
         <div className="content">
             {/* Title */}
+            <ReactScrollWheelHandler
+          upHandler={subIndex}
+          downHandler={addIndex}>
             <div className='header'>
                 <div className="tooltip3"><span className="tooltiptext">Add a reminder!</span>
                     <div>
@@ -207,7 +211,7 @@ function Home() {
                     and maps through days of the week and passes responsibility 
                     to display reminders to the reminder component */}
                     <div className="days">
-                        <Carousel activeIndex={focusedWeekIndex} onSelect={handleSelect} interval={null} indicators={false} controls={false}>
+                        <Carousel id='carousel' activeIndex={focusedWeekIndex} onSelect={handleSelect} interval={null} indicators={false} controls={false}>
                             {weeks.map(util.buildWeek).map((thisIsChaos, index) => {
                                 return (
                                     <Carousel.Item key={index}>
@@ -353,6 +357,7 @@ function Home() {
                 </Modal>
             </div>
             <Footer />
+            </ReactScrollWheelHandler>
         </div >
     )
 }

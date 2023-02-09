@@ -163,7 +163,7 @@
   display: grid;
   grid-template-rows: repeat(9, 60px);
   border-radius: 5px;
-  background-color: #dbdbdb;
+  background-color: #2c2c2c;
   padding: 0.5rem 0;
 }
 
@@ -287,7 +287,7 @@
 
   .addIt {
     background-color: #0cb458;
-    border: 1px solid black;
+    border: .5px solid black;
     border-radius: 0.375rem;
     transition: all .3s ease-in-out;
     line-height: 1.75;
