@@ -28,13 +28,21 @@ function Home() {
     const [selectedMonth, setSelectedMonth] = useState(util.getInitialMonth(cookies, date)); //state of the current month that is selected
     const [focusedWeekIndex, setFocusedWeekIndex] = useState(util.getInitialWeek(cookies, weeks));
     const [show, setShow] = useState(false); //handles the visibility state for adding a new reminder
-    const [showScreenshot, setShowScreenshot] = useState(false) //screenshot modal view state
-    const handleClose = () => setShow(false); //function to toggle closing add reminder modal
-    const handleShow = () => setShow(true); //function to toggle showing add reminder modal
-    const handleCloseScreenshot = () => setShowScreenshot(false); //function to close screenshot modal
+    const handleClose = () => { setShow(false); setForm({}); setErrors([]) }//function to toggle closing add reminder modal
+    // const handleShow = () => setShow(true); //function to toggle showing add reminder modal
     //Validation stuff
     const [errors, setErrors] = useState([]); //holds error strings
     const [form, setForm] = useState([]); //contains create account form entries in seperate object
+
+    function handleShow() {
+        setForm({
+            "description": "",
+            "date": "",
+            "start": "9 AM",
+            "end": "10 AM"
+        })
+        setShow(true)
+    }
 
     //function fired each time the slide is changed
     function handleSelect(selectedIndex) {
@@ -50,7 +58,7 @@ function Home() {
     function findFormErrors() {
         setErrors([])
         let { description, date, start, end } = form;
-        let times = ["9 AM","10 AM","11 AM","12 PM","1 PM","2 PM","3 PM","4 PM","5 PM","6 PM"]
+        let times = ["9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM"]
         let startTime = times.indexOf(start)
         let endTime = times.indexOf(end)
         let newErrors = {};
@@ -58,10 +66,11 @@ function Home() {
         else if (description.length > 200) newErrors.description = "Your description must be under 200 charaters in length."
         if (startTime === endTime) newErrors.start = "Make sure you have at least a 1 hour seperation between start and end."
         if (startTime > endTime) newErrors.end = "Make sure your start time is before your end time."
-        let year = parseInt(date.slice(0, 4))
         if (!date || date === "") newErrors.date = "Please choose a date.";
-        if (year) {
-        if (year !== 2023) newErrors.date = "Please choose a date that is within this year."
+        let year = 0
+        if (date) {
+            let year = parseInt(date.slice(0, 4))
+            if (year !== 2023) newErrors.date = "Please choose a date that is within this year."
         }
         return newErrors;
     }
@@ -118,8 +127,21 @@ function Home() {
     //middle man to edit reminder
     function editReminder({ description, date, start, end, type }) {
         return api.createReminder({ description, date, start, end, type })
-            .then(() => reloadReminders());
+            .then(Response => Response.text())
+            .then(body => {
+                try {
+                    return JSON.parse(body);
+                } catch {
+                    throw Error(body);
+                }
+            })
+            .then(console.log)
+            .then(() => reloadReminders())
+            .catch(console.error);
+        // .then(() => reloadReminders())
     }
+    //if res staus is failed throw the error
+    //dont delete if edit fails
 
     //function responsible for posting a reminder to the database upon form submission
     function addReminder(e) {
@@ -144,7 +166,7 @@ function Home() {
     //past present future
     function inception(dayNum, dayMonth) {
         let date = new Date
-        let dateNum = date.getDate() 
+        let dateNum = date.getDate()
         let dateMonth = date.getMonth()
         let findMonth = new Date(Date.parse(dayMonth + " 1, 2023")).getMonth()
         if (dateNum === dayNum && dateMonth === findMonth) return 'today events'
@@ -172,191 +194,176 @@ function Home() {
         <div className="content">
             {/* Title */}
             <ReactScrollWheelHandler
-          upHandler={subIndex}
-          downHandler={addIndex}>
-            <div className='header'>
-                <div className="tooltip3"><span className="tooltiptext">Add a reminder!</span>
-                    <div>
-                        <MdOutlineAddBox style={{ width: "47px", height: "47px", color: "#02B3FC" }} onClick={handleShow} />
+                upHandler={subIndex}
+                downHandler={addIndex}>
+                <div className='header'>
+                    <div className="tooltip3"><span className="tooltiptext">Add a reminder!</span>
+                        <div>
+                            <MdOutlineAddBox style={{ width: "47px", height: "47px", color: "#02B3FC" }} onClick={handleShow} />
+                        </div>
+                    </div>
+                    <h1>Reminders</h1>
+                    <div className="tooltip4"><span className="tooltiptext">Menu</span>
+                        <div>
+                            <Menu />
+                            {/* <FiCamera onClick={() => { handleShowScreenshot(); screenshot() }} style={{ width: "40px", height: "40px", color: "#02B3FC" }} /> */}
+                        </div>
                     </div>
                 </div>
-                <h1>Reminders</h1>
-                <div className="tooltip4"><span className="tooltiptext">Menu</span>
-                    <div>
-                    <Menu/>
-                        {/* <FiCamera onClick={() => { handleShowScreenshot(); screenshot() }} style={{ width: "40px", height: "40px", color: "#02B3FC" }} /> */}
-                    </div>
-                </div>
-            </div>
-            <div className="midBody">
+                <div className="midBody">
 
-                {/* Left side arrow */}
-                <div className="caretLeft"><BsCaretLeft style={{ width: "120px", height: "120px", color: "#F8CE27", cursor: "pointer" }} onClick={() => subIndex()} /></div>
-                <div className="calendar" id='capture'>
-                    {/* Time markers on left side of calendar */}
-                    <div className="timeline">
-                        <div className="spacer"></div>
-                        <div className="time-marker">9 AM</div>
-                        <div className="time-marker">10 AM</div>
-                        <div className="time-marker">11 AM</div>
-                        <div className="time-marker">12 PM</div>
-                        <div className="time-marker">1 PM</div>
-                        <div className="time-marker">2 PM</div>
-                        <div className="time-marker">3 PM</div>
-                        <div className="time-marker">4 PM</div>
-                        <div className="time-marker">5 PM</div>
-                        <div className="time-marker">6 PM</div>
-                    </div>
-                    {/* Displays numeric date and date name, 
+                    {/* Left side arrow */}
+                    <div className="caretLeft"><BsCaretLeft style={{ width: "120px", height: "120px", color: "#F8CE27", cursor: "pointer" }} onClick={() => subIndex()} /></div>
+                    <div className="calendar" id='capture'>
+                        {/* Time markers on left side of calendar */}
+                        <div className="timeline">
+                            <div className="spacer"></div>
+                            <div className="time-marker">9 AM</div>
+                            <div className="time-marker">10 AM</div>
+                            <div className="time-marker">11 AM</div>
+                            <div className="time-marker">12 PM</div>
+                            <div className="time-marker">1 PM</div>
+                            <div className="time-marker">2 PM</div>
+                            <div className="time-marker">3 PM</div>
+                            <div className="time-marker">4 PM</div>
+                            <div className="time-marker">5 PM</div>
+                            <div className="time-marker">6 PM</div>
+                        </div>
+                        {/* Displays numeric date and date name, 
                     and maps through days of the week and passes responsibility 
                     to display reminders to the reminder component */}
-                    <div className="days">
-                        <Carousel id='carousel' activeIndex={focusedWeekIndex} onSelect={handleSelect} interval={null} indicators={false} controls={false}>
-                            {weeks.map(util.buildWeek).map((thisIsChaos, index) => {
-                                return (
-                                    <Carousel.Item key={index}>
-                                        {thisIsChaos.map((day, index) => {
-                                            const dailyReminders = util.filterReminders(reminders, day.dayMonth, day.dayNum);
-                                            const pastPresentFuture = inception(day.dayNum, day.dayMonth)
-                                            return (
-                                                <div key={index} className='day'>
-                                                    {Object.keys(day).length === 0 ?
-                                                        <div className='placeholderCard'></div>
-                                                        :
-                                                        <>
-                                                            <div className="date">
-                                                                <p className="date-day">{day.dayName}</p>
-                                                                <p className="date-mon">{day.dayMonth}, {day.dayNum}</p>
-                                                            </div>
-                                                            <Reminder
-                                                                reminders={dailyReminders}
-                                                                deleteReminder={deleteReminder}
-                                                                editReminder={editReminder}
-                                                                dayNum={day.dayNum}
-                                                                pastPresentFuture={pastPresentFuture}
-                                                            />
-                                                        </>
-                                                    }
-                                                </div>
-                                            )
-                                        })}
-                                    </Carousel.Item>
-                                )
-                            })}
-                        </Carousel>
+                        <div className="days">
+                            <Carousel id='carousel' activeIndex={focusedWeekIndex} onSelect={handleSelect} interval={null} indicators={false} controls={false}>
+                                {weeks.map(util.buildWeek).map((thisIsChaos, index) => {
+                                    return (
+                                        <Carousel.Item key={index}>
+                                            {thisIsChaos.map((day, index) => {
+                                                const dailyReminders = util.filterReminders(reminders, day.dayMonth, day.dayNum);
+                                                const pastPresentFuture = inception(day.dayNum, day.dayMonth)
+                                                return (
+                                                    <div key={index} className='day'>
+                                                        {Object.keys(day).length === 0 ?
+                                                            <div className='placeholderCard'></div>
+                                                            :
+                                                            <>
+                                                                <div className="date">
+                                                                    <p className="date-day">{day.dayName}</p>
+                                                                    <p className="date-mon">{day.dayMonth}, {day.dayNum}</p>
+                                                                </div>
+                                                                <Reminder
+                                                                    reminders={dailyReminders}
+                                                                    deleteReminder={deleteReminder}
+                                                                    editReminder={editReminder}
+                                                                    dayNum={day.dayNum}
+                                                                    pastPresentFuture={pastPresentFuture}
+                                                                />
+                                                            </>
+                                                        }
+                                                    </div>
+                                                )
+                                            })}
+                                        </Carousel.Item>
+                                    )
+                                })}
+                            </Carousel>
+                        </div>
                     </div>
+                    {/* Right side arrow */}
+                    <div className="caretRight"><BsCaretRight style={{ width: "120px", height: "120px", color: "#F8CE27", cursor: "pointer" }} onClick={() => addIndex()} /></div>
                 </div>
-                {/* Right side arrow */}
-                <div className="caretRight"><BsCaretRight style={{ width: "120px", height: "120px", color: "#F8CE27", cursor: "pointer" }} onClick={() => addIndex()} /></div>
-            </div>
-            {/* Below the calendar, contains month, button to add reminder, and year */}
-            <div className="bottom">
-                <h2>
-                    <select value={selectedMonth} onChange={pickMonth}>
-                        <option value="0">January</option>
-                        <option value="1">February</option>
-                        <option value="2">March</option>
-                        <option value="3">April</option>
-                        <option value="4">May</option>
-                        <option value="5">June</option>
-                        <option value="6">July</option>
-                        <option value="7">August</option>
-                        <option value="8">September</option>
-                        <option value="9">October</option>
-                        <option value="10">November</option>
-                        <option value="11">December</option>
-                    </select>
-                </h2>
-                <h2>
-                    {thisYear}
-                </h2>
-            </div>
-            {/* Pop up modal to add a reminder */}
-            <div className="Modal">
-                <Modal
-                    show={show}
-                    onHide={handleClose}
-                    backdrop="static"
-                    keyboard={false}
-                    dialogClassName={"addReminderModal"}
-                >
-                    <Form onSubmit={addReminder}>
-                        <Form.Group className="mb-3" controlId="formDescription">
-                            <Form.Label>Brief Description:</Form.Label>
-                            <Form.Control type="description" placeholder='200 Character Limit' onChange={(e) => setField("description", e.target.value)} />
-                            {!!errors.date ? <p className='formErrors'>{errors.description}</p> : ""}
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="formDate" onChange={(e) => setField("date", e.target.value)}>
-                            <Form.Label>Date:</Form.Label>
-                            <Form.Control type="date" />
-                            {!!errors.date ? <p className='formErrors'>{errors.date}</p> : ""}
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="formStart" onChange={(e) => setField("start", e.target.value)}>
-                            <Form.Label>Start:</Form.Label>
-                            <Form.Select aria-label="Default select example">
-                                <option value="9 AM">9 AM</option>
-                                <option value="10 AM">10 AM</option>
-                                <option value="11 AM">11 AM</option>
-                                <option value="12 PM">12 PM</option>
-                                <option value="1 PM">1 PM</option>
-                                <option value="2 PM">2 PM</option>
-                                <option value="3 PM">3 PM</option>
-                                <option value="4 PM">4 PM</option>
-                                <option value="5 PM">5 PM</option>
-                                <option value="6 PM">6 PM</option>
-                            </Form.Select>
-                            {!!errors.start ? <p className='formErrors'>{errors.start}</p> : ""}
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="formEnd" onChange={(e) => setField("end", e.target.value)}>
-                            <Form.Label>End:</Form.Label>
-                            <Form.Select aria-label="Default select example">
-                                <option value="9 AM">9 AM</option>
-                                <option selected value="10 AM">10 AM</option>
-                                <option value="11 AM">11 AM</option>
-                                <option value="12 PM">12 PM</option>
-                                <option value="1 PM">1 PM</option>
-                                <option value="2 PM">2 PM</option>
-                                <option value="3 PM">3 PM</option>
-                                <option value="4 PM">4 PM</option>
-                                <option value="5 PM">5 PM</option>
-                                <option value="6 PM">6 PM</option>
-                            </Form.Select>
-                            {!!errors.end ? <p className='formErrors'>{errors.end}</p> : ""}
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="formType">
-                            <Form.Label>Type:</Form.Label>
-                            <Form.Select aria-label="Default select example">
-                                <option value="Appointment">Appointment</option>
-                                <option value="Meeting">Meeting</option>
-                                <option value="General">General</option>
-                                <option value="Personal">Personal</option>
-                            </Form.Select>
-                        </Form.Group>
-                        <button type="button" className='closeIt' onClick={handleClose}>
-                            Close
-                        </button>
-                        <button className='addIt' type='submit'>
-                            Add Reminder
-                        </button>
-                    </Form>
-                </Modal>
-            </div>
-            <div className='screenshotModal'>
-                {/* Pop up modal to create a screenshot */}
-                <Modal
-                    show={showScreenshot}
-                    dialogClassName={"screenshotModalContent"}
-                >
-                    <Modal.Header>This is a screenshot of your schedule this week, it should also be in your downloads! Save it, send it to co-workers, or post it on the fridge. The world is your oyster!</Modal.Header>
-                    <div id='output'></div>
-                    <Modal.Footer>
-                        <button type="button" className='closeIt' onClick={handleCloseScreenshot}>
-                            Close
-                        </button>
-                    </Modal.Footer>
-                </Modal>
-            </div>
-            <Footer />
+                {/* Below the calendar, contains month, button to add reminder, and year */}
+                <div className="bottom">
+                    <h2>
+                        <select value={selectedMonth} onChange={pickMonth}>
+                            <option value="0">January</option>
+                            <option value="1">February</option>
+                            <option value="2">March</option>
+                            <option value="3">April</option>
+                            <option value="4">May</option>
+                            <option value="5">June</option>
+                            <option value="6">July</option>
+                            <option value="7">August</option>
+                            <option value="8">September</option>
+                            <option value="9">October</option>
+                            <option value="10">November</option>
+                            <option value="11">December</option>
+                        </select>
+                    </h2>
+                    <h2>
+                        {thisYear}
+                    </h2>
+                </div>
+                {/* Pop up modal to add a reminder */}
+                <div className="Modal">
+                    <Modal
+                        show={show}
+                        onHide={handleClose}
+                        backdrop="static"
+                        keyboard={false}
+                        dialogClassName={"addReminderModal"}
+                    >
+                        <Form onSubmit={addReminder}>
+                            <Form.Group className="mb-3" controlId="formDescription">
+                                <Form.Label>Brief Description:</Form.Label>
+                                <Form.Control type="description" placeholder='200 Character Limit' onChange={(e) => setField("description", e.target.value)} />
+                                {!!errors.date ? <p className='formErrors'>{errors.description}</p> : ""}
+                            </Form.Group>
+                            <Form.Group className="mb-3" controlId="formDate" onChange={(e) => setField("date", e.target.value)}>
+                                <Form.Label>Date:</Form.Label>
+                                <Form.Control type="date" />
+                                {!!errors.date ? <p className='formErrors'>{errors.date}</p> : ""}
+                            </Form.Group>
+                            <Form.Group className="mb-3" controlId="formStart" onChange={(e) => setField("start", e.target.value)}>
+                                <Form.Label>Start:</Form.Label>
+                                <Form.Select aria-label="Default select example">
+                                    <option value="9 AM">9 AM</option>
+                                    <option value="10 AM">10 AM</option>
+                                    <option value="11 AM">11 AM</option>
+                                    <option value="12 PM">12 PM</option>
+                                    <option value="1 PM">1 PM</option>
+                                    <option value="2 PM">2 PM</option>
+                                    <option value="3 PM">3 PM</option>
+                                    <option value="4 PM">4 PM</option>
+                                    <option value="5 PM">5 PM</option>
+                                    <option value="6 PM">6 PM</option>
+                                </Form.Select>
+                                {!!errors.start ? <p className='formErrors'>{errors.start}</p> : ""}
+                            </Form.Group>
+                            <Form.Group className="mb-3" controlId="formEnd" onChange={(e) => setField("end", e.target.value)}>
+                                <Form.Label>End:</Form.Label>
+                                <Form.Select aria-label="Default select example">
+                                    <option value="9 AM">9 AM</option>
+                                    <option selected value="10 AM">10 AM</option>
+                                    <option value="11 AM">11 AM</option>
+                                    <option value="12 PM">12 PM</option>
+                                    <option value="1 PM">1 PM</option>
+                                    <option value="2 PM">2 PM</option>
+                                    <option value="3 PM">3 PM</option>
+                                    <option value="4 PM">4 PM</option>
+                                    <option value="5 PM">5 PM</option>
+                                    <option value="6 PM">6 PM</option>
+                                </Form.Select>
+                                {!!errors.end ? <p className='formErrors'>{errors.end}</p> : ""}
+                            </Form.Group>
+                            <Form.Group className="mb-3" controlId="formType">
+                                <Form.Label>Type:</Form.Label>
+                                <Form.Select aria-label="Default select example">
+                                    <option value="Appointment">Appointment</option>
+                                    <option value="Meeting">Meeting</option>
+                                    <option value="General">General</option>
+                                    <option value="Personal">Personal</option>
+                                </Form.Select>
+                            </Form.Group>
+                            <button type="button" className='closeIt' onClick={handleClose}>
+                                Close
+                            </button>
+                            <button className='addIt' type='submit'>
+                                Add Reminder
+                            </button>
+                        </Form>
+                    </Modal>
+                </div>
+                <Footer />
             </ReactScrollWheelHandler>
         </div >
     )

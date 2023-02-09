@@ -12,7 +12,7 @@ export function createReminder({ description, date, start, end, type }) {
     return fetch(`http://localhost:3030/reminders`, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json; charset=UTF-8",
             "Authorization": localStorage.getItem('token'),
         },
         mode: "cors",
