@@ -53,12 +53,6 @@
   height: 60px
 }
 
-.date-num {
-  font-size: 3rem;
-  font-weight: 600;
-  align-self: flex-end;
-}
-
 .date-day {
   display: inline;
   font-size: 2rem;
