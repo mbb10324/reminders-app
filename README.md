@@ -49,3 +49,6 @@ docker ps -a
 docker exec -it <Container-ID> bash
 psql -U postgres
 CREATE DATABASE reminders;
+
+
+- Don Norman design of everyday things
