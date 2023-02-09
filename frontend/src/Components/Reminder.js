@@ -13,10 +13,10 @@ function Reminder(props) {
     const [showEdit, setShowEdit] = useState(false); //handles the visibility state for adding a new reminder
     const [showReminder, setShowReminder] = useState(false);
     const [copy, setCopy] = useState(false)
-    const handleCloseDelete = () => setShowDelete(false); //function to toggle closing delete modal
+    const handleCloseDelete = () => {setShowDelete(false); setForm({}); setErrors([])} //function to toggle closing delete modal
     const handleShowDelete = () => setShowDelete(true); //function to toggle showing delete modal
-    const handleCloseEdit = () => {setShowEdit(false);  setTimeout(() => { setCopy(false) }, 600)} //function to toggle closing delete modal
-    const handleCloseReminder = () => setShowReminder(false);
+    const handleCloseEdit = () => {setShowEdit(false);  setTimeout(() => { setCopy(false) }, 600); setForm({}); setErrors([])} //function to toggle closing delete modal
+    const handleCloseReminder = () => {setShowReminder(false); setForm({}); setErrors([])}
 
     const [errors, setErrors] = useState([]); //holds error strings
     const [form, setForm] = useState([]); //contains create account form entries in seperate objects
@@ -58,8 +58,6 @@ function Reminder(props) {
     }
 
     function findFormErrors() {
-        setErrors([])
-        setErrors([])
         let { description, date, start, end } = form;
         let times = ["9 AM","10 AM","11 AM","12 PM","1 PM","2 PM","3 PM","4 PM","5 PM","6 PM"]
         let startTime = times.indexOf(start)
@@ -111,7 +109,7 @@ function Reminder(props) {
             }
             setTimeout(() => {
                 props.editReminder({ description, date, start, end, type })
-                    .then(() =>console.log("updated"))
+                .then(response => console.log(response))
             }, 1000);
         }
     }

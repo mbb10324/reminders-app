@@ -188,7 +188,7 @@ body::-webkit-scrollbar-thumb {
 .faq h2 {
     padding-top: 70px;
     font-weight: 100;
-    font-size: 120px;
+    font-size: 110px;
     color: #06E19E;
     text-shadow: #063170 5px 3px;
 }
@@ -364,7 +364,7 @@ body::-webkit-scrollbar-thumb {
     margin-bottom: 80px;
     color: #F8CE27;
     font-weight: 200;
-    font-size: 120px;
+    font-size: 110px;
     text-shadow: #02B3FC 5px 3px;
     z-index: 5;
 }
