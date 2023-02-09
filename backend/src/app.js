@@ -176,19 +176,40 @@ app.get('/reminders', requireUser, (req, res) => {
         })
 })
 
+function hasCollision(passedInReminder, existingReminders) {
+    const times = ["9 AM","10 AM","11 AM","12 PM","1 PM","2 PM","3 PM","4 PM","5 PM","6 PM"]
+    for (let i = 0; i < existingReminders.length; i++) {
+    let passedInStart = times.indexOf(passedInReminder.start)
+    let passedInEnd = times.indexOf(passedInReminder.end)
+    let existingStart = times.indexOf(existingReminders[i].start)
+    let existingEnd = times.indexOf(existingReminders[i].end)
+    let range1 = [existingStart, existingEnd]
+    let range2 = [passedInStart, passedInEnd]
+    console.log("1", range1) 
+    console.log("2", range2)
+    if (range1[0] > range1[1]) [range1[0], range1[1]] = [range1[1], range1[0]];
+    if (range2[0] > range2[1]) [range2[0], range2[1]] = [range2[1], range2[0]];
+    if ( range2[0] < range1[1] && range2[1] > range1[0]) {return true }
+    }
+    return false
+}
+
 app.post('/reminders', requireUser, async (req, res) => {
     // Validate that the new reminder data is all valid
     // Send back validation errors to the client if it's not
+    const remindersForTargetDate = await knex('reminder_table')
+    .select('*')
+    .where('user', req.user.id)
+    .where('date', req.body.date)
 
-    // CAN FAIL
-
-    // Perform the insert
-
-    // CAN FAIL
-
-    // Send the response
-
-    await knex('reminder_table')
+    if (hasCollision(req.body, remindersForTargetDate)) {
+        return res.status(200).send({
+            status: 'failed',
+            reason: 'That reminder collides with the timeframe of another reminder',
+        })
+    } else {
+    
+        await knex('reminder_table')
         .insert(
             {
                 description: req.body.description,
@@ -198,10 +219,42 @@ app.post('/reminders', requireUser, async (req, res) => {
                 type: req.body.type,
                 user: req.user.id,
             }
-        )
-        .then(() => {
-            res.status(201).send("add complete")
+        ).then(() => {
+                res.status(201).send({
+                status: 'succeeded',
+                message: 'Your reminder has been added',
+            })
         });
+        
+
+    }
+
+
+    // CAN FAIL
+
+    // Perform the insert
+
+    // CAN FAIL
+
+    // Send the response
+
+    // await knex('reminder_table')
+    //     .insert(
+    //         {
+    //             description: req.body.description,
+    //             date: req.body.date,
+    //             start: req.body.start,
+    //             end: req.body.end,
+    //             type: req.body.type,
+    //             user: req.user.id,
+    //         }
+    //     )
+    //     .then(() => {
+    //         res.status(201).send({
+    //             status: 'succeeded',
+    //             message: 'Your reminder has been added',
+    //         })
+    //     });
 });
 
 
