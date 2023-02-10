@@ -8,7 +8,17 @@ export function fetchReminders() {
         .then(res => res.json());
 }
 
-export function createReminder({ description, date, start, end, type }) {
+export function fetchCount() {
+    return fetch(`http://localhost:3030/count`, {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+        },
+    })
+        .then(res => res.json());
+}
+
+export function createReminder({id, description, date, start, end, type }) {
     return fetch(`http://localhost:3030/reminders`, {
         method: "POST",
         headers: {
@@ -16,7 +26,7 @@ export function createReminder({ description, date, start, end, type }) {
             "Authorization": localStorage.getItem('token'),
         },
         mode: "cors",
-        body: JSON.stringify({ description, date, start, end, type }),
+        body: JSON.stringify({id, description, date, start, end, type }),
     })
 }
 
@@ -51,7 +61,7 @@ export function createUser({ fname, lname, email, username, password }) {
 
 export function doesThisExist(email, username) {
     return fetch(`http://localhost:3030/identities?email=${email}&username=${username}`)
-    .then(res => res.json())
+        .then(res => res.json())
 }
 
 export function handleLogout() {

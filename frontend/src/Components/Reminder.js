@@ -2,6 +2,7 @@ import './Reminder.css';
 import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
+import * as api from '../Functions/api';
 
 function Reminder(props) {
     //Data Stuff
@@ -13,12 +14,12 @@ function Reminder(props) {
     const [showEdit, setShowEdit] = useState(false); //handles the visibility state for adding a new reminder
     const [showReminder, setShowReminder] = useState(false);
     const [copy, setCopy] = useState(false)
-    const handleCloseDelete = () => {setShowDelete(false); setForm({}); setErrors([])} //function to toggle closing delete modal
+    const handleCloseDelete = () => { setShowDelete(false); setForm({}); setErrors([]); setStatus([]) } //function to toggle closing delete modal
     const handleShowDelete = () => setShowDelete(true); //function to toggle showing delete modal
-    const handleCloseEdit = () => {setShowEdit(false);  setTimeout(() => { setCopy(false) }, 600); setForm({}); setErrors([])} //function to toggle closing delete modal
-    const handleCloseReminder = () => {setShowReminder(false); setForm({}); setErrors([])}
-
+    const handleCloseEdit = () => { setShowEdit(false); setTimeout(() => { setCopy(false) }, 600); setForm({}); setErrors([]); setStatus([]) } //function to toggle closing delete modal
+    const handleCloseReminder = () => { setShowReminder(false); setForm({}); setErrors([]); setStatus([]) }
     const [errors, setErrors] = useState([]); //holds error strings
+    const [status, setStatus] = useState([])
     const [form, setForm] = useState([]); //contains create account form entries in seperate objects
 
     function handleShowEdit() {
@@ -30,7 +31,7 @@ function Reminder(props) {
         })
         setShowEdit(true);
     }
-    
+
     //toggles showing the reminder modal with proper parameters for the selected reminder
     function handleShowReminder(rem, thisClass) {
         setShowReminder(true);
@@ -44,6 +45,7 @@ function Reminder(props) {
         setShowReminder(false);
         setShowEdit(false);
         setShowDelete(false);
+        setStatus([])
     }
 
     //function responsible for deleting a reminder from the database
@@ -54,12 +56,13 @@ function Reminder(props) {
 
     function setField(field, value) {
         setForm({ ...form, [field]: value });
+        setStatus([])
         if (errors[field]) setErrors({ ...errors, [field]: null });
     }
 
     function findFormErrors() {
         let { description, date, start, end } = form;
-        let times = ["9 AM","10 AM","11 AM","12 PM","1 PM","2 PM","3 PM","4 PM","5 PM","6 PM"]
+        let times = ["9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM"]
         let startTime = times.indexOf(start)
         let endTime = times.indexOf(end)
         let newErrors = {};
@@ -67,52 +70,76 @@ function Reminder(props) {
         else if (description.length > 200) newErrors.description = "Your description must be under 200 charaters in length."
         if (startTime === endTime) newErrors.start = "Make sure you have at least a 1 hour seperation between start and end."
         if (startTime > endTime) newErrors.end = "Make sure your start time is before your end time."
-        // if (isWithinRange([startTime,endTime], times)) newErrors.time = "This time frame falls within the range of another reminder, please choose another time frame."
         let year = parseInt(date.slice(0, 4))
         if (!date || date === "") newErrors.date = "Please choose a date.";
         else if (year !== 2023) newErrors.date = "Please choose a date that is within this year."
         return newErrors;
     }
 
-    // function isWithinRange(range2, times) {
-    //     for (let i = 0; i < todaysReminders.length; i++) {
-    //         console.log(todaysReminders)
-    //         let todaysStart = times.indexOf(todaysReminders[i].start)
-    //         let todaysEnd = times.indexOf(todaysReminders[i].end)
-    //         let range1 = [todaysStart, todaysEnd]
-    //         if (range1[0] > range1[1]) [range1[0], range1[1]] = [range1[1], range1[0]];
-    //         if (range2[0] > range2[1]) [range2[0], range2[1]] = [range2[1], range2[0]];
-    //         return range2[0] < range1[1] && range2[1] > range1[0];
-    //     }
-    //   }
-
     //function responsible for posting a reminder to the database upon form submission
-    function editReminder(e) {
+    async function editReminder(e) {
         e.preventDefault();
         e.stopPropagation();
-        setErrors([])
-        setField([])
         const newErrors = findFormErrors();
         if (Object.keys(newErrors).length > 0) {
             console.log("nope")
             setErrors(newErrors);
         } else {
+            let id = 0
+            if (!copy) {id = modalRem.id}
             let description = e.target[0].value;
             let date = e.target[1].value;
             let start = e.target[2].value;
             let end = e.target[3].value;
             let type = e.target[4].value;
-            if (!copy) {
-                deleteReminder(modalRem)
-            } else {
-                closeAll()
-            }
-            setTimeout(() => {
-                props.editReminder({ description, date, start, end, type })
-                .then(response => console.log(response))
-            }, 1000);
+            await props.editReminder({id, description, date, start, end, type })
+                .then(Response => {
+                    if (Response.ok) {
+                        return Response.json()
+                    } else {
+                        throw new Error('collides')
+                    }
+                })
+                .then(() => {if (!copy) {return props.deleteReminder(modalRem)}})
+                .then(() => props.reloadReminders())
+                .then(() => closeAll())
+                .catch(error => {
+                    console.error(error);
+                    setTimeout(() => {
+                        setStatus({ "reason": "This time frame falls within the range of another reminder, please choose another time frame." })
+                    }, 500)
+                })
+
+
+
+
+
+
+
+
+
+            // setTimeout(() => {
+            // api.checkReminder({ description, date, start, end, type })
+            //     .then(Response => {
+            //         if (Response.ok) {
+            //             return Response.json()
+            //         } else {
+            //             throw new Error('collides')
+            //         }
+            //     })
+            //     .then(() => { return props.editReminder({ description, date, start, end, type }) })
+            //     .then(() => closeAll())
+            //     .catch(error => {
+            //         console.error(error);
+            //         setTimeout(() => {
+            //             setStatus({ "reason": "This time frame falls within the range of another reminder, please choose another time frame." })
+            //         }, 500)
+            //     })
+            // }, 500)
         }
     }
+
+    //probelm 1 errors not resetting after closing window
 
     //start of HTML
     return (
@@ -240,7 +267,7 @@ function Reminder(props) {
                                             <option value="Personal">Personal</option>
                                         </Form.Select>
                                     </Form.Group>
-                                    {!!errors.time ? <p className='formErrors'>{errors.time}</p> : ""}
+                                    {!!status.reason ? <p className='formErrors'>{status.reason}</p> : ""}
                                     <button type="button" className='closeIt' onClick={handleCloseEdit}>
                                         Close
                                     </button>

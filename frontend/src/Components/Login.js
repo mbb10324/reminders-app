@@ -118,6 +118,7 @@ function Login() {
 
     return (
         <div className='wrapper'>
+             <div className='pageTransition loginIn'></div>
             {/* title */}
             <h1>Reminders</h1>
             {/* the lock */}

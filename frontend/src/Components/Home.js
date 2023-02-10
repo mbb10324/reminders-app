@@ -31,6 +31,7 @@ function Home() {
     const handleClose = () => { setShow(false); setForm({}); setErrors([]) }//function to toggle closing add reminder modal
     // const handleShow = () => setShow(true); //function to toggle showing add reminder modal
     //Validation stuff
+    const [status, setStatus] = useState([])
     const [errors, setErrors] = useState([]); //holds error strings
     const [form, setForm] = useState([]); //contains create account form entries in seperate object
 
@@ -52,6 +53,7 @@ function Home() {
 
     function setField(field, value) {
         setForm({ ...form, [field]: value });
+        setStatus([])
         if (errors[field]) setErrors({ ...errors, [field]: null });
     }
 
@@ -77,7 +79,11 @@ function Home() {
 
     //fetch for all reminders
     function reloadReminders() {
-        api.fetchReminders().then(reminders => setReminders(reminders));
+        handleClose()
+        api.fetchReminders()
+        .then(reminders => setReminders(reminders))
+        .then(setStatus([]))
+        .then(setErrors([]))
     }
 
     function addIndex() {
@@ -125,41 +131,40 @@ function Home() {
     }
 
     //middle man to edit reminder
-    function editReminder({ description, date, start, end, type }) {
-        return api.createReminder({ description, date, start, end, type })
-            .then(Response => Response.text())
-            .then(body => {
-                try {
-                    return JSON.parse(body);
-                } catch {
-                    throw Error(body);
-                }
-            })
-            .then(console.log)
-            .then(() => reloadReminders())
-            .catch(console.error);
-        // .then(() => reloadReminders())
+    function editReminder({id, description, date, start, end, type }) {
+        return api.createReminder({id, description, date, start, end, type })
+            .then(Response => Response)
     }
-    //if res staus is failed throw the error
-    //dont delete if edit fails
 
     //function responsible for posting a reminder to the database upon form submission
-    function addReminder(e) {
+    async function addReminder(e) {
         e.preventDefault();
         e.stopPropagation();
         const newErrors = findFormErrors();
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
         } else {
-            setForm([])
+            let id = 0
             let description = e.target[0].value;
             let date = e.target[1].value;
             let start = e.target[2].value;
             let end = e.target[3].value;
             let type = e.target[4].value;
-            return api.createReminder({ description, date, start, end, type })
-                .then(() => setShow(false))
-                .then(() => reloadReminders());
+            await api.createReminder({id, description, date, start, end, type })
+            .then(Response => {
+                if (Response.ok) {
+                    return Response.json()
+                } else {
+                    throw new Error('collides')
+                }
+            })
+            .then(() => reloadReminders())
+            .catch(error => {
+                console.error(error);
+                setTimeout(() => {
+                    setStatus({ "reason": "This time frame falls within the range of another reminder, please choose another time frame." })
+                }, 500)
+            })
         }
     }
 
@@ -192,47 +197,51 @@ function Home() {
     //start of HTML
     return (
         <div className="content">
+            <div className='pageTransition'></div>
             {/* Title */}
-            <ReactScrollWheelHandler
-                upHandler={subIndex}
-                downHandler={addIndex}>
-                <div className='header'>
-                    <div className="tooltip3"><span className="tooltiptext">Add a reminder!</span>
-                        <div>
-                            <MdOutlineAddBox style={{ width: "47px", height: "47px", color: "#02B3FC" }} onClick={handleShow} />
-                        </div>
-                    </div>
-                    <h1>Reminders</h1>
-                    <div className="tooltip4"><span className="tooltiptext">Menu</span>
-                        <div>
-                            <Menu />
-                            {/* <FiCamera onClick={() => { handleShowScreenshot(); screenshot() }} style={{ width: "40px", height: "40px", color: "#02B3FC" }} /> */}
-                        </div>
+            <div className='header'>
+                <div className="tooltip3"><span className="tooltiptext">Add a reminder!</span>
+                    <div>
+                        <MdOutlineAddBox style={{ width: "47px", height: "47px", color: "#02B3FC" }} onClick={handleShow} />
                     </div>
                 </div>
-                <div className="midBody">
+                <h1>Reminders</h1>
+                <div className="tooltip4"><span className="tooltiptext">Menu</span>
+                    <div>
+                        <Menu />
+                        {/* <FiCamera onClick={() => { handleShowScreenshot(); screenshot() }} style={{ width: "40px", height: "40px", color: "#02B3FC" }} /> */}
+                    </div>
+                </div>
+            </div>
+            <div className="midBody">
 
-                    {/* Left side arrow */}
-                    <div className="caretLeft"><BsCaretLeft style={{ width: "120px", height: "120px", color: "#F8CE27", cursor: "pointer" }} onClick={() => subIndex()} /></div>
-                    <div className="calendar" id='capture'>
-                        {/* Time markers on left side of calendar */}
-                        <div className="timeline">
-                            <div className="spacer"></div>
-                            <div className="time-marker">9 AM</div>
-                            <div className="time-marker">10 AM</div>
-                            <div className="time-marker">11 AM</div>
-                            <div className="time-marker">12 PM</div>
-                            <div className="time-marker">1 PM</div>
-                            <div className="time-marker">2 PM</div>
-                            <div className="time-marker">3 PM</div>
-                            <div className="time-marker">4 PM</div>
-                            <div className="time-marker">5 PM</div>
-                            <div className="time-marker">6 PM</div>
-                        </div>
-                        {/* Displays numeric date and date name, 
+                {/* Left side arrow */}
+                <div className="caretLeft"><BsCaretLeft style={{ width: "120px", height: "120px", color: "#F8CE27", cursor: "pointer" }} onClick={() => subIndex()} /></div>
+                <div className="calendar" id='capture'>
+                    {/* Time markers on left side of calendar */}
+                    <div className="timeline">
+                        <div className="spacer"></div>
+                        <div className="time-marker">9 AM</div>
+                        <div className="time-marker">10 AM</div>
+                        <div className="time-marker">11 AM</div>
+                        <div className="time-marker">12 PM</div>
+                        <div className="time-marker">1 PM</div>
+                        <div className="time-marker">2 PM</div>
+                        <div className="time-marker">3 PM</div>
+                        <div className="time-marker">4 PM</div>
+                        <div className="time-marker">5 PM</div>
+                        <div className="time-marker">6 PM</div>
+                    </div>
+                    {/* Displays numeric date and date name, 
                     and maps through days of the week and passes responsibility 
                     to display reminders to the reminder component */}
-                        <div className="days">
+                    <div className="days">
+                        <ReactScrollWheelHandler
+                            upHandler={subIndex}
+                            downHandler={addIndex}
+                            disableSwipe={true}
+                            disableKeyboard={true}
+                            disableSwipeWithMouse={true}>
                             <Carousel id='carousel' activeIndex={focusedWeekIndex} onSelect={handleSelect} interval={null} indicators={false} controls={false}>
                                 {weeks.map(util.buildWeek).map((thisIsChaos, index) => {
                                     return (
@@ -252,6 +261,7 @@ function Home() {
                                                                 </div>
                                                                 <Reminder
                                                                     reminders={dailyReminders}
+                                                                    reloadReminders={reloadReminders}
                                                                     deleteReminder={deleteReminder}
                                                                     editReminder={editReminder}
                                                                     dayNum={day.dayNum}
@@ -266,105 +276,106 @@ function Home() {
                                     )
                                 })}
                             </Carousel>
-                        </div>
+                        </ReactScrollWheelHandler>
                     </div>
-                    {/* Right side arrow */}
-                    <div className="caretRight"><BsCaretRight style={{ width: "120px", height: "120px", color: "#F8CE27", cursor: "pointer" }} onClick={() => addIndex()} /></div>
                 </div>
-                {/* Below the calendar, contains month, button to add reminder, and year */}
-                <div className="bottom">
-                    <h2>
-                        <select value={selectedMonth} onChange={pickMonth}>
-                            <option value="0">January</option>
-                            <option value="1">February</option>
-                            <option value="2">March</option>
-                            <option value="3">April</option>
-                            <option value="4">May</option>
-                            <option value="5">June</option>
-                            <option value="6">July</option>
-                            <option value="7">August</option>
-                            <option value="8">September</option>
-                            <option value="9">October</option>
-                            <option value="10">November</option>
-                            <option value="11">December</option>
-                        </select>
-                    </h2>
-                    <h2>
-                        {thisYear}
-                    </h2>
-                </div>
-                {/* Pop up modal to add a reminder */}
-                <div className="Modal">
-                    <Modal
-                        show={show}
-                        onHide={handleClose}
-                        backdrop="static"
-                        keyboard={false}
-                        dialogClassName={"addReminderModal"}
-                    >
-                        <Form onSubmit={addReminder}>
-                            <Form.Group className="mb-3" controlId="formDescription">
-                                <Form.Label>Brief Description:</Form.Label>
-                                <Form.Control type="description" placeholder='200 Character Limit' onChange={(e) => setField("description", e.target.value)} />
-                                {!!errors.date ? <p className='formErrors'>{errors.description}</p> : ""}
-                            </Form.Group>
-                            <Form.Group className="mb-3" controlId="formDate" onChange={(e) => setField("date", e.target.value)}>
-                                <Form.Label>Date:</Form.Label>
-                                <Form.Control type="date" />
-                                {!!errors.date ? <p className='formErrors'>{errors.date}</p> : ""}
-                            </Form.Group>
-                            <Form.Group className="mb-3" controlId="formStart" onChange={(e) => setField("start", e.target.value)}>
-                                <Form.Label>Start:</Form.Label>
-                                <Form.Select aria-label="Default select example">
-                                    <option value="9 AM">9 AM</option>
-                                    <option value="10 AM">10 AM</option>
-                                    <option value="11 AM">11 AM</option>
-                                    <option value="12 PM">12 PM</option>
-                                    <option value="1 PM">1 PM</option>
-                                    <option value="2 PM">2 PM</option>
-                                    <option value="3 PM">3 PM</option>
-                                    <option value="4 PM">4 PM</option>
-                                    <option value="5 PM">5 PM</option>
-                                    <option value="6 PM">6 PM</option>
-                                </Form.Select>
-                                {!!errors.start ? <p className='formErrors'>{errors.start}</p> : ""}
-                            </Form.Group>
-                            <Form.Group className="mb-3" controlId="formEnd" onChange={(e) => setField("end", e.target.value)}>
-                                <Form.Label>End:</Form.Label>
-                                <Form.Select aria-label="Default select example">
-                                    <option value="9 AM">9 AM</option>
-                                    <option selected value="10 AM">10 AM</option>
-                                    <option value="11 AM">11 AM</option>
-                                    <option value="12 PM">12 PM</option>
-                                    <option value="1 PM">1 PM</option>
-                                    <option value="2 PM">2 PM</option>
-                                    <option value="3 PM">3 PM</option>
-                                    <option value="4 PM">4 PM</option>
-                                    <option value="5 PM">5 PM</option>
-                                    <option value="6 PM">6 PM</option>
-                                </Form.Select>
-                                {!!errors.end ? <p className='formErrors'>{errors.end}</p> : ""}
-                            </Form.Group>
-                            <Form.Group className="mb-3" controlId="formType">
-                                <Form.Label>Type:</Form.Label>
-                                <Form.Select aria-label="Default select example">
-                                    <option value="Appointment">Appointment</option>
-                                    <option value="Meeting">Meeting</option>
-                                    <option value="General">General</option>
-                                    <option value="Personal">Personal</option>
-                                </Form.Select>
-                            </Form.Group>
-                            <button type="button" className='closeIt' onClick={handleClose}>
-                                Close
-                            </button>
-                            <button className='addIt' type='submit'>
-                                Add Reminder
-                            </button>
-                        </Form>
-                    </Modal>
-                </div>
-                <Footer />
-            </ReactScrollWheelHandler>
+                {/* Right side arrow */}
+                <div className="caretRight"><BsCaretRight style={{ width: "120px", height: "120px", color: "#F8CE27", cursor: "pointer" }} onClick={() => addIndex()} /></div>
+            </div>
+            {/* Below the calendar, contains month, button to add reminder, and year */}
+            <div className="bottom">
+                <h2>
+                    <select value={selectedMonth} onChange={pickMonth}>
+                        <option value="0">January</option>
+                        <option value="1">February</option>
+                        <option value="2">March</option>
+                        <option value="3">April</option>
+                        <option value="4">May</option>
+                        <option value="5">June</option>
+                        <option value="6">July</option>
+                        <option value="7">August</option>
+                        <option value="8">September</option>
+                        <option value="9">October</option>
+                        <option value="10">November</option>
+                        <option value="11">December</option>
+                    </select>
+                </h2>
+                <h2>
+                    {thisYear}
+                </h2>
+            </div>
+            {/* Pop up modal to add a reminder */}
+            <div className="Modal">
+                <Modal
+                    show={show}
+                    onHide={handleClose}
+                    backdrop="static"
+                    keyboard={false}
+                    dialogClassName={"addReminderModal"}
+                >
+                    <Form onSubmit={addReminder}>
+                        <Form.Group className="mb-3" controlId="formDescription">
+                            <Form.Label>Brief Description:</Form.Label>
+                            <Form.Control type="description" placeholder='200 Character Limit' onChange={(e) => setField("description", e.target.value)} />
+                            {!!errors.date ? <p className='formErrors'>{errors.description}</p> : ""}
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="formDate" onChange={(e) => setField("date", e.target.value)}>
+                            <Form.Label>Date:</Form.Label>
+                            <Form.Control type="date" />
+                            {!!errors.date ? <p className='formErrors'>{errors.date}</p> : ""}
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="formStart" onChange={(e) => setField("start", e.target.value)}>
+                            <Form.Label>Start:</Form.Label>
+                            <Form.Select aria-label="Default select example">
+                                <option value="9 AM">9 AM</option>
+                                <option value="10 AM">10 AM</option>
+                                <option value="11 AM">11 AM</option>
+                                <option value="12 PM">12 PM</option>
+                                <option value="1 PM">1 PM</option>
+                                <option value="2 PM">2 PM</option>
+                                <option value="3 PM">3 PM</option>
+                                <option value="4 PM">4 PM</option>
+                                <option value="5 PM">5 PM</option>
+                                <option value="6 PM">6 PM</option>
+                            </Form.Select>
+                            {!!errors.start ? <p className='formErrors'>{errors.start}</p> : ""}
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="formEnd" onChange={(e) => setField("end", e.target.value)}>
+                            <Form.Label>End:</Form.Label>
+                            <Form.Select aria-label="Default select example">
+                                <option value="9 AM">9 AM</option>
+                                <option selected value="10 AM">10 AM</option>
+                                <option value="11 AM">11 AM</option>
+                                <option value="12 PM">12 PM</option>
+                                <option value="1 PM">1 PM</option>
+                                <option value="2 PM">2 PM</option>
+                                <option value="3 PM">3 PM</option>
+                                <option value="4 PM">4 PM</option>
+                                <option value="5 PM">5 PM</option>
+                                <option value="6 PM">6 PM</option>
+                            </Form.Select>
+                            {!!errors.end ? <p className='formErrors'>{errors.end}</p> : ""}
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="formType">
+                            <Form.Label>Type:</Form.Label>
+                            <Form.Select aria-label="Default select example">
+                                <option value="Appointment">Appointment</option>
+                                <option value="Meeting">Meeting</option>
+                                <option value="General">General</option>
+                                <option value="Personal">Personal</option>
+                            </Form.Select>
+                        </Form.Group>
+                        {!!status.reason ? <p className='formErrors'>{status.reason}</p> : ""}
+                        <button type="button" className='closeIt' onClick={handleClose}>
+                            Close
+                        </button>
+                        <button className='addIt' type='submit'>
+                            Add Reminder
+                        </button>
+                    </Form>
+                </Modal>
+            </div>
+            <Footer />
         </div >
     )
 }

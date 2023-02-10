@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { MdEmail } from "react-icons/md";
 import { FaFacebook, FaTwitter, FaInstagram, FaYoutube } from "react-icons/fa"
 import { FiPlus, FiMinus } from "react-icons/fi"
+import * as api from '../Functions/api';
 
 function Help() {
     const navigate = useNavigate();
@@ -24,8 +25,18 @@ function Help() {
     const [offset, setOffset] = useState(0)
     const [offset2, setOffset2] = useState(0)
 
+    const [count, setCount] = useState()
+    const [userCount, setUserCount] = useState()
+
     // const scrollPosition = 0
     const sectionPosition = 1000
+
+    useEffect(() => {
+        api.fetchReminders()
+        .then(userCount => setUserCount(userCount.length))
+        api.fetchCount()
+        .then(gotCount => setCount(gotCount.total))
+    }, [])
 
     useEffect(() => {
         if (!localStorage.getItem('token')) {
@@ -38,6 +49,8 @@ function Help() {
         window.addEventListener('scroll', scrollRotate)
         return () => window.removeEventListener('scroll', scrollRotate)
     }, [])
+
+    console.log(count)
 
     useEffect(() => {
         console.log(window.pageYOffset)
@@ -86,6 +99,7 @@ function Help() {
 
     return (
         <div className="helpContent">
+             <div className='pageTransition helpMe'></div>
             {/* <div className="middleLine lineRight"></div> */}
             <div className="testLine"></div>
             <div className="helpHeader">
@@ -277,8 +291,8 @@ function Help() {
                 <div className="hidden">
                     <div className="middleLine lineLeft thanksLine"></div>
                     <h3 id="thanksScroll">THANKS FOR STOPPING BY!</h3>
-                    <p className="lefty">You have posted 34 reminders<br></br> this year, keep it going!</p>
-                    <p className="righty">Over 21,000 reminders have<br></br> been posted on our site!</p>
+                    <p className="lefty">You have posted {userCount} reminders<br></br> this year, keep it going!</p>
+                    <p className="righty">In total {count} reminders are<br></br>posted on our site!</p>
                     <div className="smileyFace">
                         <p className="eyes lefteye"></p>
                         <p className="eyes righteye"></p>

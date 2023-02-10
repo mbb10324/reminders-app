@@ -6,6 +6,16 @@
     color: #fefefe;
     position: relative;
     overflow: hidden;
+    background-color: rgb(25, 25, 25);
+    animation-name: fadeInOpacity;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: 2s;
+}
+
+.helpMe {
+    top: 0 !important;
+    margin-top: -10px;
 }
 
 .hidden {
@@ -164,8 +174,7 @@ body::-webkit-scrollbar-thumb {
 
 .faqBody {
     position: relative;
-    /* background: linear-gradient(270deg, #F8CE27, #02B3FC); */
-    background-color: rgb(25, 25, 25);;
+    background-color: rgb(39, 39, 39);
     z-index: 3;
     padding-bottom: 80px;
 }
@@ -300,7 +309,6 @@ body::-webkit-scrollbar-thumb {
 
 .motivatingRemContainer {
     position: relative;
-    background-color: rgb(39, 39, 39);
     padding-top: 350px;
     padding-bottom: 400px;
     z-index: 1;
@@ -347,7 +355,7 @@ body::-webkit-scrollbar-thumb {
 .thanksContainer {
     position: relative;
     /* background: linear-gradient(270deg, #F8CE27, #02B3FC); */
-    background-color: rgb(25, 25, 25);;
+    background-color: rgb(39, 39, 39);
     z-index: 3;
     height: 1000px;
     margin-top: 200px;
