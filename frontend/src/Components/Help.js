@@ -10,7 +10,8 @@ import * as api from '../Functions/api';
 function Help() {
     const navigate = useNavigate();
     const [first, setFirst] = useState(true)
-    const toggleFirst = () => setFirst(!first)
+    const [firstAnimation, setFirstAnimation] = useState({scale: ''})
+    const toggleFirst = () => {setFirst(!first); renderFirst(firstAnimation)}
     const [second, setSecond] = useState(true)
     const toggleSecond = () => setSecond(!second)
     const [third, setThird] = useState(true)
@@ -30,6 +31,14 @@ function Help() {
 
     // const scrollPosition = 0
     const sectionPosition = 1000
+
+    function renderFirst() {
+        if (first)  {
+            setFirstAnimation({scale: 'shiftOpen'}) 
+        }else {
+            setFirstAnimation({scale: 'shiftClose'}) 
+        }
+    }
 
     useEffect(() => {
         api.fetchReminders()
@@ -158,18 +167,18 @@ function Help() {
                                 <FiMinus className="rotate" style={{ width: "40px", height: "40px", color: "#06E19E" }} />
                             }
                         </div>
-                        {!first ?
+                        {/* {!first ? */}
                             <div className='answersPara'>
-                                <p>
+                                <p className={firstAnimation.scale}>
                                     Use the caret symbols on the left and right of the screen <br />
                                     to scroll to the following/previous week. You can also <br />
                                     navigate to a particular month by clicking on whichever month <br />
                                     you would like to see.
                                 </p>
                             </div>
-                            :
+                            {/* :
                             ""
-                        }
+                        } */}
                     </div>
                     <div className="answers" onClick={() => { toggleSecond() }}>
                         <div className="answersHeader">
