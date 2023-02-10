@@ -24,13 +24,14 @@
 - [ ] token over 256
 - [x] add ability to copy a reminder -01/06
 - [x] replace bootstrap buttons with custom buttons -01/06
-- [ ] fix all html2canvas bugs
-- [ ] figure out logic to prevent individuals from posting a reminder within the same time frame as another reminder.
+- [x] fix all html2canvas bugs -01/07
 
 # Hard
-- [ ] review edge cases when fetch's fail(prevent api from crashing, instead show not found or something)
+- [x] figure out logic to prevent individuals from posting a reminder within the same time frame as another reminder. -01/08
+- [x] review edge cases when fetch's fail(prevent api from crashing, instead show not found or something)-01/08
+- [ ] create about us page
 - [ ] create tests for all functions
-- [ ] check to make sure there isnt allready a reminder during that time
+- [x] check to make sure there isnt already a reminder during that time -01/08
 - [x] refactor arrays and selectedmonth logic to account for scrolling into next/previous months -01/06
 
 # Stretch

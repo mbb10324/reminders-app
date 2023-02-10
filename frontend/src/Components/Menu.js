@@ -39,6 +39,11 @@ function Menu() {
         navigate("/")
     }
 
+    function goAbout() {
+        setShowMenuNav(false)
+        navigate("/About")
+    }
+
     return (
         <>
             <div className='menuIcon'>
@@ -56,7 +61,7 @@ function Menu() {
                         <div className='fourthBlock'></div>
                         <div className='fifthBlock'></div>
                         <div className='sixthBlock'>
-                            <button className='menuClose' onClick={toggleMenu}>About Us</button>
+                            <button className='menuClose' onClick={goAbout}>About Us</button>
                         </div>
                         <div className='seventhBlock'>
                             <button className='menuClose' onClick={goHome}>Home</button>

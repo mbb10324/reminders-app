@@ -30,7 +30,7 @@
 .middleLine {
     position: absolute;
     width: 3px;
-    height: 100%; 
+    height: 100%;
     top: 0;
     overflow: hidden;
     z-index: 10;
@@ -241,8 +241,6 @@ body::-webkit-scrollbar-thumb {
     justify-content: space-between;
     transition: all .6s;
     height: 95px;
-    /* background-color: rgb(39, 39, 39); */
-      z-index: 0;
 }
 
 .answersHeader:hover {
@@ -258,8 +256,6 @@ body::-webkit-scrollbar-thumb {
     transition: all .4s;
     overflow: hidden;
     position: relative;
-     /* background-color: rgb(39, 39, 39); */
-      z-index: 3;
 }
 
 .answers::before {
@@ -273,12 +269,12 @@ body::-webkit-scrollbar-thumb {
     transition: all .4s;
     z-index: -1;
     transform: translateY(-100%);
-    transition: transform .4s cubic-bezier(.13,.54,.88,.53);
+    transition: transform .4s cubic-bezier(.13, .54, .88, .53);
 }
 
 .answers:hover::before {
     transform: translatey(0);
-  }
+}
 
 
 .answers h4 {
@@ -287,25 +283,21 @@ body::-webkit-scrollbar-thumb {
 }
 
 .shiftOpen {
-  animation: openDown 1s forwards;
-   animation-timing-function: cubic-bezier(.79,-0.08,.37,1.47);
-   /* margin-top: 0% !important; */
-    z-index: 0;
-
+    animation: openDown .7s forwards;
+    animation-timing-function: cubic-bezier(.79, -0.08, .37, 1.47);
 }
 
 .shiftClose {
-     animation: closeUp 1s forwards;
-   animation-timing-function: cubic-bezier(.79,-0.08,.37,1.47);
-   /* margin-top: -17% !important; */
-    z-index: 0;
+    animation: closeUp .7s forwards;
+    animation-timing-function: cubic-bezier(.79, -0.08, .37, 1.47);
 }
 
 @keyframes openDown {
     from {
-        margin-top: -140px;
+        margin-top: -150px;
         opacity: 0;
     }
+
     to {
         margin-top: 0%;
         opacity: 1;
@@ -317,8 +309,9 @@ body::-webkit-scrollbar-thumb {
         margin-top: 0%;
         opacity: 1;
     }
+
     to {
-        margin-top: -140px;
+        margin-top: -150px;
         opacity: 0;
     }
 }
@@ -330,8 +323,8 @@ body::-webkit-scrollbar-thumb {
     margin-bottom: 2%;
     position: relative;
     z-index: -1;
-   /* margin-top: -17%; */
-  opacity: 1;
+    /* margin-top: -17%; */
+    opacity: 1;
     /* animation: 1s slide; */
 }
 
@@ -377,20 +370,20 @@ body::-webkit-scrollbar-thumb {
 }
 
 .bigMotivatingReminder p {
-    text-shadow: 
-    0 0 0 #F8CE27, 
-    0 0 0 #02B3FC;
+    text-shadow:
+        0 0 0 #F8CE27,
+        0 0 0 #02B3FC;
     outline: 12px solid transparent;
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
 .bigMotivatingReminder p:hover {
-    text-shadow: 
-    0.9px -0.7px 0 #F8CE27, 
-    0.7px 0.7px 0 #02B3FC;
-  transition: 1s cubic-bezier(0.5,200,0.5,-200);
-  outline: 12px solid transparent;
-  box-shadow: 0 0 1px rgba(0, 0, 0, 0.05);
+    text-shadow:
+        0.9px -0.7px 0 #F8CE27,
+        0.7px 0.7px 0 #02B3FC;
+    transition: 1s cubic-bezier(0.5, 200, 0.5, -200);
+    outline: 12px solid transparent;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
 
@@ -401,7 +394,6 @@ body::-webkit-scrollbar-thumb {
 
 .thanksContainer {
     position: relative;
-    /* background: linear-gradient(270deg, #F8CE27, #02B3FC); */
     background-color: rgb(39, 39, 39);
     z-index: 3;
     height: 1000px;
@@ -415,7 +407,7 @@ body::-webkit-scrollbar-thumb {
     position: absolute;
     bottom: 0;
     left: 0;
-    margin-left: 12%;
+    right: 0;
     margin-bottom: 80px;
     color: #F8CE27;
     font-weight: 200;
@@ -652,18 +644,18 @@ body::-webkit-scrollbar-thumb {
     margin-right: 10px;
     cursor: pointer;
     /* background-color: #00e346; */
-    text-shadow: 
-    0 0 0 #F8CE27, 
-    0 0 0 #02B3FC, 
-    0 0 0 #06E19E;
+    text-shadow:
+        0 0 0 #F8CE27,
+        0 0 0 #02B3FC,
+        0 0 0 #06E19E;
 }
 
 .spans:hover {
     text-decoration: underline;
-    text-shadow: 
-    0.3px -0.1px 0px #F8CE27, 
-    0.2px 0.1px 0 #02B3FC, 
-    -0.1px 0.2px 0 #06E19E;
-  transition: 1s cubic-bezier(0.5,200,0.5,-200);
+    text-shadow:
+        0.3px -0.1px 0px #F8CE27,
+        0.2px 0.1px 0 #02B3FC,
+        -0.1px 0.2px 0 #06E19E;
+    transition: 1s cubic-bezier(0.5, 200, 0.5, -200);
     /* text-decoration: underline; */
 }
