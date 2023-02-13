@@ -11,19 +11,16 @@ import * as api from '../Functions/api';
 import * as util from '../Functions/util'
 
 function Login() {
-
     const navigate = useNavigate(); //navigate var
     const [lock, setLock] = useState(false); //controls lock view
     const [show, setShow] = useState(false); //show or close create account modal
     const [showAlert, setShowAlert] = useState(false); //toggles the login failure pop up
     const [showSuccess, setShowSuccess] = useState(false); //toggles the account created pop up
     const [disableButton, setDisableButton] = useState(false); //disables create account to prevent multiple PUT's
-    const [validated, setValidated] = useState(false); //toggles input validation alerts(just the styling)
     const [errors, setErrors] = useState([]); //holds error strings
     const [form, setForm] = useState([]); //contains create account form entries in seperate objects
     const handleShow = () => setShow(true); //shows create account modal
     const toggleLock = () => setLock(!lock); //toggles the lock view
-
     const checkIdentityDebounced = util.debounce(500, checkIdentity);
 
     useEffect(() => {
@@ -37,10 +34,13 @@ function Login() {
         setShow(false)
         setForm({})
         setErrors({})
+        setShowSuccess(false)
+        setDisableButton(false)
     };
 
     //create an object that holds all form entries
     function setField(field, value) {
+        setErrors([])
         setForm({ ...form, [field]: value });
         if (errors[field]) setErrors({ ...errors, [field]: null });
     }
@@ -54,6 +54,7 @@ function Login() {
         if (!lastName || lastName === "") newErrors.lastName = "This is a required field.";
         if (!email || email === "") newErrors.email = "This is a required field.";
         else if (!email.includes("@")) newErrors.email = "Please provide a valid E-mail address.";
+        else if (email.length > 80) newErrors.email = "We do not support E-mails this long.";
         if (!username || username === "") newErrors.username = "This is a required field.";
         if (!password || password === "") newErrors.password = "This is a required field.";
         else if (!password.match(strongPassword)) newErrors.password = "Must be at least 8 characters, contain at least one uppercase, one lowercase, one digit, and one special character.";
@@ -89,21 +90,23 @@ function Login() {
                         email: existingIdentity.email ? 'That email address is already registered with us.' : errors.email,
                         username: existingIdentity.username ? 'That username already exists in our database, please choose another username.' : errors.username,
                     });
-                    setValidated(false);
                     return;
                 }
             });
     }
+  
 
     //function called when attempting to create an account
     async function createAccount(e) {
         e.preventDefault();
         e.stopPropagation();
         const newErrors = findFormErrors();
+        console.log(newErrors)
         if (Object.keys(newErrors).length > 0) {
+            console.log("nope")
             setErrors(newErrors);
-            setValidated(false);
         } else {
+            console.log("good")
             let fname = form.firstName
             let lname = form.lastName
             let email = form.email
@@ -111,7 +114,6 @@ function Login() {
             let password = form.password
             return api.createUser({ fname, lname, email, username, password })
                 .then(setShowSuccess(true))
-                .then(setValidated(true))
                 .then(setDisableButton(true))
         }
     }
@@ -171,7 +173,7 @@ function Login() {
                     keyboard={false}
                     dialogClassName={"createaccountModal"}
                 >
-                    <Form noValidate validated={validated} onSubmit={createAccount}>
+                    <Form onSubmit={createAccount}>
                         <Form.Group className="mb-3" controlId="formFName">
                             <Form.Label>First Name</Form.Label>
                             <Form.Control isInvalid={!!errors.firstName} type="Fname" value={form.firstName} onChange={(e) => setField("firstName", e.target.value)} />

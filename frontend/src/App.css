@@ -1,38 +1,75 @@
 * {
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
+}
+
+@font-face {
+    font-family: "Quicksand-Light";
+    src: url(./fonts/Quicksand-Light.ttf) format('truetype')
+}
+
+@font-face {
+    font-family: "Quicksand-Regular";
+    src: url(./fonts/Quicksand-Regular.ttf) format('truetype')
+}
+
+@font-face {
+    font-family: "Quicksand-Medium";
+    src: url(./fonts/Quicksand-Medium.ttf) format('truetype')
+}
+
+@font-face {
+    font-family: "Quicksand-SemiBold";
+    src: url(./fonts/Quicksand-SemiBold.ttf) format('truetype')
+}
+
+@font-face {
+    font-family: "Quicksand-Bold";
+    src: url(./fonts/Quicksand-Bold.ttf) format('truetype')
 }
 
 .App {
-  background-size: cover;
-  min-height: 100vh;
-  width: 100%;
-  background-color: rgb(39, 39, 39);
-  overflow-y:hidden;
-  height:100%;
-  color: #ffffff;
-  text-align: center;
-  cursor: default;
-  animation-name: fadeInOpacity;
-  animation-iteration-count: 1;
-  animation-timing-function: ease-in;
-  animation-duration: 1.5s;
-  pointer-events: all;
+    background-size: cover;
+    min-height: 100vh;
+    width: 100%;
+    background-color: rgb(39, 39, 39);
+    font-family: Quicksand-SemiBold !important;
+    overflow-y: hidden;
+    height: 100%;
+    color: #ffffff;
+    text-align: center;
+    cursor: default;
+    animation-name: fadeInOpacity;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: 1.5s;
+    pointer-events: all;
 }
 
 @keyframes fadeInOpacity {
-  0% {
-      opacity: 0;
-  }
+    0% {
+        opacity: 0;
+    }
 
-  100% {
-      opacity: 1;
-  }
+    100% {
+        opacity: 1;
+    }
 }
 
+.modal-content {
+    font-family: Quicksand-Medium !important;
+}
 
+body::-webkit-scrollbar {
+    width: 1em;
+}
 
+body::-webkit-scrollbar-track {
+    background-color: #F8CE27;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.2);
+}
 
-
-
-
+body::-webkit-scrollbar-thumb {
+    background-color: #063170;
+    border-radius: 1rem;
+}

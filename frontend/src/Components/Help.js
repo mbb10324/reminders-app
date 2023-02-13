@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react"
 import Menu from './Menu.js'
 import { useNavigate } from "react-router-dom";
 import { MdEmail } from "react-icons/md";
-import { FaFacebook, FaTwitter, FaInstagram, FaYoutube } from "react-icons/fa"
+import { FaFacebook, FaTwitter, FaInstagram, FaYoutube, FaLongArrowAltRight } from "react-icons/fa"
 import { FiPlus, FiMinus } from "react-icons/fi"
 import * as api from '../Functions/api';
 
@@ -23,6 +23,10 @@ function Help() {
     const [count, setCount] = useState()
     const [userCount, setUserCount] = useState()
     const [showFAQ, setShowFAQ] = useState([1, 2, 3, 4, 5, 6])
+    const goAbout = () => {navigate("/About")}
+    const goPrivacy = () => {navigate("/Privacy")}
+    const goTerms = () => {navigate("/Terms")}
+    const goSecurity = () => {navigate("/Security")}
     const sectionPosition = 1000
 
     function toggleHandler(id) {
@@ -71,7 +75,9 @@ function Help() {
 
     useEffect(() => {
         function handleScroll() {
+            if (window.pageYOffset < 900) {
             setOffset(window.pageYOffset)
+            }
         }
         window.addEventListener("scroll", handleScroll)
         return () => { window.removeEventListener("scroll", handleScroll) }
@@ -104,15 +110,23 @@ function Help() {
         hiddenElements.forEach((el) => observer.observe(el))
     }, [])
 
+    useEffect(() => {
+        window.scroll({
+            top: 0,
+            behavior: 'smooth'
+        })
+    }, [])
+
     return (
         <div className="helpContent">
             <div className='pageTransition helpMe'></div>
             <div className="testLine"></div>
             <div className="helpHeader">
-                <div className="blank"><span></span></div>
                 <h1>Reminders</h1>
-                <Menu />
             </div>
+                <div className="helpMenu">
+                <Menu />
+                </div>
             <div className='tileContainer' style={{
                 transform: `translateY(${offset * 0.5}px)`,
             }}>
@@ -293,6 +307,8 @@ function Help() {
                 }}>Contact Us! Contact Us! Contact Us! Contact Us! Contact Us!</h2>
                 <h4>Email: reminderapp@email.com</h4>
                 <h4>Phone: (123) 456-7890</h4>
+                <h4>Check out our about page <FaLongArrowAltRight/></h4>
+                <div className="goAbout" onClick={goAbout}><p>About</p></div>
                 <div className="gutter">
                     <p>@2023 ReminderApp, inc.</p>
                     <div className="SocialIcons">
@@ -303,9 +319,9 @@ function Help() {
                         <a className="indivSocialIcons" href="mailto:marketing@galvanize.com" rel="noopener noreferrer"><MdEmail /></a>
                     </div>
                     <div className="legalLinks">
-                        <span className="spans">privacy</span>
-                        <span className="spans">terms</span>
-                        <span className="spans">security</span>
+                        <span className="spans" onClick={goPrivacy}>privacy</span>
+                        <span className="spans" onClick={goTerms}>terms</span>
+                        <span className="spans" onClick={goSecurity}>security</span>
                     </div>
                 </div>
             </div>

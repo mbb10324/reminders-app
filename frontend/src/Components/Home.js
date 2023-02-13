@@ -7,6 +7,7 @@ import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { MdOutlineAddBox } from "react-icons/md";
 import { BsCaretRight, BsCaretLeft } from "react-icons/bs"
+import { FiUser, FiUsers } from "react-icons/fi"
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import Carousel from 'react-bootstrap/Carousel';
@@ -17,24 +18,26 @@ import ReactScrollWheelHandler from "react-scroll-wheel-handler";
 function Home() {
     //Cookie stuff
     const [cookies, setCookie] = useCookies(['index', 'month', 'today', 'user']); //index of current slide-index of the month-index of this week
-    const [reminders, setReminders] = useState([]);
+    const [reminders, setReminders] = useState([]); //state that holds all the reminders for the currently logged in user
     // Date Stuff
     const date = new Date //todays date
     const thisYear = date.getFullYear() //this year (ex: 2023)
     // Data stuff
-    const [weeks, setWeeks] = useState(util.getInitialWeeks(date));
+    const [weeks, setWeeks] = useState(util.getInitialWeeks(date)); //state with all of the days in a year filtered and sorted for calendar
     // View stuff
     const navigate = useNavigate();
     const [selectedMonth, setSelectedMonth] = useState(util.getInitialMonth(cookies, date)); //state of the current month that is selected
-    const [focusedWeekIndex, setFocusedWeekIndex] = useState(util.getInitialWeek(cookies, weeks));
+    const [focusedWeekIndex, setFocusedWeekIndex] = useState(util.getInitialWeek(cookies, weeks)); //state that holds index of current slide
     const [show, setShow] = useState(false); //handles the visibility state for adding a new reminder
     const handleClose = () => { setShow(false); setForm({}); setErrors([]) }//function to toggle closing add reminder modal
-    // const handleShow = () => setShow(true); //function to toggle showing add reminder modal
     //Validation stuff
-    const [status, setStatus] = useState([])
+    const [status, setStatus] = useState([]) //state that holds error when reminder falls within range of another reminder
     const [errors, setErrors] = useState([]); //holds error strings
     const [form, setForm] = useState([]); //contains create account form entries in seperate object
 
+    const goAccount = () => {navigate('/Account')}
+
+    //sets initial form values and shows the add reminder modal
     function handleShow() {
         setForm({
             "description": "",
@@ -51,12 +54,14 @@ function Home() {
         setCookie("index", selectedIndex)
     };
 
+    //sets a form state to check for errors
     function setField(field, value) {
         setForm({ ...form, [field]: value });
         setStatus([])
         if (errors[field]) setErrors({ ...errors, [field]: null });
     }
 
+    //finds errors based off form submission
     function findFormErrors() {
         setErrors([])
         let { description, date, start, end } = form;
@@ -81,11 +86,12 @@ function Home() {
     function reloadReminders() {
         handleClose()
         api.fetchReminders()
-        .then(reminders => setReminders(reminders))
-        .then(setStatus([]))
-        .then(setErrors([]))
+            .then(reminders => setReminders(reminders))
+            .then(setStatus([]))
+            .then(setErrors([]))
     }
 
+    //function call when going to right slide
     function addIndex() {
         let newIndex = focusedWeekIndex + 1
         let weekIndex = weeks[newIndex]
@@ -99,6 +105,7 @@ function Home() {
         setCookie("index", newIndex)
     }
 
+    //function call when going to left slide
     function subIndex() {
         let newIndex = focusedWeekIndex - 1
         let weekIndex = weeks[newIndex]
@@ -131,8 +138,8 @@ function Home() {
     }
 
     //middle man to edit reminder
-    function editReminder({id, description, date, start, end, type }) {
-        return api.createReminder({id, description, date, start, end, type })
+    function editReminder({ id, description, date, start, end, type }) {
+        return api.createReminder({ id, description, date, start, end, type })
             .then(Response => Response)
     }
 
@@ -150,21 +157,21 @@ function Home() {
             let start = e.target[2].value;
             let end = e.target[3].value;
             let type = e.target[4].value;
-            await api.createReminder({id, description, date, start, end, type })
-            .then(Response => {
-                if (Response.ok) {
-                    return Response.json()
-                } else {
-                    throw new Error('collides')
-                }
-            })
-            .then(() => reloadReminders())
-            .catch(error => {
-                console.error(error);
-                setTimeout(() => {
-                    setStatus({ "reason": "This time frame falls within the range of another reminder, please choose another time frame." })
-                }, 500)
-            })
+            await api.createReminder({ id, description, date, start, end, type })
+                .then(Response => {
+                    if (Response.ok) {
+                        return Response.json()
+                    } else {
+                        throw new Error('collides')
+                    }
+                })
+                .then(() => reloadReminders())
+                .catch(error => {
+                    console.error(error);
+                    setTimeout(() => {
+                        setStatus({ "reason": "This time frame falls within the range of another reminder, please choose another time frame." })
+                    }, 500)
+                })
         }
     }
 
@@ -181,15 +188,12 @@ function Home() {
     }
 
     //function called when selecting a month
-    function pickMonth(e) {
+    function pickMonth(value) {
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const idkSomeMonth = JSON.parse(e.target.value)
-        const selectedMonthName = monthNames[idkSomeMonth]
+        const selectedMonthName = monthNames[value]
         const findFirstWeekOfMonth = weeks.findIndex(week => week.some(day => day.dayMonth === selectedMonthName))
-        e.preventDefault()
-        e.stopPropagation()
-        setCookie("month", idkSomeMonth)
-        setSelectedMonth(idkSomeMonth)
+        setCookie("month", value)
+        setSelectedMonth(value)
         setCookie("index", findFirstWeekOfMonth)
         setFocusedWeekIndex(findFirstWeekOfMonth)
     }
@@ -200,37 +204,37 @@ function Home() {
             <div className='pageTransition'></div>
             {/* Title */}
             <div className='header'>
-                <div className="tooltip3"><span className="tooltiptext">Add a reminder!</span>
-                    <div>
+                {/* <div className="tooltip3"><span className="tooltiptext">Add a reminder!</span> */}
+                    <div className='MenuIconsHome'>
                         <MdOutlineAddBox style={{ width: "47px", height: "47px", color: "#02B3FC" }} onClick={handleShow} />
+                        <FiUsers style={{ width: "47px", height: "47px", color: "#02B3FC" }}/>
                     </div>
-                </div>
+                {/* </div> */}
                 <h1>Reminders</h1>
-                <div className="tooltip4"><span className="tooltiptext">Menu</span>
-                    <div>
+                {/* <div className="tooltip4"><span className="tooltiptext">Menu</span> */}
+                    <div className='MenuIconsHome'>
+                        <FiUser style={{ width: "47px", height: "47px", color: "#02B3FC" }} onClick={goAccount}/>
                         <Menu />
-                        {/* <FiCamera onClick={() => { handleShowScreenshot(); screenshot() }} style={{ width: "40px", height: "40px", color: "#02B3FC" }} /> */}
                     </div>
-                </div>
+                {/* </div> */}
             </div>
             <div className="midBody">
-
                 {/* Left side arrow */}
                 <div className="caretLeft"><BsCaretLeft style={{ width: "120px", height: "120px", color: "#F8CE27", cursor: "pointer" }} onClick={() => subIndex()} /></div>
                 <div className="calendar" id='capture'>
                     {/* Time markers on left side of calendar */}
                     <div className="timeline">
-                        <div className="spacer"></div>
-                        <div className="time-marker">9 AM</div>
-                        <div className="time-marker">10 AM</div>
-                        <div className="time-marker">11 AM</div>
-                        <div className="time-marker">12 PM</div>
-                        <div className="time-marker">1 PM</div>
-                        <div className="time-marker">2 PM</div>
-                        <div className="time-marker">3 PM</div>
-                        <div className="time-marker">4 PM</div>
-                        <div className="time-marker">5 PM</div>
-                        <div className="time-marker">6 PM</div>
+                        <div></div>
+                        <div>9 AM</div>
+                        <div>10 AM</div>
+                        <div>11 AM</div>
+                        <div>12 PM</div>
+                        <div>1 PM</div>
+                        <div>2 PM</div>
+                        <div>3 PM</div>
+                        <div>4 PM</div>
+                        <div>5 PM</div>
+                        <div>6 PM</div>
                     </div>
                     {/* Displays numeric date and date name, 
                     and maps through days of the week and passes responsibility 
@@ -283,8 +287,23 @@ function Home() {
                 <div className="caretRight"><BsCaretRight style={{ width: "120px", height: "120px", color: "#F8CE27", cursor: "pointer" }} onClick={() => addIndex()} /></div>
             </div>
             {/* Below the calendar, contains month, button to add reminder, and year */}
-            <div className="bottom">
+            <div className='monthsIndexer'>
+                <p className={selectedMonth === 0 ? 'selected' : ""} id='0' onClick={() => pickMonth(0)}>Jan</p>
+                <p className={selectedMonth === 1 ? 'selected' : ""}  id='two' onClick={() => pickMonth(1)} >Feb</p>
+                <p className={selectedMonth === 2 ? 'selected' : ""}  id='three' onClick={() => pickMonth(2)}>Mar</p>
+                <p className={selectedMonth === 3 ? 'selected' : ""}  id='three' onClick={() => pickMonth(3)}>Apr</p>
+                <p className={selectedMonth === 4 ? 'selected' : ""}  id='four' onClick={() => pickMonth(4)}>May</p>
+                <p className={selectedMonth === 5 ? 'selected' : ""}  id='five' onClick={() => pickMonth(5)}>Jun</p>
+                <p className={selectedMonth === 6 ? 'selected' : ""}  id='six' onClick={() => pickMonth(6)}>Jul</p>
+                <p className={selectedMonth === 7 ? 'selected' : ""}  id='seven' onClick={() => pickMonth(7)}>Aug</p>
+                <p className={selectedMonth === 8 ? 'selected' : ""}  id='eight' onClick={() => pickMonth(8)}>Sep</p>
+                <p className={selectedMonth === 9 ? 'selected' : ""}  id='nine' onClick={() => pickMonth(9)} >Oct</p>
+                <p className={selectedMonth === 10 ? 'selected' : ""}  id='ten' onClick={() => pickMonth(10)}>Nov</p>
+                <p className={selectedMonth === 11 ? 'selected' : ""}  id='eleven' onClick={() => pickMonth(11)}>Dec</p>
+            </div>
+            {/* <div className="bottom">
                 <h2>
+                    <IoIosArrowDown style={{ width: "40px", height: "40px", color: "#06E19E" }} />
                     <select value={selectedMonth} onChange={pickMonth}>
                         <option value="0">January</option>
                         <option value="1">February</option>
@@ -303,7 +322,7 @@ function Home() {
                 <h2>
                     {thisYear}
                 </h2>
-            </div>
+            </div> */}
             {/* Pop up modal to add a reminder */}
             <div className="Modal">
                 <Modal
@@ -375,6 +394,7 @@ function Home() {
                     </Form>
                 </Modal>
             </div>
+            {/*Contains the legend at bottom of page*/}
             <Footer />
         </div >
     )

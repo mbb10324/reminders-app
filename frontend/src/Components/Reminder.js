@@ -109,37 +109,8 @@ function Reminder(props) {
                         setStatus({ "reason": "This time frame falls within the range of another reminder, please choose another time frame." })
                     }, 500)
                 })
-
-
-
-
-
-
-
-
-
-            // setTimeout(() => {
-            // api.checkReminder({ description, date, start, end, type })
-            //     .then(Response => {
-            //         if (Response.ok) {
-            //             return Response.json()
-            //         } else {
-            //             throw new Error('collides')
-            //         }
-            //     })
-            //     .then(() => { return props.editReminder({ description, date, start, end, type }) })
-            //     .then(() => closeAll())
-            //     .catch(error => {
-            //         console.error(error);
-            //         setTimeout(() => {
-            //             setStatus({ "reason": "This time frame falls within the range of another reminder, please choose another time frame." })
-            //         }, 500)
-            //     })
-            // }, 500)
         }
     }
-
-    //probelm 1 errors not resetting after closing window
 
     //start of HTML
     return (

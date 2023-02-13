@@ -1,165 +1,312 @@
+/*-----------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------Container---------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------*/
+
 .aboutContainer {
     width: 100%;
     height: 100%;
-    position: absolute;
-    animation-direction: alternate;
+    position: relative;
+    overflow: hidden;
     animation-name: fadeInOpacity;
-    overflow-x: hidden;
     animation-iteration-count: 1;
     animation-timing-function: ease-in;
     animation-duration: 2s;
+    pointer-events: all;
+    border: 20px solid #F8CE27;
+    z-index: 2;
+    padding-bottom: 300px;
 }
 
-.aboutIn {
-    right: 0 !important;
-    margin-right: -10px !important;
-    overflow: hidden !important;
-}
-
-.aboutContainer h1 {
+.aboutContainer:before {
+    content: " ";
     position: absolute;
-    margin-top: 100px;
-    margin-left: 25%;
-    margin-right: 25%;
-    font-size: 350px;
-    color: #063170;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 20px solid #02B3FC;
+    pointer-events: all;
     z-index: 1;
 }
 
-.border1 {
+.aboutContainer:after {
+    content: " ";
     position: absolute;
-    width: 100%;
-    height: 100vh;
-    background-color: #F8CE27;
-    z-index: 0;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    border: 20px solid #06E19E;
+    pointer-events: all;
 }
 
-.border2 {
-    position: absolute;
-    margin-left: .5%;
-    margin-top: .5%;
-    margin-bottom: .5%;
-    width: 99%;
-    height: 100vh;
-    background-color: #02B3FC;
-    z-index: .1;
-}
-
-.border3 {
-    position: absolute;
-    margin-left: 1%;
-    margin-top: 1%;
-    margin-bottom: 1%;
-    width: 98%;
-    height: 100vh;
-    background-color: #063170;
-    z-index: .2;
-}
-
-.border4 {
-    position: absolute;
-    margin-left: 1.5%;
-    margin-top: 1.5%;
-    margin-bottom: 1.5%;
-    width: 97%;
-    height: 100vh;
-    background-color: #06E19E;
-    z-index: .3;
+.aboutIn {
+    top: 0 !important;
+    right: 0 !important;
+    margin-top: -10px;
+    z-index: 4;
 }
 
 .border5 {
-    position: absolute;
     margin-left: 2%;
     margin-top: 2%;
     margin-bottom: 2%;
     width: 96%;
     height: 100vh;
     background-color: rgb(39, 39, 39);
-    z-index: .4;
 }
 
 .aboutMenu {
-    position: absolute;
-    z-index: 2;
+    background-color: #02B3FC;
+    border-radius: 50%;
+    height: 60px;
+    width: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
     right: 0;
-    margin-right: 5%;
+    margin-right: 7%;
     margin-top: 5%;
+    z-index: 3;
+    transition: all .5s cubic-bezier(.79, -1, .37, 2);
+    box-shadow: 0 2px 5px rgb(0 0 0 / 1);
+}
+
+.aboutMenu:hover {
+    background-color: #F8CE27;
+    height: 70px;
+    width: 70px;
+    transition: all .5s cubic-bezier(.79, -1, .37, 2);
+}
+
+.aboutMenu svg {
+    color: #F8CE27 !important;
+    transition: all .5s cubic-bezier(.79, -1, .37, 2);
+}
+
+.aboutMenu svg:hover {
+    transform: scale(1.2);
+    color: #02B3FC !important;
+    transition: all .5s cubic-bezier(.79, -1, .37, 2);
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------Header--------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------*/
+
+.aboutHeader {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 100%;
+    height: 600px;
+    transition: all .2s linear;
+}
+
+.aboutHeader h1 {
+    text-shadow: 0 1px 3px rgb(0 0 0 / 1);
+    text-align: center;
+    font-family: Quicksand-Bold;
+    font-size: 350px;
+    color: #063170;
 }
 
 .nestedTitle {
-    position: absolute;
-    margin-top: 20%;
-    margin-left: 30%;
-    margin-right: 30%;
-    font-size: 300px;
-    color: #06E19E;
-    z-index: 1;
+    position: relative;
+    margin-top: -180px;
+    margin-bottom: 200px;
+    z-index: 2;
 }
 
 .nestedTitle h2 {
+    font-family: Quicksand-Light;
     font-size: 80px;
     font-weight: 100;
+    color: #06E19E;
+    z-index: 2;
 }
 
-.frame1 {
-    position: absolute;
-    width: 25%;
-    height: 35%;
-    top: 0;
-    right: 0;
-    margin-top: 45%;
-    margin-right: 25%;
-    border: 20px solid #F8CE27;
+/*-----------------------------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------First Section------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------*/
+
+.firstFrame {
+    position: relative;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
 }
 
 .mission1Body {
     text-align: left;
-    position: absolute;
-    margin-top: 47.5%;
-    margin-left: 18%;
+    font-family: Quicksand-Medium;
     font-size: 21px;
     color: #02B3FC;
-    z-index: 1;
+}
+
+.frame1 {
+    width: 500px;
+    height: 400px;
+    border: 20px solid #F8CE27;
+}
+
+
+.random1 {
+    position: relative;
+    height: 305px;
+    width: 100%;
+}
+
+.block1 {
+    position: absolute;
+    background-color: #02B3FC;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 1);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    pointer-events: none;
+    left: calc(50% - 25px);
+    top: calc(50% - 25px);
+    transition: all .6s cubic-bezier(.79, -1, .37, 2);
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------Second Section-------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------*/
+
+.secondFrame {
+    margin-top: 200px;
+    position: relative;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
 }
 
 .mission2Body {
     text-align: right;
-    position: absolute;
-    margin-top: 75%;
-    margin-left: 50%;
+    font-family: Quicksand-Medium;
     font-size: 21px;
     color: #06E19E;
-    z-index: 1;
 }
 
 .frame2 {
-    position: absolute;
-    width: 20%;
-    height: 50%;
-    top: 0;
-    right: 0;
-    margin-top: 70%;
-    margin-right: 60%;
+    width: 300px;
+    height: 600px;
     border: 20px solid #063170;
+}
+
+.random2 {
+    position: relative;
+    height: 305px;
+    width: 100%;
+}
+
+.block2 {
+    position: absolute;
+    background-color: #06E19E;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 1);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    pointer-events: none;
+    left: calc(50% - 25px);
+    top: calc(50% - 25px);
+    transition: all .6s cubic-bezier(.79, -1, .37, 2);
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------Third Section-------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------*/
+
+.thirdFrame {
+    margin-top: 200px;
+    position: relative;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.frame3 {
+    width: 600px;
+    height: 300px;
+    border: 20px solid #02B3FC;
 }
 
 .mission3Body {
     text-align: left;
-    position: absolute;
-    margin-top: 106%;
-    margin-left: 17%;
+    font-family: Quicksand-Medium;
     font-size: 21px;
     color: #F8CE27;
-    z-index: 1;
 }
 
-.frame3 {
+.random3 {
+    position: relative;
+    height: 305px;
+    width: 100%;
+}
+
+.block3 {
     position: absolute;
-    width: 30%;
-    height: 30%;
-    top: 0;
-    right: 0;
-    margin-top: 106%;
-    margin-right: 22%;
-    border: 20px solid #02B3FC;
+    background-color: #F8CE27;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 1);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    pointer-events: none;
+    left: calc(50% - 25px);
+    top: calc(50% - 25px);
+    transition: all .6s cubic-bezier(.79, -1, .37, 2);
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------Bottom Section-------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------*/
+
+.aboutBottom {
+    position: relative;
+    background-color: rgb(25, 25, 25);
+    width: 100%;
+    height: 500px;
+}
+
+.aboutBottom h3 {
+    padding-top: 200px;
+    margin-left: -200px;
+}
+
+.helpButton {
+    display: flex;
+    justify-content: space-around;
+    position: relative;
+    background-color: #F8CE27;
+    border-radius: 50%;
+    width: 180px;
+    height: 180px;
+    left: 60%;
+    top: -22%;
+    transform: scale(1);
+    transition: all .6s cubic-bezier(.79, -1, .37, 2);
+}
+
+.helpButton p {
+    color: #063170;
+    margin-top: 75px;
+}
+
+.helpButton:hover {
+    transform: scale(1.2);
+    transition: all .6s cubic-bezier(.79, -.7, .37, 1.5);
+    background-color: #02B3FC;
+    cursor: pointer;
+}
+
+.aboutGutter {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    color: rgb(130, 130, 130);
+    font-family: Quicksand-Light;
 }

@@ -46,9 +46,7 @@ function Menu() {
 
     return (
         <>
-            <div className='menuIcon'>
-                <RxHamburgerMenu onClick={toggleMenu} style={{ width: "47px", height: "47px", cursor: "pointer", color: "#02B3FC" }} />
-            </div>
+            <RxHamburgerMenu onClick={toggleMenu} style={{ width: "47px", height: "47px", cursor: "pointer", color: "#02B3FC" }} />
             <div className={`menuContainer ${!showMenuNav ? "allowBack" : ""}`}>
                 {showMenuNav ?
                     <div>
