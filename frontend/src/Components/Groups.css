@@ -1,0 +1,134 @@
+.GroupsInfo {
+    background-color: rgb(39, 39, 39);
+    color: #06E19E;
+    box-shadow: 0 10px 25px rgb(0 0 0 / 1);
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    padding: 30px;
+    width: 450px;
+    height: 500px;
+    overflow-y: auto;
+    border-radius: 5px;
+    z-index: 2;
+}
+
+.GroupsInfo h5 {
+    font-size: 40px;
+}
+
+.noGroup {
+    margin-top: 30px;
+}
+
+.groupCreateButton {
+    margin-top: 30px;
+    width: 200px;
+    height: 35px;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 1);
+    border-radius: 20px;
+    background-color: #02B3FC;
+    color: #F8CE27;
+    display: flex;
+    justify-content: space-around;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    margin-bottom: 30px;
+    transform: scale(1);
+    transition: all 1s cubic-bezier(.79, 0, .37, 4);
+}
+
+.groupCreateButton:hover {
+    transform: scale(1.1);
+    transition: all 1s cubic-bezier(.79, 0, .37, 4);
+}
+
+.groupCreateButton p {
+    position: relative;
+    z-index: 2;
+    margin-top: 5px;
+    width: 100%;
+    height: 35px;
+}
+
+.groupCreateButton p:hover {
+    color: #02B3FC;
+}
+
+.groupCreateButton::before {
+    content: "";
+    position: absolute;
+    top: 50;
+    left: 0;
+    width: 100%;
+    background-color: #F8CE27;
+    color: #02B3FC !important;
+    height: 100%;
+    transition: all .4s linear;
+    z-index: 1;
+    transform: translateX(-100%);
+}
+
+.groupCreateButton:hover::before {
+    transform: translateX(-0%);
+}
+
+.groupCreator {
+    transition: all 1s linear !important;
+}
+
+.groupCreator p{
+    height: 100px;
+}
+
+.groupLanding {
+    transition: all 3s linear !important;
+}
+
+.adminGroups {
+    width: 380px;
+    border-bottom: 2px solid #06E19E;
+}
+
+.memberGroups {
+    width: 380px;
+    border-bottom: 2px solid #06E19E;
+}
+
+.groupTiles {
+    border-top: 2px solid #06E19E;
+    width: 100%;
+    height: 40px;
+    cursor: pointer;
+    transition: all .4s;
+    overflow: hidden;
+    position: relative;
+}
+
+.groupTiles::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #063170;
+    height: 100%;
+    transition: all .4s;
+    z-index: -1;
+    transform: translateY(-100%);
+    transition: transform .3s cubic-bezier(.13, .54, .88, .53);
+}
+
+.groupTiles:hover::before {
+    transform: translatey(0);
+}
+
+.groupTiles h6 {
+    margin-top: 10px;
+}
+
+
+

@@ -36,6 +36,7 @@ function Home() {
     const [form, setForm] = useState([]); //contains create account form entries in seperate object
 
     const goAccount = () => {navigate('/Account')}
+    const goGroups = () => {navigate('/Groups')}
 
     //sets initial form values and shows the add reminder modal
     function handleShow() {
@@ -207,7 +208,7 @@ function Home() {
                 {/* <div className="tooltip3"><span className="tooltiptext">Add a reminder!</span> */}
                     <div className='MenuIconsHome'>
                         <MdOutlineAddBox style={{ width: "47px", height: "47px", color: "#02B3FC" }} onClick={handleShow} />
-                        <FiUsers style={{ width: "47px", height: "47px", color: "#02B3FC" }}/>
+                        <FiUsers style={{ width: "47px", height: "47px", color: "#02B3FC" }} onClick={goGroups}/>
                     </div>
                 {/* </div> */}
                 <h1>Reminders</h1>

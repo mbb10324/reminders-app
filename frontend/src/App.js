@@ -7,6 +7,7 @@ import Privacy from "./Components/Privacy"
 import Terms from "./Components/Terms"
 import Security from "./Components/Security"
 import Account from "./Components/Account"
+import Groups from "./Components/Groups"
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -24,6 +25,7 @@ function App() {
           <Route path="/Terms" element={<Terms />} />
           <Route path="/Security" element={<Security />} />
           <Route path="/Account" element={<Account />} />
+          <Route path="/Groups" element={<Groups />} />
         </Routes>
       </Router>
     </div>
