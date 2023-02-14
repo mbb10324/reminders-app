@@ -63,6 +63,12 @@ function Groups() {
         }, 3800)
     })
 
+    const [showGroupEdit, setShowGroupEdit] = useState(false)
+
+    function editGroup() {
+        setShowGroupEdit(true)
+        setCreateGroupIndex(5)
+    }
 
     return (
         <div className="AccountContainer">
@@ -94,13 +100,13 @@ function Groups() {
                                 </div> */}
                                 <div className="adminGroups">
                                     <p>Admin:</p>
-                                    <div className="groupTiles">
+                                    <div className="groupTiles" onClick={editGroup}>
                                         <h6>DWC Software section</h6>
                                     </div>
                                 </div>
                                 <div className="memberGroups">
                                     <p>Member:</p>
-                                    <div className="groupTiles">
+                                    <div className="groupTiles" onClick={editGroup}>
                                         <h6>Data Warfare Company</h6>
                                     </div>
                                 </div>
@@ -144,6 +150,33 @@ function Groups() {
                                 <button onClick={goBackCreate}>back</button>
                                 <button onClick={submitGroup}>done</button>
                                 <button onClick={cancel}>cancel</button>
+                            </div>
+                        </Carousel.Item>
+                        <Carousel.Item>
+                            <div>
+                                <h5>Group Name</h5>
+                                <div>
+                                    <p>Admins:</p>
+                                    <p>Members:</p>
+                                </div>
+                                <div>
+                                    <div>
+                                    <p>@MilesB</p>
+                                    <p>@JohnD</p>
+                                    <p>@MattJ</p>
+                                    </div>
+                                    <div></div>
+                                    <div>
+                                    <p>@Member1</p>
+                                    <p>@Member2</p>
+                                    <p>@Member3</p>
+                                    <p>@Member4</p>
+                                    <p>@Member5</p>
+                                    <p>@Member6</p>
+                                    <p>@Member7</p>
+                                    <p>@Member8</p>
+                                    </div>
+                                </div>
                             </div>
                         </Carousel.Item>
                     </Carousel>

@@ -91,6 +91,15 @@
 .adminGroups {
     width: 380px;
     border-bottom: 2px solid #06E19E;
+    margin-bottom: 15px;
+}
+
+.adminGroups p {
+    color: #eeeeee;
+}
+
+.memberGroups p {
+    color: #eeeeee;
 }
 
 .memberGroups {
