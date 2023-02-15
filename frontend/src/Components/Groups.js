@@ -3,7 +3,7 @@ import "./Groups.css";
 import Menu from './Menu.js';
 import Carousel from 'react-bootstrap/Carousel';
 import { IoMdArrowRoundBack, IoIosAdd } from "react-icons/io";
-import { MdSearch } from "react-icons/md";
+import { MdSearch, MdOutlineDelete } from "react-icons/md";
 import * as api from '../Functions/api';
 import * as util from '../Functions/util';
 
@@ -13,10 +13,12 @@ function Groups() {
     const [userAdded, setUserAdded] = useState(false);
     const [filteredRequest, setFilteredRequest] = useState([]);
     const [tempGroup, setTempGroup] = useState([]);
-    const [userGroups, setUserGroups] = useState([])
+    const [loggedInUser, setLoggedInUser] = useState()
+    const [adminGroup, setAdminGroup] = useState([])
+    const [memberGroup, setMemberGroup] = useState([])
     const [failure, setFailure] = useState({});
     const abort = () => { setCreateGroupIndex(0); killAll() };
-    const goNextCreate = () => { if (createGroupIndex < 4) setCreateGroupIndex(createGroupIndex + 1); setUserAdded(false); setDuplicateError(false)};
+    const goNextCreate = () => { if (createGroupIndex < 4) setCreateGroupIndex(createGroupIndex + 1); setUserAdded(false); setDuplicateError(false) };
     const goBackCreate = () => { setCreateGroupIndex(createGroupIndex - 1); killAll() };
 
     function killAll() {
@@ -27,20 +29,17 @@ function Groups() {
         setFailure({});
     };
 
-    const [loggedInUser, setLoggedInUser] = useState()
-    const [adminGroup, setAdminGroup] = useState([])
-    const [memberGroup, setMemberGroup] = useState([])
-
     useEffect(() => {
         api.getGroups()
             .then(groups => {
                 const findUsername = groups.filter((user) => { if ("username" in user) { return user } });
                 const tempName = findUsername
                 setLoggedInUser(tempName)
-                const findAdminGroups = groups.filter((groups) => { if ("admins" in groups) { return (groups.admins).includes(tempName) } })
+                const findAdminGroups = groups.filter((groups) => { if ("role" in groups) { return groups.role === 'admin' } })
                 setAdminGroup(findAdminGroups)
-                const findMemberGroups = groups.filter((groups) => { if ("members" in groups) { return (groups.members).includes(tempName) } })
+                const findMemberGroups = groups.filter((groups) => { if ("role" in groups) { return groups.role === 'member' } })
                 setMemberGroup(findMemberGroups)
+                console.log(groups)
             })
     }, [])
 
@@ -83,7 +82,7 @@ function Groups() {
         setUserAdded(false)
         api.filterUsers(username)
             .then((filtered) => {
-                const removeMe = filtered.filter((x) => x.username !== loggedInUser)
+                const removeMe = filtered.filter((x) => x.username !== loggedInUser[0].username)
                 setFilteredRequest(removeMe)
             })
     }
@@ -137,14 +136,21 @@ function Groups() {
         if (nameArray === 0 || nameArray[0] === "") { setFailure({ error: "Please give this group a name." }) }
         else if (memberArray.length === 0 || memberArray[0] === "") { setFailure({ error: "You need to add at least one member to this group." }) }
         else {
-            let addMe = loggedInUser[0].id
+            let addMe = loggedInUser[0].UserID
             let name = nameArray.toString()
             let admins = adminArray.toString() + "," + addMe
             let members = memberArray.toString()
             console.log(admins)
-            // return api.postGroup({ name, admins, members })
-            //     .then(window.location.reload())
+            return api.postGroup({ name, admins, members })
+                .then(window.location.reload())
         }
+    }
+
+    const [individualGroup, setIndividualGroup] = useState([])
+
+    function getGroupInfo(id) {
+        api.getIndividualGroup(id)
+            .then(data => setIndividualGroup(data))
     }
 
     return (
@@ -180,7 +186,7 @@ function Groups() {
                                         <p>You're an ADMIN of:</p>
                                         {adminGroup.map((admins) => {
                                             return (
-                                                <div className="groupTiles" onClick={() => setCreateGroupIndex(5)}>
+                                                <div className="groupTiles" onClick={() => { setCreateGroupIndex(5); getGroupInfo(admins.group_id) }}>
                                                     <h6>{admins.name}</h6>
                                                 </div>
                                             )
@@ -192,7 +198,7 @@ function Groups() {
                                         <p>You're a MEMBER of:</p>
                                         {memberGroup.map((members) => {
                                             return (
-                                                <div className="groupTiles" onClick={() => setCreateGroupIndex(5)}>
+                                                <div className="groupTiles" onClick={() => { setCreateGroupIndex(8); getGroupInfo(members.group_id) }}>
                                                     <h6>{members.name}</h6>
                                                 </div>
                                             )
@@ -319,7 +325,7 @@ function Groups() {
                         </Carousel.Item>
                         <Carousel.Item>
                             <div>
-                                <h5>DWC Software section</h5>
+                                {individualGroup.length > 0 ? <h5>{individualGroup[0].name}</h5> : ''}
                                 <div className="group-AA">
                                     <div className="backButton">
                                         <button onClick={() => setCreateGroupIndex(0)}><IoMdArrowRoundBack /></button>
@@ -339,20 +345,23 @@ function Groups() {
                                 </div>
                                 <div className="group-AC">
                                     <div className="group-BA">
-                                        <p>@MilesB</p>
-                                        <p>@JohnD</p>
-                                        <p>@MattJ</p>
+                                        {individualGroup.map((admins, index) => {
+                                            if (admins.role === 'admin') {
+                                                return (
+                                                    <p><MdOutlineDelete/>&nbsp;&nbsp;{admins.username}</p>
+                                                )
+                                            }
+                                        })}
                                     </div>
                                     <div className="group-BB"></div>
                                     <div className="group-BC">
-                                        <p>@Member1</p>
-                                        <p>@Member2</p>
-                                        <p>@Member3</p>
-                                        <p>@Member4</p>
-                                        <p>@Member5</p>
-                                        <p>@Member6</p>
-                                        <p>@Member7</p>
-                                        <p>@Member8</p>
+                                        {individualGroup.map((members, index) => {
+                                            if (members.role === 'member') {
+                                                return (
+                                                    <p><MdOutlineDelete/>&nbsp;&nbsp;{members.username}</p>
+                                                )
+                                            }
+                                        })}
                                     </div>
                                 </div>
                             </div>
@@ -399,7 +408,7 @@ function Groups() {
                         </Carousel.Item>
                         <Carousel.Item>
                             <div className="memberSlide">
-                                <h5>Data Warfare Company</h5>
+                                {individualGroup.length > 0 ? <h5>{individualGroup[0].name}</h5> : ''}
                                 <div className="group-AA">
                                     <div className="backButton">
                                         <button onClick={() => setCreateGroupIndex(0)}><IoMdArrowRoundBack /></button>
@@ -414,20 +423,23 @@ function Groups() {
                                 </div>
                                 <div className="group-AC">
                                     <div className="group-BA">
-                                        <p>@MilesB</p>
-                                        <p>@JohnD</p>
-                                        <p>@MattJ</p>
+                                        {individualGroup.map((admins, index) => {
+                                            if (admins.role === 'admin') {
+                                                return (
+                                                    <p>{admins.username}</p>
+                                                )
+                                            }
+                                        })}
                                     </div>
                                     <div className="group-BB"></div>
                                     <div className="group-BC">
-                                        <p>@Member1</p>
-                                        <p>@Member2</p>
-                                        <p>@Member3</p>
-                                        <p>@Member4</p>
-                                        <p>@Member5</p>
-                                        <p>@Member6</p>
-                                        <p>@Member7</p>
-                                        <p>@Member8</p>
+                                        {individualGroup.map((members, index) => {
+                                            if (members.role === 'member') {
+                                                return (
+                                                    <p>{members.username}</p>
+                                                )
+                                            }
+                                        })}
                                     </div>
                                 </div>
                             </div>

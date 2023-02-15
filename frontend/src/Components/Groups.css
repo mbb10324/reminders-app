@@ -13,6 +13,7 @@
     overflow-y: auto;
     border-radius: 5px;
     z-index: 2;
+    scale: 1.2;
 }
 
 .GroupsInfo h5 {
@@ -182,8 +183,24 @@
     margin-top: 20px;
 }
 
+.group-BA p svg {
+    cursor: pointer;
+    color: #F8CE27;
+    height: 25px;
+    width: 25px;
+    margin-top: -7px;
+}
+
 .group-BC {
     margin-top: 20px;
+}
+
+.group-BC p svg {
+    cursor: pointer;
+    color: #F8CE27;
+    height: 25px;
+    width: 25px;
+    margin-top: -7px;
 }
 
 .carousel {

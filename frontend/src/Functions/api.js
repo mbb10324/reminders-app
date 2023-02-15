@@ -19,6 +19,18 @@ export function getGroups() {
         .then(res => res.json());
 }
 
+export function getIndividualGroup(id) {
+    return fetch(`http://localhost:3030/group/${id}`, {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+            'Authorization': localStorage.getItem('token'),
+        },
+        mode: "cors",
+    })
+        .then(res => res.json());
+}
+
 export function fetchCount() {
     return fetch(`http://localhost:3030/count`, {
         method: 'GET',

@@ -132,9 +132,9 @@ app.get('/identities', async (req, res) => {
 app.get('/users/:username', async (req, res) => {
     const username = req.params.username
     try {
-        const filterUsers = await knex ('user_table')
-        .select('id', 'username')
-        .where('username', 'like', `%${username}%`)
+        const filterUsers = await knex('user_table')
+            .select('id', 'username')
+            .where('username', 'like', `%${username}%`)
         res.json(filterUsers)
     } catch (error) {
         console.error(error);
@@ -200,20 +200,44 @@ app.post('/user', async (req, res) => {
     }
 });
 
+name = "software team"
+admins = "1,5,12,24"
+members = "2,15,32,3,8,39"
+adminIds = [1, 5, 12, 24]
+
 app.post('/group', async (req, res) => {
     try {
-        await knex('group_table')
-            .insert(
-                {
-                   name: req.body.name,
-                   admins: req.body.admins,
-                   members: req.body.members
-                }
-            )
-            .then(res.status(201).send("add complete"))
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'An error occurred while fetching the data' });
+        const insertName = { name: req.body.name }
+        const trx = await knex.transaction();
+        try {
+            const [groupId] = await trx('group_table').insert(insertName).returning('id');
+            const admins = req.body.admins
+            const members = req.body.members
+            const adminIds = admins.split(",").map(id => parseInt(id, 10));
+            const memberIds = members.split(",").map(id => parseInt(id, 10));
+            for (const id of adminIds) {
+                await trx('group_relation_table').insert({
+                    group_id: groupId.id,
+                    user_id: id,
+                    role: "admin"
+                })
+            }
+            for (const id of memberIds) {
+                await trx('group_relation_table').insert({
+                    group_id: groupId.id,
+                    user_id: id,
+                    role: "member"
+                })
+            }
+            await trx.commit();
+            res.status(201).json({ message: 'Post created successfully' });
+        } catch (err) {
+            await trx.rollback();
+            throw err;
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Internal server error' });
     }
 });
 
@@ -231,15 +255,33 @@ app.get('/reminders', requireUser, async (req, res) => {
     }
 })
 
+app.get('/group/:id', requireUser, async (req, res) => {
+    const paramid = req.params.id;
+    try {
+        await knex('group_relation_table')
+            .join('user_table', 'group_relation_table.user_id', '=', 'user_table.id')
+            .join('group_table', 'group_relation_table.group_id', '=', 'group_table.id')
+            .select('group_relation_table.*', 'user_table.username', 'group_table.name')
+            .where('group_id', '=', paramid)
+            .then(group => {
+                res.json(group)
+            })
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while fetching the data' });
+    }
+})
+
 app.get('/groups', requireUser, async (req, res) => {
     let username = req.user.username
     let id = req.user.id
     try {
-        await knex('group_table')
-            .select('*')
+        await knex('group_relation_table')
+            .join('group_table', 'group_relation_table.group_id', '=', 'group_table.id')
+            .select('group_relation_table.*', 'group_table.name')
             .then(groups => {
-                const findUsersGroups = groups.filter((x) => ((x.admins).includes(username) || (x.members).includes(username)))
-                findUsersGroups.push({username: username, id: id})
+                const findUsersGroups = groups.filter((x) => x.user_id === id)
+                findUsersGroups.push({ username: username, UserID: id })
                 res.json(findUsersGroups)
             })
     } catch (error) {
@@ -277,29 +319,29 @@ app.post('/reminders', requireUser, async (req, res) => {
     let id = req.body.id
     try {
         const remindersForTargetDate = await knex('reminder_table')
-        .select('*')
-        .where('user', req.user.id)
-        .where('date', req.body.date)
-    if (hasCollision(id, req.body, remindersForTargetDate)) {
-        return res.status(400).send({ status: "bad" })
-    } else {
-        await knex('reminder_table')
-            .insert(
-                {
-                    description: req.body.description,
-                    date: req.body.date,
-                    start: req.body.start,
-                    end: req.body.end,
-                    type: req.body.type,
-                    user: req.user.id,
-                }
-            )
+            .select('*')
+            .where('user', req.user.id)
+            .where('date', req.body.date)
+        if (hasCollision(id, req.body, remindersForTargetDate)) {
+            return res.status(400).send({ status: "bad" })
+        } else {
+            await knex('reminder_table')
+                .insert(
+                    {
+                        description: req.body.description,
+                        date: req.body.date,
+                        start: req.body.start,
+                        end: req.body.end,
+                        type: req.body.type,
+                        user: req.user.id,
+                    }
+                )
             return res.status(200).send({ status: "good" })
         }
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'An error occurred while fetching the data' });
-}
+    }
 })
 
 app.delete('/reminders/:id', requireUser, async (req, res) => {
@@ -345,8 +387,8 @@ function sanitizeUser({ password, ...user }) {
 
 function hasCollision(id, passedInReminder, existingReminders) {
     const times = ["9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM"]
-    const existingRemindersX = existingReminders.filter(function (x) {return x.id !== id})
-    return existingRemindersX.some(function(existingRem) {
+    const existingRemindersX = existingReminders.filter(function (x) { return x.id !== id })
+    return existingRemindersX.some(function (existingRem) {
         let existingStart = times.indexOf(existingRem.start)
         let existingEnd = times.indexOf(existingRem.end)
         let passedInStart = times.indexOf(passedInReminder.start)
