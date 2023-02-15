@@ -129,6 +129,19 @@ app.get('/identities', async (req, res) => {
     }
 });
 
+app.get('/users/:username', async (req, res) => {
+    const username = req.params.username
+    try {
+        const filterUsers = await knex ('user_table')
+        .select('username')
+        .where('username', 'like', `%${username}%`)
+        res.json(filterUsers)
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while fetching the data' });
+    }
+})
+
 app.get('/logout', requireUser, async (req, res) => {
     try {
         await knex('tokens')
@@ -178,6 +191,23 @@ app.post('/user', async (req, res) => {
                     email: req.body.email,
                     username: req.body.username,
                     password: await bcrypt.hash(req.body.password, BCRYPT_ROUNDS)
+                }
+            )
+            .then(res.status(201).send("add complete"))
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while fetching the data' });
+    }
+});
+
+app.post('/group', async (req, res) => {
+    try {
+        await knex('group_table')
+            .insert(
+                {
+                   name: req.body.name,
+                   admins: req.body.admins,
+                   members: req.body.members
                 }
             )
             .then(res.status(201).send("add complete"))
