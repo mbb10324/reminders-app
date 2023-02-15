@@ -8,6 +8,17 @@ export function fetchReminders() {
         .then(res => res.json());
 }
 
+export function getGroups() {
+    return fetch(`http://localhost:3030/groups`, {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+            'Authorization': localStorage.getItem('token'),
+        },
+    })
+        .then(res => res.json());
+}
+
 export function fetchCount() {
     return fetch(`http://localhost:3030/count`, {
         method: 'GET',

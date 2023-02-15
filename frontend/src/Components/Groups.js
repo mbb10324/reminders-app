@@ -13,9 +13,10 @@ function Groups() {
     const [userAdded, setUserAdded] = useState(false);
     const [filteredRequest, setFilteredRequest] = useState([]);
     const [tempGroup, setTempGroup] = useState([]);
+    const [userGroups, setUserGroups] = useState([])
     const [failure, setFailure] = useState({});
     const abort = () => { setCreateGroupIndex(0); killAll() };
-    const goNextCreate = () => { if (createGroupIndex < 4) setCreateGroupIndex(createGroupIndex + 1) };
+    const goNextCreate = () => { if (createGroupIndex < 4) setCreateGroupIndex(createGroupIndex + 1); setUserAdded(false); setDuplicateError(false)};
     const goBackCreate = () => { setCreateGroupIndex(createGroupIndex - 1); killAll() };
 
     function killAll() {
@@ -25,6 +26,23 @@ function Groups() {
         setTempGroup([]);
         setFailure({});
     };
+
+    const [loggedInUser, setLoggedInUser] = useState()
+    const [adminGroup, setAdminGroup] = useState([])
+    const [memberGroup, setMemberGroup] = useState([])
+
+    useEffect(() => {
+        api.getGroups()
+            .then(groups => {
+                const findUsername = groups.filter((user) => { if ("username" in user) { return user } });
+                const tempName = findUsername
+                setLoggedInUser(tempName)
+                const findAdminGroups = groups.filter((groups) => { if ("admins" in groups) { return (groups.admins).includes(tempName) } })
+                setAdminGroup(findAdminGroups)
+                const findMemberGroups = groups.filter((groups) => { if ("members" in groups) { return (groups.members).includes(tempName) } })
+                setMemberGroup(findMemberGroups)
+            })
+    }, [])
 
     useEffect(() => {
         const smallCircle1 = document.getElementById("smallCircle1");
@@ -65,7 +83,8 @@ function Groups() {
         setUserAdded(false)
         api.filterUsers(username)
             .then((filtered) => {
-                setFilteredRequest(filtered)
+                const removeMe = filtered.filter((x) => x.username !== loggedInUser)
+                setFilteredRequest(removeMe)
             })
     }
 
@@ -82,26 +101,26 @@ function Groups() {
         }
     }
 
-    function addAdminTemp(user) {
-        let findDuplicate = tempGroup.find((x) => x.admin === user || x.member === user)
+    function addAdminTemp(userID) {
+        let findDuplicate = tempGroup.find((x) => x.admin === userID || x.member === userID)
         if (findDuplicate) {
             setDuplicateError(true)
             setFilteredRequest([])
         } else {
             setUserAdded(true)
-            setTempGroup([...tempGroup, { admin: user }])
+            setTempGroup([...tempGroup, { admin: userID }])
             setFilteredRequest([])
         }
     }
 
-    function addMemberTemp(user) {
-        let findDuplicate = tempGroup.find((x) => x.admin === user || x.member === user)
+    function addMemberTemp(userID) {
+        let findDuplicate = tempGroup.find((x) => x.admin === userID || x.member === userID)
         if (findDuplicate) {
             setDuplicateError(true)
             setFilteredRequest([])
         } else {
             setUserAdded(true)
-            setTempGroup([...tempGroup, { member: user }])
+            setTempGroup([...tempGroup, { member: userID }])
             setFilteredRequest([])
         }
     }
@@ -118,11 +137,13 @@ function Groups() {
         if (nameArray === 0 || nameArray[0] === "") { setFailure({ error: "Please give this group a name." }) }
         else if (memberArray.length === 0 || memberArray[0] === "") { setFailure({ error: "You need to add at least one member to this group." }) }
         else {
+            let addMe = loggedInUser[0].id
             let name = nameArray.toString()
-            let admins = adminArray.toString()
+            let admins = adminArray.toString() + "," + addMe
             let members = memberArray.toString()
-            return api.postGroup({ name, admins, members })
-                .then(window.location.reload())
+            console.log(admins)
+            // return api.postGroup({ name, admins, members })
+            //     .then(window.location.reload())
         }
     }
 
@@ -154,21 +175,30 @@ function Groups() {
                                 {/* <div className="noGroup">
                                     <p>After you have created a group, or have been added to one they will appear here</p>
                                 </div> */}
-                                <div className="adminGroups">
-                                    <p>You're an ADMIN of:</p>
-                                    <div className="groupTiles" onClick={() => setCreateGroupIndex(5)}>
-                                        <h6>DWC Software section</h6>
+                                {adminGroup.length !== 0 ?
+                                    <div className="adminGroups">
+                                        <p>You're an ADMIN of:</p>
+                                        {adminGroup.map((admins) => {
+                                            return (
+                                                <div className="groupTiles" onClick={() => setCreateGroupIndex(5)}>
+                                                    <h6>{admins.name}</h6>
+                                                </div>
+                                            )
+                                        })}
                                     </div>
-                                </div>
-                                <div className="memberGroups">
-                                    <p>You're a MEMBER of:</p>
-                                    <div className="groupTiles" onClick={() => setCreateGroupIndex(8)}>
-                                        <h6>Data Warfare Company</h6>
+                                    : ""}
+                                {memberGroup.length !== 0 ?
+                                    <div className="memberGroups">
+                                        <p>You're a MEMBER of:</p>
+                                        {memberGroup.map((members) => {
+                                            return (
+                                                <div className="groupTiles" onClick={() => setCreateGroupIndex(5)}>
+                                                    <h6>{members.name}</h6>
+                                                </div>
+                                            )
+                                        })}
                                     </div>
-                                    <div className="groupTiles" onClick={() => setCreateGroupIndex(8)}>
-                                        <h6>Army dummys</h6>
-                                    </div>
-                                </div>
+                                    : ""}
                             </div>
                         </Carousel.Item>
                         <Carousel.Item>
@@ -212,7 +242,7 @@ function Groups() {
                                                     return (
                                                         <div className="results">
                                                             <div className="addButton">
-                                                                <button onClick={() => addAdminTemp(users.username)}><IoIosAdd /></button>
+                                                                <button onClick={() => addAdminTemp(users.id)}><IoIosAdd /></button>
                                                             </div>
                                                             <p>{users.username}</p>
                                                         </div>
@@ -255,7 +285,7 @@ function Groups() {
                                                     return (
                                                         <div className="results">
                                                             <div className="addButton">
-                                                                <button onClick={() => addMemberTemp(users.username)}><IoIosAdd /></button>
+                                                                <button onClick={() => addMemberTemp(users.id)}><IoIosAdd /></button>
                                                             </div>
                                                             <p>{users.username}</p>
                                                         </div>

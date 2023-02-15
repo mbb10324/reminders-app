@@ -133,7 +133,7 @@ app.get('/users/:username', async (req, res) => {
     const username = req.params.username
     try {
         const filterUsers = await knex ('user_table')
-        .select('username')
+        .select('id', 'username')
         .where('username', 'like', `%${username}%`)
         res.json(filterUsers)
     } catch (error) {
@@ -224,6 +224,23 @@ app.get('/reminders', requireUser, async (req, res) => {
             .where('user', req.user.id)
             .then(reminder => {
                 res.json(reminder)
+            })
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while fetching the data' });
+    }
+})
+
+app.get('/groups', requireUser, async (req, res) => {
+    let username = req.user.username
+    let id = req.user.id
+    try {
+        await knex('group_table')
+            .select('*')
+            .then(groups => {
+                const findUsersGroups = groups.filter((x) => ((x.admins).includes(username) || (x.members).includes(username)))
+                findUsersGroups.push({username: username, id: id})
+                res.json(findUsersGroups)
             })
     } catch (error) {
         console.error(error);
