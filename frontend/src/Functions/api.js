@@ -71,17 +71,20 @@ export function deleteGroup(groupID) {
             'Content-type': 'application/json; charset=UTF-8',
             'Authorization': localStorage.getItem('token'),
         },
+        mode: "cors",
     })
 }
 
 export function deleteUserInGroup(person) {
-    return fetch(`http://localhost:3030/userInGroup/${person.user_id}`, {
+    let data = {userID: person.user_id, groupID: person.group_id}
+    return fetch(`http://localhost:3030/userInGroup`, {
         method: 'DELETE',
         headers: {
-            'Content-type': 'application/json; charset=UTF-8',
+            "Content-Type": "application/json",
             'Authorization': localStorage.getItem('token'),
         },
-        body: JSON.stringify(person.group_id),
+        mode: "cors",
+        body: JSON.stringify(data),
     })
 }
 
@@ -100,6 +103,15 @@ export function createUser({ fname, lname, email, username, password }) {
         headers: { "Content-Type": "application/json" },
         mode: "cors",
         body: JSON.stringify({ fname, lname, email, username, password }),
+    })
+}
+
+export function postGroupUser({group_id, user_id, role}) {
+    return fetch("http://localhost:3030/newGroupMember", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        mode: "cors",
+        body: JSON.stringify({group_id, user_id, role}),
     })
 }
 

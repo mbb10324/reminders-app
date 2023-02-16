@@ -200,10 +200,22 @@ app.post('/user', async (req, res) => {
     }
 });
 
-name = "software team"
-admins = "1,5,12,24"
-members = "2,15,32,3,8,39"
-adminIds = [1, 5, 12, 24]
+app.post('/newGroupMember', async (req, res) => {
+    try {
+        await knex('group_relation_table')
+            .insert(
+                {
+                    group_id: req.body.group_id,
+                    user_id: req.body.user_id,
+                    role: req.body.role
+                }
+            )
+            .then(res.status(201).send("add complete"))
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'An error occurred while fetching the data' });
+        }
+})
 
 app.post('/group', async (req, res) => {
     try {
@@ -375,14 +387,12 @@ app.delete('/groups/:id', requireUser, async (req, res) => {
     }
 });
 
-app.delete('/userInGroup/:id',  requireUser, async (req, res) => {
-    const id = req.params.id;
-    const group_id = req.body.group_id
-    console.log(id)
-    console.log(group_id)
+app.delete('/userInGroup',  requireUser, async (req, res) => {
+    const user_id = req.body.userID;
+    const group_id = req.body.groupID
     try {
         await knex('group_relation_table')
-        .where('user_id', id)
+        .where('user_id', user_id)
         .where('group_id', group_id)
         .del()
         return res.status(200).send({ status: "deleted" })

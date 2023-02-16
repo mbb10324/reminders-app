@@ -19,7 +19,7 @@ function Groups() {
     const [failure, setFailure] = useState({});
     const abort = () => { setCreateGroupIndex(0); killAll() };
     const goNextCreate = () => { if (createGroupIndex < 4) setCreateGroupIndex(createGroupIndex + 1); setUserAdded(false); setDuplicateError(false) };
-    const goBackCreate = () => { setCreateGroupIndex(createGroupIndex - 1); killAll() };
+    const goBackCreate = () => { setCreateGroupIndex(createGroupIndex - 1) };
 
     function killAll() {
         setDuplicateError(false);
@@ -39,7 +39,6 @@ function Groups() {
                 setAdminGroup(findAdminGroups)
                 const findMemberGroups = groups.filter((groups) => { if ("role" in groups) { return groups.role === 'member' } })
                 setMemberGroup(findMemberGroups)
-                console.log(groups)
             })
     }, [])
 
@@ -89,15 +88,10 @@ function Groups() {
 
     function addNameTemp() {
         let inputValue = document.getElementById("groupName").value
-        let replaceOld = tempGroup.find((x) => x.name !== undefined)
-        if (replaceOld) {
-            replaceOld.name = inputValue
-            setTempGroup(tempGroup)
-            setCreateGroupIndex(createGroupIndex + 1)
-        } else {
-            setTempGroup([...tempGroup, { name: inputValue }])
-            setCreateGroupIndex(createGroupIndex + 1)
-        }
+        tempGroup.splice(0, 1)
+        setTempGroup([...tempGroup, { name: inputValue }])
+        setCreateGroupIndex(createGroupIndex + 1)
+
     }
 
     function addAdminTemp(userID) {
@@ -123,6 +117,9 @@ function Groups() {
             setFilteredRequest([])
         }
     }
+
+    console.log("temporary group", tempGroup)
+    console.log("search filter", filteredRequest)
 
     function submitGroup() {
         let nameArray = [];
@@ -161,20 +158,45 @@ function Groups() {
 
     function deleteUserInGroup(person) {
         api.deleteUserInGroup(person)
-        .then(res => console.log(res))
+            .then(res => console.log(res))
         let removePerson = individualGroup.filter((x) => x.user_id !== person.user_id)
         setIndividualGroup(removePerson)
     }
 
     function leaveGroup(group_id) {
-        let newObject = {...loggedInUser[0], group_id}
-        delete Object.assign(newObject, {"user_id": newObject["UserID"]})["UserID"]
+        let newObject = { ...loggedInUser[0], group_id }
+        delete Object.assign(newObject, { "user_id": newObject["UserID"] })["UserID"]
         console.log(newObject)
         api.deleteUserInGroup(newObject)
-        .then(window.location.reload())
+            .then(window.location.reload())
     }
 
-    console.log(loggedInUser)
+    //if individual group already has user then throw error and dont post
+    function postAdmin(id) {
+        let group_id = individualGroup[0].group_id
+        let user_id = id
+        let role = 'admin'
+        api.postGroupUser({ group_id, user_id, role })
+            .then(window.location.reload())
+    }
+
+    //if individual group already has user then throw error and dont post
+    function postMember(id) {
+        console.log(individualGroup)
+        let findDuplicate = individualGroup.find((x) => x.user_id === id)
+        if (findDuplicate) {
+            setDuplicateError(true)
+            setFilteredRequest([])
+        } else {
+            setUserAdded(true)
+            setFilteredRequest([])
+            let group_id = individualGroup[0].group_id
+            let user_id = id
+            let role = 'member'
+            api.postGroupUser({ group_id, user_id, role })
+                .then(window.location.reload())
+        }
+    }
 
     return (
         <div className="AccountContainer">
@@ -371,7 +393,7 @@ function Groups() {
                                         {individualGroup.map((admins, index) => {
                                             if (admins.role === 'admin') {
                                                 return (
-                                                    <p><MdOutlineDelete onClick={() => deleteUserInGroup(admins)}/>&nbsp;&nbsp;{admins.username}</p>
+                                                    <p><MdOutlineDelete onClick={() => deleteUserInGroup(admins)} />&nbsp;&nbsp;{admins.username}</p>
                                                 )
                                             }
                                         })}
@@ -381,7 +403,7 @@ function Groups() {
                                         {individualGroup.map((members, index) => {
                                             if (members.role === 'member') {
                                                 return (
-                                                    <p><MdOutlineDelete onClick={() => deleteUserInGroup(members)}/>&nbsp;&nbsp;{members.username}</p>
+                                                    <p><MdOutlineDelete onClick={() => deleteUserInGroup(members)} />&nbsp;&nbsp;{members.username}</p>
                                                 )
                                             }
                                         })}
@@ -391,18 +413,40 @@ function Groups() {
                         </Carousel.Item>
                         <Carousel.Item>
                             <div className="groupCreator">
-                                <h5>DWC Software section</h5>
+                                {individualGroup.length > 0 ? <h5>{individualGroup[0].name}</h5> : ''}
                                 <p className="addThem">Add Admins:</p>
                                 <div className="input">
                                     <div className="search-box">
-                                        <input type="text" className="search-input" placeholder="Search.." />
+                                        <input type="text" className="search-input" placeholder="Search.." onChange={(e) => { debounceFilterUsers(e.target.value) }} />
                                         <button className="search-button">
                                             <MdSearch />
                                         </button>
                                     </div>
                                 </div>
+                                {userAdded ?
+                                    <><p style={{ color: "green", animation: "fadeIn 1s linear forwards" }}>User added to group!</p></>
+                                    :
+                                    <>
+                                        {duplicateError ?
+                                            <><p style={{ color: "tomato", animation: "fadeIn 1s linear forwards" }}>You've already added that person to this group.</p></>
+                                            :
+                                            <>
+                                                {filteredRequest.map((users, index) => {
+                                                    return (
+                                                        <div className="results">
+                                                            <div className="addButton">
+                                                                <button onClick={() => postAdmin(users.id)}><IoIosAdd /></button>
+                                                            </div>
+                                                            <p>{users.username}</p>
+                                                        </div>
+                                                    )
+                                                })}
+                                            </>
+                                        }
+                                    </>
+                                }
                                 <div className="backButton">
-                                    <button onClick={() => setCreateGroupIndex(5)}><IoMdArrowRoundBack /></button>
+                                    <button onClick={() => { setCreateGroupIndex(5); killAll() }}><IoMdArrowRoundBack /></button>
                                 </div>
                                 <div className="groupButtons">
                                     <button onClick={() => setCreateGroupIndex(5)}>done</button>
@@ -411,16 +455,38 @@ function Groups() {
                         </Carousel.Item>
                         <Carousel.Item>
                             <div className="groupCreator">
-                                <h5>DWC Software section</h5>
+                                {individualGroup.length > 0 ? <h5>{individualGroup[0].name}</h5> : ''}
                                 <p className="addThem">Add Members:</p>
                                 <div className="input">
                                     <div className="search-box">
-                                        <input type="text" className="search-input" placeholder="Search.." />
+                                        <input type="text" className="search-input" placeholder="Search.." onChange={(e) => { debounceFilterUsers(e.target.value) }} />
                                         <button className="search-button">
                                             <MdSearch />
                                         </button>
                                     </div>
                                 </div>
+                                {userAdded ?
+                                    <><p style={{ color: "green", animation: "fadeIn 1s linear forwards" }}>User added to group!</p></>
+                                    :
+                                    <>
+                                        {duplicateError ?
+                                            <><p style={{ color: "tomato", animation: "fadeIn 1s linear forwards" }}>You've already added that person to this group.</p></>
+                                            :
+                                            <>
+                                                {filteredRequest.map((users, index) => {
+                                                    return (
+                                                        <div className="results">
+                                                            <div className="addButton">
+                                                                <button onClick={() => postMember(users.id)}><IoIosAdd /></button>
+                                                            </div>
+                                                            <p>{users.username}</p>
+                                                        </div>
+                                                    )
+                                                })}
+                                            </>
+                                        }
+                                    </>
+                                }
                                 <div className="backButton">
                                     <button onClick={() => setCreateGroupIndex(5)}><IoMdArrowRoundBack /></button>
                                 </div>
