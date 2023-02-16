@@ -118,9 +118,6 @@ function Groups() {
         }
     }
 
-    console.log("temporary group", tempGroup)
-    console.log("search filter", filteredRequest)
-
     function submitGroup() {
         let nameArray = [];
         let adminArray = [];
@@ -173,16 +170,23 @@ function Groups() {
 
     //if individual group already has user then throw error and dont post
     function postAdmin(id) {
+        let findDuplicate = individualGroup.find((x) => x.user_id === id)
+        if (findDuplicate) {
+            setDuplicateError(true)
+            setFilteredRequest([])
+        } else {
+            setUserAdded(true)
+            setFilteredRequest([])
         let group_id = individualGroup[0].group_id
         let user_id = id
         let role = 'admin'
         api.postGroupUser({ group_id, user_id, role })
             .then(window.location.reload())
+        }
     }
 
     //if individual group already has user then throw error and dont post
     function postMember(id) {
-        console.log(individualGroup)
         let findDuplicate = individualGroup.find((x) => x.user_id === id)
         if (findDuplicate) {
             setDuplicateError(true)
@@ -503,7 +507,7 @@ function Groups() {
                                         <button onClick={() => setCreateGroupIndex(0)}><IoMdArrowRoundBack /></button>
                                     </div>
                                     <div className="adminGroupButtons">
-                                        <button>Leave Group</button>
+                                        <button onClick={() => leaveGroup(individualGroup[0].group_id)}>Leave Group</button>
                                     </div>
                                 </div>
                                 <div className="group-AB">

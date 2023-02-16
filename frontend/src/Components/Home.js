@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { MdOutlineAddBox } from "react-icons/md";
 import { BsCaretRight, BsCaretLeft } from "react-icons/bs"
 import { FiUser, FiUsers } from "react-icons/fi"
+import {FaLongArrowAltRight} from "react-icons/fa"
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import Carousel from 'react-bootstrap/Carousel';
@@ -397,6 +398,15 @@ function Home() {
             </div>
             {/*Contains the legend at bottom of page*/}
             <Footer />
+            <div className='groupPicker'>
+                <p>Switch to one of your group calendars! <FaLongArrowAltRight /> </p>
+                <select>
+                    <option>Personal Calendar</option>
+                    <option>test group</option>
+                    <option>software group</option>
+                </select>
+                <h4>2023</h4>
+            </div>
         </div >
     )
 }

@@ -383,3 +383,48 @@
     transform: scale(1.1);
     background-color: #1cca6b;
 }
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------Footer---------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+.groupPicker {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    color: #06E19E;
+}
+
+.groupPicker p {
+    margin-right: 30px;
+    margin-top: 10px;
+}
+
+.groupPicker p svg {
+    width: 25px;
+    height: 25px;
+}
+
+.groupPicker select {
+    background-color: rgb(39, 39, 39);
+    color: #06E19E;
+    border-color: #06E19E;
+}
+
+.groupPicker select option {
+    background-color: rgb(39, 39, 39);
+    color: #06E19E;
+}
+
+.groupPicker select:focus {
+    outline: none;
+}
+
+.groupPicker h4 {
+    font-size: 30px;
+    margin-top: 5px;
+    margin-left: 80px;
+}
