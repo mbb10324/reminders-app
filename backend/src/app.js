@@ -359,7 +359,38 @@ app.delete('/reminders/:id', requireUser, async (req, res) => {
     }
 });
 
+app.delete('/groups/:id', requireUser, async (req, res) => {
+    const id = req.params.id;
+    try {
+        await knex('group_relation_table')
+            .where('group_id', id)
+            .del()
+        await knex('group_table')
+            .where("id", id)
+            .del()
+        return res.status(200).send({ status: "deleted" })
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while fetching the data' });
+    }
+});
 
+app.delete('/userInGroup/:id',  requireUser, async (req, res) => {
+    const id = req.params.id;
+    const group_id = req.body.group_id
+    console.log(id)
+    console.log(group_id)
+    try {
+        await knex('group_relation_table')
+        .where('user_id', id)
+        .where('group_id', group_id)
+        .del()
+        return res.status(200).send({ status: "deleted" })
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while fetching the data' });
+    }
+});
 
 /*------------------------------------------------------------------------------
  | Server Start

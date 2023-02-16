@@ -153,6 +153,29 @@ function Groups() {
             .then(data => setIndividualGroup(data))
     }
 
+    function deleteGroup(id) {
+        api.deleteGroup(id)
+            .then(res => console.log(res))
+            .then(window.location.reload())
+    }
+
+    function deleteUserInGroup(person) {
+        api.deleteUserInGroup(person)
+        .then(res => console.log(res))
+        let removePerson = individualGroup.filter((x) => x.user_id !== person.user_id)
+        setIndividualGroup(removePerson)
+    }
+
+    function leaveGroup(group_id) {
+        let newObject = {...loggedInUser[0], group_id}
+        delete Object.assign(newObject, {"user_id": newObject["UserID"]})["UserID"]
+        console.log(newObject)
+        api.deleteUserInGroup(newObject)
+        .then(window.location.reload())
+    }
+
+    console.log(loggedInUser)
+
     return (
         <div className="AccountContainer">
             <div className='pageTransition aboutIn'></div>
@@ -335,8 +358,8 @@ function Groups() {
                                         <button onClick={() => setCreateGroupIndex(7)}>Add Members</button>
                                     </div>
                                     <div className="adminGroupButtons">
-                                        <button>Delete Group</button>
-                                        <button>Leave Group</button>
+                                        <button onClick={() => deleteGroup(individualGroup[0].group_id)}>Delete Group</button>
+                                        <button onClick={() => leaveGroup(individualGroup[0].group_id)}>Leave Group</button>
                                     </div>
                                 </div>
                                 <div className="group-AB">
@@ -348,7 +371,7 @@ function Groups() {
                                         {individualGroup.map((admins, index) => {
                                             if (admins.role === 'admin') {
                                                 return (
-                                                    <p><MdOutlineDelete/>&nbsp;&nbsp;{admins.username}</p>
+                                                    <p><MdOutlineDelete onClick={() => deleteUserInGroup(admins)}/>&nbsp;&nbsp;{admins.username}</p>
                                                 )
                                             }
                                         })}
@@ -358,7 +381,7 @@ function Groups() {
                                         {individualGroup.map((members, index) => {
                                             if (members.role === 'member') {
                                                 return (
-                                                    <p><MdOutlineDelete/>&nbsp;&nbsp;{members.username}</p>
+                                                    <p><MdOutlineDelete onClick={() => deleteUserInGroup(members)}/>&nbsp;&nbsp;{members.username}</p>
                                                 )
                                             }
                                         })}

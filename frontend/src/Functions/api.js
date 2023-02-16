@@ -64,6 +64,27 @@ export function deleteReminder(reminder) {
     })
 }
 
+export function deleteGroup(groupID) {
+    return fetch(`http://localhost:3030/groups/${groupID}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+            'Authorization': localStorage.getItem('token'),
+        },
+    })
+}
+
+export function deleteUserInGroup(person) {
+    return fetch(`http://localhost:3030/userInGroup/${person.user_id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+            'Authorization': localStorage.getItem('token'),
+        },
+        body: JSON.stringify(person.group_id),
+    })
+}
+
 export function checkLogin({ username, password }) {
     return fetch('http://localhost:3030/login', {
         method: 'POST',
