@@ -8,13 +8,13 @@ import { useNavigate } from "react-router-dom";
 import { MdOutlineAddBox } from "react-icons/md";
 import { BsCaretRight, BsCaretLeft } from "react-icons/bs"
 import { FiUser, FiUsers } from "react-icons/fi"
-import {FaLongArrowAltRight} from "react-icons/fa"
+import { MdEmail } from "react-icons/md";
+import { FaFacebook, FaTwitter, FaInstagram, FaYoutube, FaLongArrowAltRight, FaLongArrowAltLeft } from 'react-icons/fa'
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import Carousel from 'react-bootstrap/Carousel';
 import * as api from '../Functions/api';
 import * as util from '../Functions/util'
-import ReactScrollWheelHandler from "react-scroll-wheel-handler";
 
 function Home() {
     //Cookie stuff
@@ -38,6 +38,10 @@ function Home() {
 
     const goAccount = () => {navigate('/Account')}
     const goGroups = () => {navigate('/Groups')}
+    const goHelp = () => { navigate("/Help") }
+    const goPrivacy = () => { navigate("/Privacy") }
+    const goTerms = () => { navigate("/Terms") }
+    const goSecurity = () => { navigate("/Security") }
 
     //sets initial form values and shows the add reminder modal
     function handleShow() {
@@ -242,12 +246,6 @@ function Home() {
                     and maps through days of the week and passes responsibility 
                     to display reminders to the reminder component */}
                     <div className="days">
-                        <ReactScrollWheelHandler
-                            upHandler={subIndex}
-                            downHandler={addIndex}
-                            disableSwipe={true}
-                            disableKeyboard={true}
-                            disableSwipeWithMouse={true}>
                             <Carousel id='carousel' activeIndex={focusedWeekIndex} onSelect={handleSelect} interval={null} indicators={false} controls={false}>
                                 {weeks.map(util.buildWeek).map((thisIsChaos, index) => {
                                     return (
@@ -282,7 +280,6 @@ function Home() {
                                     )
                                 })}
                             </Carousel>
-                        </ReactScrollWheelHandler>
                     </div>
                 </div>
                 {/* Right side arrow */}
@@ -303,29 +300,6 @@ function Home() {
                 <p className={selectedMonth === 10 ? 'selected' : ""}  id='ten' onClick={() => pickMonth(10)}>Nov</p>
                 <p className={selectedMonth === 11 ? 'selected' : ""}  id='eleven' onClick={() => pickMonth(11)}>Dec</p>
             </div>
-            {/* <div className="bottom">
-                <h2>
-                    <IoIosArrowDown style={{ width: "40px", height: "40px", color: "#06E19E" }} />
-                    <select value={selectedMonth} onChange={pickMonth}>
-                        <option value="0">January</option>
-                        <option value="1">February</option>
-                        <option value="2">March</option>
-                        <option value="3">April</option>
-                        <option value="4">May</option>
-                        <option value="5">June</option>
-                        <option value="6">July</option>
-                        <option value="7">August</option>
-                        <option value="8">September</option>
-                        <option value="9">October</option>
-                        <option value="10">November</option>
-                        <option value="11">December</option>
-                    </select>
-                </h2>
-                <h2>
-                    {thisYear}
-                </h2>
-            </div> */}
-            {/* Pop up modal to add a reminder */}
             <div className="Modal">
                 <Modal
                     show={show}
@@ -398,14 +372,39 @@ function Home() {
             </div>
             {/*Contains the legend at bottom of page*/}
             <Footer />
+            <div className="homeBottom">
             <div className='groupPicker'>
-                <p>Switch to one of your group calendars! <FaLongArrowAltRight /> </p>
                 <select>
                     <option>Personal Calendar</option>
                     <option>test group</option>
                     <option>software group</option>
                 </select>
-                <h4>2023</h4>
+                <p><FaLongArrowAltLeft /> Switch to one of your group calendars</p>
+                <h4>Welcome @MilesB!</h4>
+                <p>Choose which year you'd like to view<FaLongArrowAltRight /></p>
+                <select>
+                    <option>2022</option>
+                    <option selected>2023</option>
+                    <option>2024</option>
+                </select>
+            </div>
+                <h3>Check out our help page <FaLongArrowAltRight /></h3>
+                <div className="helpButtonHome" onClick={goHelp}><p>Help</p></div>
+                <div className="homeGutter">
+                    <p>@2023 ReminderApp, inc.</p>
+                    <div className="SocialIcons">
+                        <a className="indivSocialIcons" href="https://fb.me/GalvanizeHQ/" target="_blank" rel="noopener noreferrer"><FaFacebook /></a>
+                        <a className="indivSocialIcons" href="https://twitter.com/galvanize/" target="_blank" rel="noopener noreferrer"><FaTwitter /></a>
+                        <a className="indivSocialIcons" href="https://instagr.am/GalvanizeHQ/" target="_blank" rel="noopener noreferrer"><FaInstagram /></a>
+                        <a className="indivSocialIcons" href="https://www.youtube.com/@Galvanize_HackReactor/videos/" target="_blank" rel="noopener noreferrer"><FaYoutube /></a>
+                        <a className="indivSocialIcons" href="mailto:marketing@galvanize.com" rel="noopener noreferrer"><MdEmail /></a>
+                    </div>
+                    <div className="legalLinks">
+                        <span className="spans" onClick={goPrivacy}>privacy</span>
+                        <span className="spans" onClick={goTerms}>terms</span>
+                        <span className="spans" onClick={goSecurity}>security</span>
+                    </div>
+                </div>
             </div>
         </div >
     )

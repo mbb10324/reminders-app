@@ -8,8 +8,22 @@
     animation-timing-function: ease-in;
     animation-duration: 2s;
     height: 100vh;
-    overflow: hidden;
+    overflow-x: hidden;
     position: relative;
+}
+
+.content::-webkit-scrollbar {
+    width: 1em;
+}
+
+.content::-webkit-scrollbar-track {
+    background-color: #F8CE27;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.2);
+}
+
+.content::-webkit-scrollbar-thumb {
+    background-color: #063170;
+    border-radius: 1rem;
 }
 
 
@@ -61,6 +75,7 @@
 
 .header {
     display: grid;
+    margin-bottom: 30px;
     grid-template-columns: 1fr 2fr 1fr;
     justify-content: center;
     align-items: center;
@@ -69,7 +84,6 @@
 
 .header svg {
     margin-left: 35%;
-    /* margin-right: 50%; */
     cursor: pointer;
     transition: all .5s cubic-bezier(.79, -1, .37, 2);
     filter: drop-shadow(0 1px 3px rgb(0 0 0 / 1));
@@ -393,14 +407,16 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    margin-left: 5%;
+    margin-right: 5%;
     margin-top: 10px;
+    padding-top: 30px;
     color: #06E19E;
 }
 
 .groupPicker p {
-    margin-right: 30px;
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 .groupPicker p svg {
@@ -409,13 +425,18 @@
 }
 
 .groupPicker select {
-    background-color: rgb(39, 39, 39);
+    cursor: pointer;
+    background-color: #063170;
+    border-radius: 8px;
+    font-size: 30px;
     color: #06E19E;
-    border-color: #06E19E;
+    text-align: right;
+    border: none;
+    width: 300px;
 }
 
 .groupPicker select option {
-    background-color: rgb(39, 39, 39);
+    background-color: rgb(25, 25, 25);
     color: #06E19E;
 }
 
@@ -425,6 +446,54 @@
 
 .groupPicker h4 {
     font-size: 30px;
-    margin-top: 5px;
-    margin-left: 80px;
+    margin-top: 8px;
+    margin-left: 5%;
+     margin-right: 5%;
+    color: #02B3FC;
+}
+
+.homeBottom {
+    position: relative;
+    background-color: rgb(25, 25, 25);
+    width: 100%;
+    height: 400px;
+}
+
+.homeBottom h3 {
+    padding-top: 100px;
+    margin-left: -200px;
+}
+
+.helpButtonHome {
+    display: flex;
+    justify-content: space-around;
+    position: relative;
+    background-color: #F8CE27;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    left: 55%;
+    top: -18%;
+    transform: scale(1);
+    transition: all .6s cubic-bezier(.79, -1, .37, 2);
+}
+
+.helpButtonHome p {
+    color: #063170;
+    margin-top: 38px;
+}
+
+.helpButtonHome:hover {
+    transform: scale(1.2);
+    transition: all .6s cubic-bezier(.79, -.7, .37, 1.5);
+    background-color: #02B3FC;
+    cursor: pointer;
+}
+
+.homeGutter {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    color: rgb(130, 130, 130);
+    font-family: Quicksand-Light;
 }
