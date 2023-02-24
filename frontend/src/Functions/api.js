@@ -1,9 +1,11 @@
-export function fetchReminders() {
-    return fetch(`http://localhost:3030/reminders`, {
+export function fetchReminders(id) {
+    return fetch(`http://localhost:3030/getreminders/${id}`, {
         method: 'GET',
         headers: {
+            "Content-Type": "application/json; charset=UTF-8",
             'Authorization': localStorage.getItem('token'),
         },
+        mode: "cors",
     })
         .then(res => res.json());
 }
@@ -41,7 +43,7 @@ export function fetchCount() {
         .then(res => res.json());
 }
 
-export function createReminder({ id, description, date, start, end, type }) {
+export function createReminder({ id, description, date, start, end, type, group }) {
     return fetch(`http://localhost:3030/reminders`, {
         method: "POST",
         headers: {
@@ -49,7 +51,7 @@ export function createReminder({ id, description, date, start, end, type }) {
             "Authorization": localStorage.getItem('token'),
         },
         mode: "cors",
-        body: JSON.stringify({ id, description, date, start, end, type }),
+        body: JSON.stringify({ id, description, date, start, end, type, group }),
     })
 }
 

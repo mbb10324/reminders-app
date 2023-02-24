@@ -10,7 +10,7 @@ function Menu() {
     const [showMenuNav, setShowMenuNav] = useState(false)
     const toggleMenu = () => setShowMenuNav(!showMenuNav)
     const navigate = useNavigate(); //navigate var
-    const [cookies, setCookie, removeCookie] = useCookies(['index', 'month', 'today', 'user']) //cookies
+    const [cookies, setCookie, removeCookie] = useCookies(['index', 'month', 'today', 'user', 'group']) //cookies
     const [logoutCheck, setLogoutCheck] = useState(false); //handles the visibility state for deleting a reminder
     const handleClose = () => setLogoutCheck(false); //function to toggle closing delete modal
     const handleShow = () => setLogoutCheck(true); //function to toggle showing delete modal
@@ -24,6 +24,7 @@ function Menu() {
                 removeCookie('index')
                 removeCookie('month')
                 removeCookie('today')
+                removeCookie('group')
                 localStorage.removeItem('token');
                 navigate("/Login")
             });

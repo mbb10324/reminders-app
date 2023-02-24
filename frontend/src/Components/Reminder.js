@@ -2,12 +2,14 @@ import './Reminder.css';
 import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
+import { useCookies } from "react-cookie";
 import * as api from '../Functions/api';
 
 function Reminder(props) {
     //Data Stuff
     const todaysReminders = props.reminders;
     const [modalRem, setModalRem] = useState({});
+    const [cookies, setCookie] = useCookies(['index', 'month', 'today', 'user', 'group']);
     //View Stuff
     const [modalRemClass, setModalRemClass] = useState('');
     const [showDelete, setShowDelete] = useState(false); //handles the visibility state for deleting a reminder
@@ -86,13 +88,14 @@ function Reminder(props) {
             setErrors(newErrors);
         } else {
             let id = 0
-            if (!copy) {id = modalRem.id}
+            if (!copy) { id = modalRem.id }
             let description = e.target[0].value;
             let date = e.target[1].value;
             let start = e.target[2].value;
             let end = e.target[3].value;
             let type = e.target[4].value;
-            await props.editReminder({id, description, date, start, end, type })
+            let group = cookies.group
+            await props.editReminder({ id, description, date, start, end, type, group })
                 .then(Response => {
                     if (Response.ok) {
                         return Response.json()
@@ -100,7 +103,7 @@ function Reminder(props) {
                         throw new Error('collides')
                     }
                 })
-                .then(() => {if (!copy) {return props.deleteReminder(modalRem)}})
+                .then(() => { if (!copy) { return props.deleteReminder(modalRem) } })
                 .then(() => props.reloadReminders())
                 .then(() => closeAll())
                 .catch(error => {
@@ -139,20 +142,28 @@ function Reminder(props) {
                                 <p className="title">{modalRem.description}</p>
                                 <p className="time">{modalRem.start}-{modalRem.end}</p>
                             </div>
-                            <div className='modalbuttons'>
-                                <button className='edit copy' onClick={() => { handleShowEdit(); setCopy(true) }}>
-                                    Copy
-                                </button>
-                                <button className='edit' onClick={handleShowEdit}>
-                                    Edit
-                                </button>
-                                <button className='closeIt' onClick={handleCloseReminder}>
-                                    Close
-                                </button>
-                                <button className='delete' onClick={handleShowDelete}>
-                                    Delete
-                                </button>
-                            </div>
+                            {props.isAdmin ?
+                                <div className='modalbuttons'>
+                                    <button className='edit copy' onClick={() => { handleShowEdit(); setCopy(true) }}>
+                                        Copy
+                                    </button>
+                                    <button className='edit' onClick={handleShowEdit}>
+                                        Edit
+                                    </button>
+                                    <button className='closeIt' onClick={handleCloseReminder}>
+                                        Close
+                                    </button>
+                                    <button className='delete' onClick={handleShowDelete}>
+                                        Delete
+                                    </button>
+                                </div>
+                                :
+                                <div>
+                                    <button className='closeIt' onClick={handleCloseReminder}>
+                                        Close
+                                    </button>
+                                </div>
+                            }
                         </Modal>
                         {/* Pop up modal when deleting a reminder */}
                         <Modal

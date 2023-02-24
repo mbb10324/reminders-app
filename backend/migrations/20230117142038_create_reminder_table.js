@@ -11,6 +11,7 @@ exports.up = function(knex) {
     table.string('end', 80);
     table.string('type', 80);
     table.integer('user');
+    table.integer('group');
   })
 };
 

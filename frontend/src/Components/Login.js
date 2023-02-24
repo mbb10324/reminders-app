@@ -1,6 +1,7 @@
 import "./Login.css";
 import React, { useEffect, useState, } from 'react';
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import { FiLock, FiUnlock } from 'react-icons/fi';
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
@@ -12,6 +13,7 @@ import * as util from '../Functions/util'
 
 function Login() {
     const navigate = useNavigate(); //navigate var
+    const [cookies, setCookie] = useCookies(['index', 'month', 'today', 'user', 'group']);
     const [lock, setLock] = useState(false); //controls lock view
     const [show, setShow] = useState(false); //show or close create account modal
     const [showAlert, setShowAlert] = useState(false); //toggles the login failure pop up
@@ -76,6 +78,7 @@ function Login() {
                     return;
                 }
                 toggleLock();
+                setCookie("group", 0)
                 localStorage.setItem('token', result.token);
                 setTimeout(() => { navigate("/") }, 2000);
             });

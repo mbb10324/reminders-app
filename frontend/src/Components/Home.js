@@ -18,7 +18,7 @@ import * as util from '../Functions/util'
 
 function Home() {
     //Cookie stuff
-    const [cookies, setCookie] = useCookies(['index', 'month', 'today', 'user']); //index of current slide-index of the month-index of this week
+    const [cookies, setCookie] = useCookies(['index', 'month', 'today', 'user', 'group']); //index of current slide-index of the month-index of this week
     const [reminders, setReminders] = useState([]); //state that holds all the reminders for the currently logged in user
     // Date Stuff
     const date = new Date //todays date
@@ -28,6 +28,7 @@ function Home() {
     // View stuff
     const navigate = useNavigate();
     const [selectedMonth, setSelectedMonth] = useState(util.getInitialMonth(cookies, date)); //state of the current month that is selected
+    const [selectedGroup, setSelectedGroup] = useState(cookies.group)
     const [focusedWeekIndex, setFocusedWeekIndex] = useState(util.getInitialWeek(cookies, weeks)); //state that holds index of current slide
     const [show, setShow] = useState(false); //handles the visibility state for adding a new reminder
     const handleClose = () => { setShow(false); setForm({}); setErrors([]) }//function to toggle closing add reminder modal
@@ -36,8 +37,8 @@ function Home() {
     const [errors, setErrors] = useState([]); //holds error strings
     const [form, setForm] = useState([]); //contains create account form entries in seperate object
 
-    const goAccount = () => {navigate('/Account')}
-    const goGroups = () => {navigate('/Groups')}
+    const goAccount = () => { navigate('/Account') }
+    const goGroups = () => { navigate('/Groups') }
     const goHelp = () => { navigate("/Help") }
     const goPrivacy = () => { navigate("/Privacy") }
     const goTerms = () => { navigate("/Terms") }
@@ -91,7 +92,8 @@ function Home() {
     //fetch for all reminders
     function reloadReminders() {
         handleClose()
-        api.fetchReminders()
+        const cookieID = JSON.parse(cookies.group)
+        api.fetchReminders(cookieID)
             .then(reminders => setReminders(reminders))
             .then(setStatus([]))
             .then(setErrors([]))
@@ -137,6 +139,31 @@ function Home() {
         setCookie("today", util.getIndexOfThisWeek(weeks))
     }, [selectedMonth]);
 
+    const [groups, setGroups] = useState([])
+
+    useEffect(() => {
+        api.getGroups()
+            .then(data => { setGroups(data) })
+    }, [])
+
+    const [isAdmin, setIsAdmin] = useState(true)
+
+    useEffect(() => {
+        let findGroup = groups.filter(x => x.group_id === JSON.parse(cookies.group))
+        if (findGroup.length > 0) {
+            let findRole = findGroup[0].role
+            if (findRole === "admin") {
+                setIsAdmin(true)
+            } else {
+                setIsAdmin(false)
+            }
+        }
+    })
+
+    //determine admin or member, check every render 
+    //for wether or not they are admin or member of selected 
+    //group and toggle boolean to activate or disactivate admin buttons
+
     //middle man to delete reminder
     function deleteReminder(reminder) {
         return api.deleteReminder(reminder)
@@ -144,8 +171,8 @@ function Home() {
     }
 
     //middle man to edit reminder
-    function editReminder({ id, description, date, start, end, type }) {
-        return api.createReminder({ id, description, date, start, end, type })
+    function editReminder({ id, description, date, start, end, type, group }) {
+        return api.createReminder({ id, description, date, start, end, type, group })
             .then(Response => Response)
     }
 
@@ -163,7 +190,8 @@ function Home() {
             let start = e.target[2].value;
             let end = e.target[3].value;
             let type = e.target[4].value;
-            await api.createReminder({ id, description, date, start, end, type })
+            let group = cookies.group;
+            await api.createReminder({ id, description, date, start, end, type, group })
                 .then(Response => {
                     if (Response.ok) {
                         return Response.json()
@@ -204,6 +232,12 @@ function Home() {
         setFocusedWeekIndex(findFirstWeekOfMonth)
     }
 
+    function pickGroup(e) {
+        setCookie("group", e.target.value)
+        setSelectedGroup(e.target.value)
+        window.location.reload()
+    }
+
     //start of HTML
     return (
         <div className="content">
@@ -211,17 +245,21 @@ function Home() {
             {/* Title */}
             <div className='header'>
                 {/* <div className="tooltip3"><span className="tooltiptext">Add a reminder!</span> */}
-                    <div className='MenuIconsHome'>
+                <div className='MenuIconsHome'>
+                    {isAdmin ?
                         <MdOutlineAddBox style={{ width: "47px", height: "47px", color: "#02B3FC" }} onClick={handleShow} />
-                        <FiUsers style={{ width: "47px", height: "47px", color: "#02B3FC" }} onClick={goGroups}/>
-                    </div>
+                        :
+                        <MdOutlineAddBox style={{ width: "47px", height: "47px", color: "transparent", transform: "none", cursor: "default" }} />
+                    }
+                    <FiUsers style={{ width: "47px", height: "47px", color: "#02B3FC" }} onClick={goGroups} />
+                </div>
                 {/* </div> */}
                 <h1>Reminders</h1>
                 {/* <div className="tooltip4"><span className="tooltiptext">Menu</span> */}
-                    <div className='MenuIconsHome'>
-                        <FiUser style={{ width: "47px", height: "47px", color: "#02B3FC" }} onClick={goAccount}/>
-                        <Menu />
-                    </div>
+                <div className='MenuIconsHome'>
+                    <FiUser style={{ width: "47px", height: "47px", color: "#02B3FC" }} onClick={goAccount} />
+                    <Menu />
+                </div>
                 {/* </div> */}
             </div>
             <div className="midBody">
@@ -246,40 +284,41 @@ function Home() {
                     and maps through days of the week and passes responsibility 
                     to display reminders to the reminder component */}
                     <div className="days">
-                            <Carousel id='carousel' activeIndex={focusedWeekIndex} onSelect={handleSelect} interval={null} indicators={false} controls={false}>
-                                {weeks.map(util.buildWeek).map((thisIsChaos, index) => {
-                                    return (
-                                        <Carousel.Item key={index}>
-                                            {thisIsChaos.map((day, index) => {
-                                                const dailyReminders = util.filterReminders(reminders, day.dayMonth, day.dayNum);
-                                                const pastPresentFuture = inception(day.dayNum, day.dayMonth)
-                                                return (
-                                                    <div key={index} className='day'>
-                                                        {Object.keys(day).length === 0 ?
-                                                            <div className='placeholderCard'></div>
-                                                            :
-                                                            <>
-                                                                <div className="date">
-                                                                    <p className="date-day">{day.dayName}</p>
-                                                                    <p className="date-mon">{day.dayMonth}, {day.dayNum}</p>
-                                                                </div>
-                                                                <Reminder
-                                                                    reminders={dailyReminders}
-                                                                    reloadReminders={reloadReminders}
-                                                                    deleteReminder={deleteReminder}
-                                                                    editReminder={editReminder}
-                                                                    dayNum={day.dayNum}
-                                                                    pastPresentFuture={pastPresentFuture}
-                                                                />
-                                                            </>
-                                                        }
-                                                    </div>
-                                                )
-                                            })}
-                                        </Carousel.Item>
-                                    )
-                                })}
-                            </Carousel>
+                        <Carousel id='carousel' activeIndex={focusedWeekIndex} onSelect={handleSelect} interval={null} indicators={false} controls={false}>
+                            {weeks.map(util.buildWeek).map((thisIsChaos, index) => {
+                                return (
+                                    <Carousel.Item key={index}>
+                                        {thisIsChaos.map((day, index) => {
+                                            const dailyReminders = util.filterReminders(reminders, day.dayMonth, day.dayNum);
+                                            const pastPresentFuture = inception(day.dayNum, day.dayMonth)
+                                            return (
+                                                <div key={index} className='day'>
+                                                    {Object.keys(day).length === 0 ?
+                                                        <div className='placeholderCard'></div>
+                                                        :
+                                                        <>
+                                                            <div className="date">
+                                                                <p className="date-day">{day.dayName}</p>
+                                                                <p className="date-mon">{day.dayMonth}, {day.dayNum}</p>
+                                                            </div>
+                                                            <Reminder
+                                                                reminders={dailyReminders}
+                                                                reloadReminders={reloadReminders}
+                                                                deleteReminder={deleteReminder}
+                                                                editReminder={editReminder}
+                                                                dayNum={day.dayNum}
+                                                                pastPresentFuture={pastPresentFuture}
+                                                                isAdmin={isAdmin}
+                                                            />
+                                                        </>
+                                                    }
+                                                </div>
+                                            )
+                                        })}
+                                    </Carousel.Item>
+                                )
+                            })}
+                        </Carousel>
                     </div>
                 </div>
                 {/* Right side arrow */}
@@ -287,18 +326,18 @@ function Home() {
             </div>
             {/* Below the calendar, contains month, button to add reminder, and year */}
             <div className='monthsIndexer'>
-                <p className={selectedMonth === 0 ? 'selected' : ""} id='0' onClick={() => pickMonth(0)}>Jan</p>
-                <p className={selectedMonth === 1 ? 'selected' : ""}  id='two' onClick={() => pickMonth(1)} >Feb</p>
-                <p className={selectedMonth === 2 ? 'selected' : ""}  id='three' onClick={() => pickMonth(2)}>Mar</p>
-                <p className={selectedMonth === 3 ? 'selected' : ""}  id='three' onClick={() => pickMonth(3)}>Apr</p>
-                <p className={selectedMonth === 4 ? 'selected' : ""}  id='four' onClick={() => pickMonth(4)}>May</p>
-                <p className={selectedMonth === 5 ? 'selected' : ""}  id='five' onClick={() => pickMonth(5)}>Jun</p>
-                <p className={selectedMonth === 6 ? 'selected' : ""}  id='six' onClick={() => pickMonth(6)}>Jul</p>
-                <p className={selectedMonth === 7 ? 'selected' : ""}  id='seven' onClick={() => pickMonth(7)}>Aug</p>
-                <p className={selectedMonth === 8 ? 'selected' : ""}  id='eight' onClick={() => pickMonth(8)}>Sep</p>
-                <p className={selectedMonth === 9 ? 'selected' : ""}  id='nine' onClick={() => pickMonth(9)} >Oct</p>
-                <p className={selectedMonth === 10 ? 'selected' : ""}  id='ten' onClick={() => pickMonth(10)}>Nov</p>
-                <p className={selectedMonth === 11 ? 'selected' : ""}  id='eleven' onClick={() => pickMonth(11)}>Dec</p>
+                <p className={selectedMonth === 0 ? 'selected' : ""} onClick={() => pickMonth(0)}>Jan</p>
+                <p className={selectedMonth === 1 ? 'selected' : ""} onClick={() => pickMonth(1)} >Feb</p>
+                <p className={selectedMonth === 2 ? 'selected' : ""} onClick={() => pickMonth(2)}>Mar</p>
+                <p className={selectedMonth === 3 ? 'selected' : ""} onClick={() => pickMonth(3)}>Apr</p>
+                <p className={selectedMonth === 4 ? 'selected' : ""} onClick={() => pickMonth(4)}>May</p>
+                <p className={selectedMonth === 5 ? 'selected' : ""} onClick={() => pickMonth(5)}>Jun</p>
+                <p className={selectedMonth === 6 ? 'selected' : ""} onClick={() => pickMonth(6)}>Jul</p>
+                <p className={selectedMonth === 7 ? 'selected' : ""} onClick={() => pickMonth(7)}>Aug</p>
+                <p className={selectedMonth === 8 ? 'selected' : ""} onClick={() => pickMonth(8)}>Sep</p>
+                <p className={selectedMonth === 9 ? 'selected' : ""} onClick={() => pickMonth(9)} >Oct</p>
+                <p className={selectedMonth === 10 ? 'selected' : ""} onClick={() => pickMonth(10)}>Nov</p>
+                <p className={selectedMonth === 11 ? 'selected' : ""} onClick={() => pickMonth(11)}>Dec</p>
             </div>
             <div className="Modal">
                 <Modal
@@ -373,21 +412,26 @@ function Home() {
             {/*Contains the legend at bottom of page*/}
             <Footer />
             <div className="homeBottom">
-            <div className='groupPicker'>
-                <select>
-                    <option>Personal Calendar</option>
-                    <option>test group</option>
-                    <option>software group</option>
-                </select>
-                <p><FaLongArrowAltLeft /> Switch to one of your group calendars</p>
-                <h4>Welcome @MilesB!</h4>
-                <p>Choose which year you'd like to view<FaLongArrowAltRight /></p>
-                <select>
-                    <option>2022</option>
-                    <option selected>2023</option>
-                    <option>2024</option>
-                </select>
-            </div>
+                <div className='groupPicker'>
+                    <select value={selectedGroup} onChange={pickGroup}>
+                        <option value={0}>Personal Calendar</option>
+                        {groups.map(group => {
+                            if (group.group_id) {
+                                return (
+                                    <option value={group.group_id}>{group.name}({group.role})</option>
+                                )
+                            }
+                        })}
+                    </select>
+                    <p><FaLongArrowAltLeft /> Switch to one of your group calendars</p>
+                    <h4>Welcome @{groups.map(findUsername => findUsername.username)}</h4>
+                    <p>Choose which year you'd like to view<FaLongArrowAltRight /></p>
+                    <select>
+                        <option>{thisYear - 1}</option>
+                        <option selected>{thisYear}</option>
+                        <option>{thisYear + 1}</option>
+                    </select>
+                </div>
                 <h3>Check out our help page <FaLongArrowAltRight /></h3>
                 <div className="helpButtonHome" onClick={goHelp}><p>Help</p></div>
                 <div className="homeGutter">

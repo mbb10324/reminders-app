@@ -253,14 +253,25 @@ app.post('/group', async (req, res) => {
     }
 });
 
-app.get('/reminders', requireUser, async (req, res) => {
+app.get('/getreminders/:id', requireUser, async (req, res) => {
+    const reminderId = req.params.id
     try {
+        if (JSON.parse(reminderId) === 0) {
         await knex('reminder_table')
             .select('*')
             .where('user', req.user.id)
+            .where('group', reminderId)
             .then(reminder => {
                 res.json(reminder)
             })
+        } else {
+            await knex('reminder_table')
+            .select('*')
+            .where('group', reminderId)
+            .then(reminder => {
+                res.json(reminder)
+            })
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'An error occurred while fetching the data' });
@@ -269,6 +280,7 @@ app.get('/reminders', requireUser, async (req, res) => {
 
 app.get('/group/:id', requireUser, async (req, res) => {
     const paramid = req.params.id;
+    console.log
     try {
         await knex('group_relation_table')
             .join('user_table', 'group_relation_table.user_id', '=', 'user_table.id')
@@ -333,6 +345,7 @@ app.post('/reminders', requireUser, async (req, res) => {
         const remindersForTargetDate = await knex('reminder_table')
             .select('*')
             .where('user', req.user.id)
+            .where('group', req.body.group)
             .where('date', req.body.date)
         if (hasCollision(id, req.body, remindersForTargetDate)) {
             return res.status(400).send({ status: "bad" })
@@ -346,6 +359,7 @@ app.post('/reminders', requireUser, async (req, res) => {
                         end: req.body.end,
                         type: req.body.type,
                         user: req.user.id,
+                        group: req.body.group
                     }
                 )
             return res.status(200).send({ status: "good" })

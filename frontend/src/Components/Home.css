@@ -410,7 +410,7 @@
     justify-content: space-between;
     margin-left: 5%;
     margin-right: 5%;
-    margin-top: 10px;
+    margin-top: 15px;
     padding-top: 30px;
     color: #06E19E;
 }
@@ -433,6 +433,7 @@
     text-align: right;
     border: none;
     width: 300px;
+    box-shadow: 0 1px 2px black;
 }
 
 .groupPicker select option {
@@ -456,7 +457,7 @@
     position: relative;
     background-color: rgb(25, 25, 25);
     width: 100%;
-    height: 400px;
+    height: 420px;
 }
 
 .homeBottom h3 {

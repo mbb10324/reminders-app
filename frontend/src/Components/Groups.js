@@ -143,6 +143,7 @@ function Groups() {
     const [individualGroup, setIndividualGroup] = useState([])
 
     function getGroupInfo(id) {
+        console.log(id)
         api.getIndividualGroup(id)
             .then(data => setIndividualGroup(data))
     }
