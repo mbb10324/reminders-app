@@ -238,6 +238,8 @@ function Home() {
         window.location.reload()
     }
 
+    console.log(reminders)
+
     //start of HTML
     return (
         <div className="content">

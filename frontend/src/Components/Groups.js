@@ -143,7 +143,6 @@ function Groups() {
     const [individualGroup, setIndividualGroup] = useState([])
 
     function getGroupInfo(id) {
-        console.log(id)
         api.getIndividualGroup(id)
             .then(data => setIndividualGroup(data))
     }
@@ -182,7 +181,8 @@ function Groups() {
         let user_id = id
         let role = 'admin'
         api.postGroupUser({ group_id, user_id, role })
-            .then(window.location.reload())
+            .then(getGroupInfo(group_id))
+            
         }
     }
 
@@ -199,7 +199,7 @@ function Groups() {
             let user_id = id
             let role = 'member'
             api.postGroupUser({ group_id, user_id, role })
-                .then(window.location.reload())
+                .then(getGroupInfo(group_id))
         }
     }
 
@@ -453,9 +453,6 @@ function Groups() {
                                 <div className="backButton">
                                     <button onClick={() => { setCreateGroupIndex(5); killAll() }}><IoMdArrowRoundBack /></button>
                                 </div>
-                                <div className="groupButtons">
-                                    <button onClick={() => setCreateGroupIndex(5)}>done</button>
-                                </div>
                             </div>
                         </Carousel.Item>
                         <Carousel.Item>
@@ -494,9 +491,6 @@ function Groups() {
                                 }
                                 <div className="backButton">
                                     <button onClick={() => setCreateGroupIndex(5)}><IoMdArrowRoundBack /></button>
-                                </div>
-                                <div className="groupButtons">
-                                    <button onClick={() => setCreateGroupIndex(5)}>done</button>
                                 </div>
                             </div>
                         </Carousel.Item>
